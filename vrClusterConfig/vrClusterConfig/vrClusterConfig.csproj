@@ -87,6 +87,8 @@
     </ApplicationDefinition>
     <Compile Include="AppLogger.cs" />
     <Compile Include="AppRunner\ActiveNode.cs" />
+    <Compile Include="Visualization\Draw.cs" />
+    <Compile Include="Parser.cs" />
     <Compile Include="UiControls\AutoScroller.cs" />
     <Compile Include="ConfigData\AnalogInput.cs" />
     <Compile Include="AppRunner\AppRunner.cs" />
@@ -115,6 +117,8 @@
     </Compile>
     <Compile Include="ValidationRules.cs" />
     <Compile Include="UiControls\SizeConverter.cs" />
+    <Compile Include="Visualization\Viewport3d.cs" />
+    <Compile Include="Visualization\ViewportPreview.cs" />
     <Page Include="DialogWindows\InfoDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -203,6 +207,7 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

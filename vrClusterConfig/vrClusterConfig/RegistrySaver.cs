@@ -12,7 +12,7 @@ namespace vrClusterConfig
         const string registryPath = "SOFTWARE\\Pixela Labs\\vrCluster";
         // conf registry names
         public const string appList = "appList";
-        public const string nodeList = "nodeList";
+        //public const string nodeList = "nodeList";
         public const string configList = "configList";
         public const string configName = "configName";
         public const string paramsList = "parameters";
@@ -21,6 +21,7 @@ namespace vrClusterConfig
         public const string isAllCoresName = "isAllCores";
         public const string isFixedSeedName = "isFixedSeed";
         public const string isNoTextureStreamingName = "isNoTextureStreaming";
+        public const string isFullscreen = "isFullscreen";
         public const string openGLName = "openGL";
         public const string additionalParamsName = "additionalParams";
 
@@ -45,24 +46,24 @@ namespace vrClusterConfig
             return valueNamesArray;
         }
 
-        public static List<ActiveNode> ReadNodesFromRegistry(string key)
-        {
-            string[] valueNamesArray = ReadRegistry(key);
-            RegistryKey pixelaKey = Registry.CurrentUser.OpenSubKey(registryPath, true);
-            RegistryKey workKey = pixelaKey.OpenSubKey(key, true);
-            List<ActiveNode> regNodes = new List<ActiveNode>();
-            foreach (string name in valueNamesArray)
-            {
-                object keyValue = workKey.GetValue(name);
-                bool isSelected = false;
+        //public static List<ActiveNode> ReadNodesFromRegistry(string key)
+        //{
+        //    string[] valueNamesArray = ReadRegistry(key);
+        //    RegistryKey pixelaKey = Registry.CurrentUser.OpenSubKey(registryPath, true);
+        //    RegistryKey workKey = pixelaKey.OpenSubKey(key, true);
+        //    List<ActiveNode> regNodes = new List<ActiveNode>();
+        //    foreach (string name in valueNamesArray)
+        //    {
+        //        object keyValue = workKey.GetValue(name);
+        //        bool isSelected = false;
 
-                if (keyValue != null)
-                    isSelected = Convert.ToBoolean(keyValue);
-                regNodes.Add(new ActiveNode(name, isSelected));
-            }
+        //        if (keyValue != null)
+        //            isSelected = Convert.ToBoolean(keyValue);
+        //        regNodes.Add(new ActiveNode(name, isSelected));
+        //    }
 
-            return regNodes;
-        }
+        //    return regNodes;
+        //}
 
         public static List<string> ReadStringsFromRegistry(string key)
         {
@@ -133,37 +134,37 @@ namespace vrClusterConfig
             regKey.DeleteValue(value);
         }
 
-        public static void SetRegValueSelected(string key, string name)
-        {
-            try
-            {
-                RegistryKey regKey = Registry.CurrentUser.OpenSubKey(registryPath + "\\" + key, true);
-                if (regKey == null)
-                {
-                    Registry.CurrentUser.CreateSubKey(registryPath + "\\" + key);
-                    UpdateRegistry(key, name, true);
-                }
-                else
-                {
-                    string[] valueNamesArray = ReadRegistry(key);
-                    foreach (string item in valueNamesArray)
-                    {
-                        if (name == item)
-                        {
-                            UpdateRegistry(key, item, true);
-                        }
-                        else
-                        {
-                            UpdateRegistry(key, name, false);
-                        }
-                    }
-                }
-            }
-            catch (Exception exception)
-            {
-                //AppLogger.Add("Can't set registry value. EXCEPTION: " + exception.Message);
-            }
-        }
+        //public static void SetRegValueSelected(string key, string name)
+        //{
+        //    try
+        //    {
+        //        RegistryKey regKey = Registry.CurrentUser.OpenSubKey(registryPath + "\\" + key, true);
+        //        if (regKey == null)
+        //        {
+        //            Registry.CurrentUser.CreateSubKey(registryPath + "\\" + key);
+        //            UpdateRegistry(key, name, true);
+        //        }
+        //        else
+        //        {
+        //            string[] valueNamesArray = ReadRegistry(key);
+        //            foreach (string item in valueNamesArray)
+        //            {
+        //                if (name == item)
+        //                {
+        //                    UpdateRegistry(key, item, true);
+        //                }
+        //                else
+        //                {
+        //                    UpdateRegistry(key, name, false);
+        //                }
+        //            }
+        //        }
+        //    }
+        //    catch (Exception exception)
+        //    {
+        //        //AppLogger.Add("Can't set registry value. EXCEPTION: " + exception.Message);
+        //    }
+        //}
 
         public static string FindSelectedRegValue(string key)
         {
@@ -176,14 +177,14 @@ namespace vrClusterConfig
                     string[] valueNamesArray = ReadRegistry(key);
                     foreach (string item in valueNamesArray)
                     {
-                        if(Convert.ToBoolean(regKey.GetValue(item)))
+                        if (Convert.ToBoolean(regKey.GetValue(item)))
                         {
                             return item;
                         }
                     }
 
                 }
-                            }
+            }
             catch (Exception exception)
             {
                 //AppLogger.Add("Can't find registry value. EXCEPTION: " + exception.Message);

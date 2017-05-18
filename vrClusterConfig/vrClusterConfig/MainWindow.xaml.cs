@@ -41,6 +41,16 @@ namespace vrClusterConfig
             logTab.DataContext = appRunner;
             appLogTextBox.DataContext = AppLogger.instance;
             SetDefaultConfig();
+            SetViewportPreview();
+        }
+
+        private void SetViewportPreview()
+        {
+
+            ViewportPreview viewportPreview = new ViewportPreview();
+            screenResolutionGrid.DataContext = viewportPreview;
+            viewportCanvas.DataContext = viewportPreview;
+            previewViewport.DataContext = currentConfig;
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -78,6 +88,8 @@ namespace vrClusterConfig
                         if (saveFileDialog.ShowDialog() == true)
                         {
                             currentFileName = saveFileDialog.FileName;
+                            currentConfig.name = Path.GetFileNameWithoutExtension(currentFileName);
+                            RegistrySaver.RemoveAllRegistryValues(RegistrySaver.configName);
                             RegistrySaver.AddRegistryValue(RegistrySaver.configName, currentFileName);
                             File.WriteAllText(currentFileName, currentConfig.CreateConfig());
                         }
@@ -112,7 +124,7 @@ namespace vrClusterConfig
             if (string.IsNullOrEmpty(configPath))
             {
                 CreateConfig();
-                
+
             }
             else
             {
@@ -134,116 +146,8 @@ namespace vrClusterConfig
         //Config file parser
         private void ConfigFileParser(string filePath)
         {
-            // refactoring needed
             CreateConfig();
-            List<string> inputLines = new List<string>();
-            List<string> sceneNodeLines = new List<string>();
-            List<string> screenLines = new List<string>();
-            List<string> viewportLines = new List<string>();
-            List<string> clusterNodeLines = new List<string>();
-            List<string> cameraLines = new List<string>();
-            List<string> generalLines = new List<string>();
-            List<string> stereoLines = new List<string>();
-            List<string> debugLines = new List<string>();
-            try
-            {
-                foreach (string line in File.ReadLines(filePath))
-                {
-                    if (line == string.Empty || line.First() == '#')
-                    {
-                        //Do nothing
-                    }
-                    else
-                    {
-                        if (line.Contains("[input]"))
-                        {
-                            inputLines.Add(line);
-                        }
-                        if (line.Contains("[scene_node]"))
-                        {
-                            sceneNodeLines.Add(line);
-                        }
-                        if (line.Contains("[screen]"))
-                        {
-                            screenLines.Add(line);
-                        }
-                        if (line.Contains("[viewport]"))
-                        {
-                            viewportLines.Add(line);
-                        }
-                        if (line.Contains("[cluster_node]"))
-                        {
-                            clusterNodeLines.Add(line);
-                        }
-                        if (line.Contains("[camera]"))
-                        {
-                            cameraLines.Add(line);
-                        }
-                        if (line.Contains("[general]"))
-                        {
-                            generalLines.Add(line);
-                        }
-                        if (line.Contains("[stereo]"))
-                        {
-                            stereoLines.Add(line);
-                        }
-                        if (line.Contains("[debug]"))
-                        {
-                            debugLines.Add(line);
-                        }
-                        if (line.Contains("[render]"))
-                        {
-                            //todo 
-                        }
-                        if (line.Contains("[custom]"))
-                        {
-                            //todo 
-                        }
-                    }
-                }
-                foreach (string line in viewportLines)
-                {
-                    currentConfig.ViewportParse(line);
-                }
-                foreach (string line in generalLines)
-                {
-                    currentConfig.GeneralParse(line);
-                }
-                foreach (string line in stereoLines)
-                {
-                    currentConfig.StereoParse(line);
-                }
-                foreach (string line in debugLines)
-                {
-                    currentConfig.DebugParse(line);
-                }
-                foreach (string line in inputLines)
-                {
-                    currentConfig.InputsParse(line);
-                }
-                foreach (string line in cameraLines)
-                {
-                    currentConfig.CameraParse(line);
-                }
-                foreach (string line in sceneNodeLines)
-                {
-                    currentConfig.SceneNodeParse(line);
-                }
-                foreach (string line in screenLines)
-                {
-                    currentConfig.ScreenParse(line);
-                }
-                foreach (string line in clusterNodeLines)
-                {
-                    currentConfig.ClusterNodeParse(line);
-                }
-
-                currentConfig.sceneNodesView = currentConfig.ConvertSceneNodeList(currentConfig.sceneNodes);
-                currentConfig.name = Path.GetFileNameWithoutExtension(filePath);
-                AppLogger.Add("Config " + currentConfig.name + " loaded");
-                RegistrySaver.AddRegistryValue(RegistrySaver.configName, filePath);
-                
-                
+            Parser.Parse(filePath, currentConfig);
                 //Set first items in listboxes and treeview as default if existed
                 currentConfig.SelectFirstItems();
                 RefreshUiControls();
@@ -257,11 +161,6 @@ namespace vrClusterConfig
                 }
                 //sceneNodeTrackerCb.SelectedIndex = -1;
                 SetTitle();
-            }
-            catch (FileNotFoundException e)
-            {
-                AppLogger.Add("ERROR! Config " + currentConfig.name + "not found!");
-            }
         }
 
         //crutch for refreshing all listboxes and comboboxes after binding
@@ -271,7 +170,6 @@ namespace vrClusterConfig
             screensListBox.Items.Refresh();
             viewportsListBox.Items.Refresh();
             nodesListBox.Items.Refresh();
-            activeNodesListBox.Items.Refresh();
             parentWallsCb.Items.Refresh();
             screensCb.Items.Refresh();
             viewportsCb.Items.Refresh();
@@ -367,11 +265,11 @@ namespace vrClusterConfig
                 {
                     node.isMaster = false;
                 }
-               
+
             }
         }
 
-        private void addscreenbutton_click(object sender, RoutedEventArgs e)
+        private void addScreenButton_Click(object sender, RoutedEventArgs e)
         {
             currentConfig.screens.Add(new Screen());
             currentConfig.selectedScreen = currentConfig.screens.LastOrDefault();
@@ -487,7 +385,6 @@ namespace vrClusterConfig
                 }
                 RefreshUiControls();
             }
-            //inputsListBox.Items.Refresh();
         }
 
         //Sets selected treeview item
@@ -798,11 +695,6 @@ namespace vrClusterConfig
             appRunner.RunCommand();
         }
 
-        //private List<string> GetSelectedListItems(ListBox listBox)
-        //{
-        //    List<string> selectedlistNames = listBox.SelectedItems.Cast<string>().ToList();
-        //    return selectedlistNames;
-        //}
 
         private void statusBtn_Click(object sender, RoutedEventArgs e)
         {
@@ -844,7 +736,7 @@ namespace vrClusterConfig
 
         private void MenuItem_Click(object sender, RoutedEventArgs e)
         {
-            InfoDialog aboutDialog = new InfoDialog("Application for configuration and launching VR Cluster version "+ versionInfo + "\n \u00a9 Copiright Pixela Labs. All rights reserved.\n more info http://vrcluster.io/");
+            InfoDialog aboutDialog = new InfoDialog("Application for configuration and launching VR Cluster version " + versionInfo + "\n \u00a9 Copiright Pixela Labs. All rights reserved.\n more info http://vrcluster.io/");
             aboutDialog.Owner = this;
             aboutDialog.Width = 350;
             aboutDialog.Height = 200;
@@ -860,50 +752,6 @@ namespace vrClusterConfig
                 string appPath = openFileDialog.FileName;
                 appRunner.AddApplication(appPath);
                 applicationsListBox.Items.Refresh();
-            }
-        }
-
-        private void addActiveNodeButton_Click(object sender, RoutedEventArgs e)
-        {
-
-            InputStringDialog dialogChooser = new InputStringDialog();
-            dialogChooser.Owner = this;
-            dialogChooser.Title = "Input node address";
-            dialogChooser.ShowDialog();
-            if (dialogChooser.DialogResult.Value)
-            {
-                string node = dialogChooser.inputString;
-                if (!string.IsNullOrEmpty(node))
-                {
-                    if (appRunner.AddNode(node))
-                    {
-                        activeNodesListBox.Items.Refresh();
-                    }
-                    else
-                    {
-                        InfoDialog wrongNodeDialog = new InfoDialog("Node with this address already exists. Active node must have a unique address");
-                        wrongNodeDialog.Owner = this;
-                        wrongNodeDialog.Width = 350;
-                        wrongNodeDialog.Height = 200;
-                        wrongNodeDialog.Show();
-                    }
-
-                }
-            }
-        }
-
-        private void deleteActiveNodeButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (activeNodesListBox.SelectedItems.Count > 0)
-            {
-                YesNoDialog dialogResult = new YesNoDialog("Do you really want to delene selected nodes?");
-                dialogResult.Owner = this;
-                if ((bool)dialogResult.ShowDialog())
-                {
-                    List<ActiveNode> selectedActiveNodes = activeNodesListBox.SelectedItems.OfType<ActiveNode>().ToList();
-                    appRunner.DeleteNodes(selectedActiveNodes);
-                    activeNodesListBox.Items.Refresh();
-                }
             }
         }
 
@@ -928,7 +776,7 @@ namespace vrClusterConfig
             if (openFileDialog.ShowDialog() == true)
             {
                 string configPath = openFileDialog.FileName;
-                if (!appRunner.configs.Exists(x=> x==configPath))
+                if (!appRunner.configs.Exists(x => x == configPath))
                 {
                     appRunner.AddConfig(configPath);
                     configsCb.Items.Refresh();
@@ -961,7 +809,7 @@ namespace vrClusterConfig
                 if ((bool)dialogResult.ShowDialog())
                 {
                     appRunner.DeleteConfig();
-                    
+
                     configsCb.Items.Refresh();
                 }
             }

@@ -1,6 +1,4 @@
 C:\work\PixelaLabs\UVR\Tools\vrClusterConfig\vrClusterConfig\bin\Release\vrClusterConfig.exe.config
-C:\work\PixelaLabs\UVR\Tools\vrClusterConfig\vrClusterConfig\bin\Release\vrClusterConfig.exe.manifest
-C:\work\PixelaLabs\UVR\Tools\vrClusterConfig\vrClusterConfig\bin\Release\vrClusterConfig.application
 C:\work\PixelaLabs\UVR\Tools\vrClusterConfig\vrClusterConfig\bin\Release\vrClusterConfig.exe
 C:\work\PixelaLabs\UVR\Tools\vrClusterConfig\vrClusterConfig\bin\Release\vrClusterConfig.pdb
 C:\work\PixelaLabs\UVR\Tools\vrClusterConfig\vrClusterConfig\obj\Release\DialogWindows\InfoDialog.g.cs
@@ -21,11 +19,8 @@ C:\work\PixelaLabs\UVR\Tools\vrClusterConfig\vrClusterConfig\obj\Release\DialogW
 C:\work\PixelaLabs\UVR\Tools\vrClusterConfig\vrClusterConfig\obj\Release\vrClusterConfig.g.resources
 C:\work\PixelaLabs\UVR\Tools\vrClusterConfig\vrClusterConfig\obj\Release\vrClusterConfig.Properties.Resources.resources
 C:\work\PixelaLabs\UVR\Tools\vrClusterConfig\vrClusterConfig\obj\Release\vrClusterConfig.csproj.GenerateResource.Cache
-C:\work\PixelaLabs\UVR\Tools\vrClusterConfig\vrClusterConfig\obj\Release\vrClusterConfig.exe.manifest
-C:\work\PixelaLabs\UVR\Tools\vrClusterConfig\vrClusterConfig\obj\Release\vrClusterConfig.application
 C:\work\PixelaLabs\UVR\Tools\vrClusterConfig\vrClusterConfig\obj\Release\vrClusterConfig.exe
 C:\work\PixelaLabs\UVR\Tools\vrClusterConfig\vrClusterConfig\obj\Release\vrClusterConfig.pdb
 C:\work\PixelaLabs\UVR\Tools\vrClusterConfig\vrClusterConfig\bin\Release\logCategoriesList.conf
-C:\work\PixelaLabs\UVR\Tools\vrClusterConfig\vrClusterConfig\obj\Release\vrClusterConfig.csprojResolveAssemblyReference.cache
 C:\work\PixelaLabs\UVR\Tools\vrClusterConfig\vrClusterConfig\obj\Release\vrClusterConfig_Content.g.cs
-C:\work\PixelaLabs\UVR\Tools\vrClusterConfig\vrClusterConfig\obj\Release\vrClusterConfig.TrustInfo.xml
+C:\work\PixelaLabs\UVR\Tools\vrClusterConfig\vrClusterConfig\obj\Release\vrClusterConfig.csprojResolveAssemblyReference.cache

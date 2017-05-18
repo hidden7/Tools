@@ -758,7 +758,7 @@
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <Button Grid.Column="0" x:Name="addScreenBtn" Content="Add" Click="addscreenbutton_click" Template="{DynamicResource ButtonTemplate}" ToolTip="Add new screen"/>
+                            <Button Grid.Column="0" x:Name="addScreenBtn" Content="Add" Click="addScreenButton_Click" Template="{DynamicResource ButtonTemplate}" ToolTip="Add new screen"/>
                             <Button Grid.Column="1" x:Name="deleteScreenBtn" Content="Delete" Click="deleteScreenButton_Click" Template="{DynamicResource ButtonTemplate}" ToolTip="Delete selected screen"/>
                         </Grid>
                     </Grid>
@@ -879,6 +879,7 @@
                 <Grid Style="{StaticResource TabContent}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="auto"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <Grid Grid.Column="0" x:Name="viewportsListPanel">
@@ -913,6 +914,9 @@
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
                         <Grid Grid.Row="0">
                             <Grid.ColumnDefinitions>
@@ -944,7 +948,46 @@
                         <Grid Grid.Row="3">
                             <CheckBox x:Name="isHorizontalFlip" Content="Horizontal Flip" HorizontalAlignment="Left" Template="{DynamicResource CustomCheckBoxControlTemplate}" IsChecked="{Binding selectedViewport.horizontalFlip}" />
                         </Grid>
+                        <Label Grid.Row="5" Content="Full screen resolution(Is used only for preview)" />
+                        <Grid Grid.Row="6" x:Name="screenResolutionGrid" >
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Label Grid.Column="0" Grid.Row="0" Content="Width" />
+                            <TextBox x:Name="fullScreenWidthTb" Grid.Column="1" Grid.Row="0" Style="{DynamicResource SizeTB}" Text="{Binding mainScreenWidth}" ToolTip="Width of phisical screen in pixels" />
+                            <Label Grid.Column="0" Grid.Row="1" Content="Height"/>
+                            <TextBox x:Name="fullScreenHeightTb" Grid.Column="1" Grid.Row="1" Style="{DynamicResource SizeTB}" Text="{Binding mainScreenHeight}" ToolTip="Height of phisical screen in pixels" />
+
+                        </Grid>
                     </Grid>
+                    <Viewbox Grid.Column="2" Stretch="Uniform" Margin="5">
+                        <Canvas x:Name="viewportCanvas" Background="#FF3F3F46" Width="{Binding canvasSize}" Height="{Binding canvasSize}" ClipToBounds="True" >
+                            <Canvas Canvas.Left="{Binding mainScreenOffsetX}" Canvas.Top="{Binding mainScreenOffsetY}" Width="{Binding mainScreenWidth}" Height="{Binding mainScreenHeight}" Background="#FF0FBDBD" >
+                                <Border x:Name="previewViewport" TextBlock.TextAlignment="Center" Background="#7FB15656" Width="{Binding selectedViewport.width}" Height="{Binding selectedViewport.height}" Canvas.Left="{Binding selectedViewport.x}" Canvas.Top="{Binding selectedViewport.y}" >
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="*" />
+                                            <RowDefinition Height="8*" />
+                                            <RowDefinition Height="*" />
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="8*" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Viewbox Grid.Column="1" Grid.Row="1" Stretch="Uniform" OpacityMask="Black" Opacity="0.5" >
+                                            <TextBlock Text="{Binding selectedViewport.id}" HorizontalAlignment="Center" VerticalAlignment="Center"  />
+                                        </Viewbox>
+                                    </Grid>
+                                </Border>
+                            </Canvas>
+                        </Canvas>
+                    </Viewbox>
                 </Grid>
             </TabItem>
             <TabItem Header="Cluster nodes">
@@ -1439,6 +1482,7 @@
                                             <RowDefinition Height="Auto" />
                                             <RowDefinition Height="Auto" />
                                             <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
                                             <RowDefinition Height="*" />
                                         </Grid.RowDefinitions>
                                         <CheckBox x:Name="stereoCheckBox" Grid.Row="0" Content="Stereo Enabled" Template="{DynamicResource CustomCheckBoxControlTemplate}" IsChecked="{Binding isStereo}" />
@@ -1446,8 +1490,9 @@
                                         <CheckBox x:Name="coresCheckBox" Grid.Row="2" Content="Use All Available Cores" Template="{DynamicResource CustomCheckBoxControlTemplate}" IsChecked="{Binding isUseAllCores}" />
                                         <CheckBox x:Name="fixedSeedCheckBox" Grid.Row="3" Content="Fixed Seed" Template="{DynamicResource CustomCheckBoxControlTemplate}" IsChecked="{Binding isFixedSeed}" />
                                         <CheckBox x:Name="textureStreamingCheckBox" Grid.Row="4" Content="No Texture Streaming" Template="{DynamicResource CustomCheckBoxControlTemplate}" IsChecked="{Binding isNotextureStreaming}" />
-                                        <Label Grid.Row="5" Content="Additional cmd params:" />
-                                        <TextBox x:Name="commandLineTb" Grid.Row="6" Style="{DynamicResource NameTB}" Width="Auto" Text="{Binding additionalParams, UpdateSourceTrigger=PropertyChanged}" Margin="20,2,2,2" HorizontalAlignment="Stretch" MaxWidth="400" />
+                                        <CheckBox x:Name="fullscreenCheckBox" Grid.Row="5" Content="Fullscreen" Template="{DynamicResource CustomCheckBoxControlTemplate}" IsChecked="{Binding isFullscreen}" />
+                                        <Label Grid.Row="6" Content="Additional cmd params:" />
+                                        <TextBox x:Name="commandLineTb" Grid.Row="7" Style="{DynamicResource NameTB}" Width="Auto" Text="{Binding additionalParams, UpdateSourceTrigger=PropertyChanged}" Margin="20,2,2,2" HorizontalAlignment="Stretch" MaxWidth="400" />
                                     </Grid>
                                 </Grid>
                             </Grid>
@@ -1471,7 +1516,7 @@
                                                     <Setter Property="Background" TargetName="border" Value="#0079CB"/>
                                                     <Setter Property="BorderBrush" TargetName="border" Value="#FF245A83"/>
                                                 </Trigger>
-                                                
+
                                             </ControlTemplate.Triggers>
                                         </ControlTemplate>
                                     </ToggleButton.Template>
@@ -1488,96 +1533,96 @@
                             </Grid>
                         </Grid>
                         <Grid Grid.Column="1" >
-                            <TabControl Grid.Row="0" TabStripPlacement="Bottom" Background="{x:Null}" BorderThickness="0" Padding="0" Style="{DynamicResource SubTabControlStyle}" Margin="3,0,0,0" Height="285" Panel.ZIndex="-4" >
-                                <TabItem Header="Applications" Style="{DynamicResource SubTabItemStyle}" >
-                                    <Grid Background="#252527" >
+                            <!--<TabControl Grid.Row="0" TabStripPlacement="Bottom" Background="{x:Null}" BorderThickness="0" Padding="0" Style="{DynamicResource SubTabControlStyle}" Margin="3,0,0,0" Height="285" Panel.ZIndex="-4" >
+                                <TabItem Header="Applications" Style="{DynamicResource SubTabItemStyle}" >-->
+                            <Grid Background="#252527" >
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="10" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*" />
+                                    <!--<RowDefinition Height="*" />-->
+                                    <RowDefinition Height="3" />
+                                </Grid.RowDefinitions>
+                                <Grid Grid.Column="0">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="*" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="5" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="5" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Label Content="Applications" Grid.Column="0" Grid.Row="0" />
+                                    <ListBox x:Name="applicationsListBox" Height="Auto" MinWidth="150" Grid.Column="0" Grid.Row="1"  ItemsSource="{Binding applications}" SelectedItem="{Binding selectedApplication}" MaxWidth="780" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" MinHeight="150" UseLayoutRounding="True" ToolTip="List of applications"/>
+                                    <Grid Grid.Row="2">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Button Grid.Column="0" x:Name="addAppBtn" Content="Add" Template="{DynamicResource ButtonTemplate}" Click="addAppButton_Click" ToolTip="Add new application to list" />
+                                        <Button Grid.Column="1" x:Name="deleteAppBtn" Content="Delete" Template="{DynamicResource ButtonTemplate}" Click="deleteAppButton_Click" ToolTip="Delete selected  application" />
+                                    </Grid>
+                                    <Grid Grid.Row="4">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto" />
-                                            <ColumnDefinition Width="10" />
-                                            <ColumnDefinition Width="Auto" />
-                                            <ColumnDefinition Width="Auto" />
-                                            <ColumnDefinition Width="Auto" />
-                                            <ColumnDefinition Width="Auto" />
-                                            <ColumnDefinition Width="Auto" />
-                                            <ColumnDefinition Width="Auto" />
-                                            <ColumnDefinition Width="Auto" />
-                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="*" />
-                                            <!--<RowDefinition Height="*" />-->
-                                            <RowDefinition Height="3" />
-                                        </Grid.RowDefinitions>
-                                        <Grid Grid.Column="0">
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="Auto" />
-                                                <RowDefinition Height="*" />
-                                                <RowDefinition Height="Auto" />
-                                                <RowDefinition Height="5" />
-                                                <RowDefinition Height="Auto" />
-                                                <RowDefinition Height="5" />
-                                                <RowDefinition Height="Auto" />
-                                                <RowDefinition Height="Auto" />
-                                                <RowDefinition Height="Auto" />
-                                            </Grid.RowDefinitions>
-                                            <Label Content="Applications" Grid.Column="0" Grid.Row="0" />
-                                            <ListBox x:Name="applicationsListBox" Height="Auto" MinWidth="150" Grid.Column="0" Grid.Row="1"  ItemsSource="{Binding applications}" SelectedItem="{Binding selectedApplication}" MaxWidth="780" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" MinHeight="150" UseLayoutRounding="True" ToolTip="List of applications"/>
-                                            <Grid Grid.Row="2">
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="*"/>
-                                                </Grid.ColumnDefinitions>
-                                                <Button Grid.Column="0" x:Name="addAppBtn" Content="Add" Template="{DynamicResource ButtonTemplate}" Click="addAppButton_Click" ToolTip="Add new application to list" />
-                                                <Button Grid.Column="1" x:Name="deleteAppBtn" Content="Delete" Template="{DynamicResource ButtonTemplate}" Click="deleteAppButton_Click" ToolTip="Delete selected  application" />
-                                            </Grid>
-                                            <Grid Grid.Row="4">
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto" />
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
 
-                                                <Label Content="Config Files" Grid.Column="0" Grid.Row="0"/>
-                                                <ComboBox x:Name="configsCb" Height="Auto" Grid.Column="1" Grid.Row="0" ItemsSource="{Binding configs}" SelectedItem="{Binding selectedConfig}" VerticalAlignment="Top" Template="{DynamicResource ComboBoxTemplate}" DropDownOpened="configsCb_DropDownOpened" Width="Auto" MinWidth="150" MaxWidth="720" ToolTip="Select config file" HorizontalAlignment="Stretch" SelectionChanged="configsCb_SelectionChanged" />
-                                                <Button Grid.Column="2" x:Name="addConfigBtn" Content="Add" Template="{DynamicResource ButtonTemplate}" ToolTip="Add new application to list" Click="addConfigButton_Click" Padding="3,1" />
-                                                <Button Grid.Column="3" x:Name="deleteConfigBtn" Content="Delete" Template="{DynamicResource ButtonTemplate}" ToolTip="Delete selected  application" Click="deleteConfigButton_Click" Padding="3,1" />
-                                            </Grid>
-                                            <Grid Grid.Row="4">
-                                                <!--<Grid.ColumnDefinitions>
+                                        <Label Content="Config Files" Grid.Column="0" Grid.Row="0"/>
+                                        <ComboBox x:Name="configsCb" Height="Auto" Grid.Column="1" Grid.Row="0" ItemsSource="{Binding configs}" SelectedItem="{Binding selectedConfig}" VerticalAlignment="Top" Template="{DynamicResource ComboBoxTemplate}" DropDownOpened="configsCb_DropDownOpened" Width="Auto" MinWidth="150" MaxWidth="720" ToolTip="Select config file" HorizontalAlignment="Stretch" SelectionChanged="configsCb_SelectionChanged" />
+                                        <Button Grid.Column="2" x:Name="addConfigBtn" Content="Add" Template="{DynamicResource ButtonTemplate}" ToolTip="Add new application to list" Click="addConfigButton_Click" Padding="3,1" />
+                                        <Button Grid.Column="3" x:Name="deleteConfigBtn" Content="Delete" Template="{DynamicResource ButtonTemplate}" ToolTip="Delete selected  application" Click="deleteConfigButton_Click" Padding="3,1" />
+                                    </Grid>
+                                    <Grid Grid.Row="4">
+                                        <!--<Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="*"/>
                                                     <ColumnDefinition Width="*"/>
                                                 </Grid.ColumnDefinitions>
                                                 <Button Grid.Column="0" x:Name="addConfigButton" Content="Add" Template="{DynamicResource ButtonTemplate}" ToolTip="Add new application to list" Click="addConfigButton_Click" />
                                                 <Button Grid.Column="1" x:Name="deleteConfigButton" Content="Delete" Template="{DynamicResource ButtonTemplate}" ToolTip="Delete selected  application" Click="deleteConfigButton_Click" />-->
 
-                                            </Grid>
-                                            <Grid Grid.Row="7">
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <Label Content="Cameras" Grid.Row="2" Grid.Column="0" />
-                                                <ComboBox x:Name="camerasCb" Height="Auto" Grid.Row="2" Grid.Column="1" ItemsSource="{Binding cameras}" SelectedItem="{Binding selectedCamera}" VerticalAlignment="Top" Template="{DynamicResource ComboBoxTemplate}"  ToolTip="Select camera" />
-                                            </Grid>
-
-                                        </Grid>
-
-                                        <Grid Grid.Column="2" Grid.Row="0" >
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="Auto" />
-                                                <RowDefinition Height="Auto" />
-                                                <RowDefinition Height="Auto" />
-                                                <RowDefinition Height="Auto" />
-                                                <RowDefinition Height="*" />
-                                            </Grid.RowDefinitions>
-
-                                        </Grid>
-
                                     </Grid>
-                                </TabItem>
+                                    <Grid Grid.Row="7">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Label Content="Cameras" Grid.Row="2" Grid.Column="0" />
+                                        <ComboBox x:Name="camerasCb" Height="Auto" Grid.Row="2" Grid.Column="1" ItemsSource="{Binding cameras}" SelectedItem="{Binding selectedCamera}" VerticalAlignment="Top" Template="{DynamicResource ComboBoxTemplate}"  ToolTip="Select camera" />
+                                    </Grid>
 
-                                <TabItem Header="Active Nodes" Style="{DynamicResource SubTabItemStyle}">
+                                </Grid>
+
+                                <Grid Grid.Column="2" Grid.Row="0" >
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="*" />
+                                    </Grid.RowDefinitions>
+
+                                </Grid>
+
+                            </Grid>
+                            <!--</TabItem>-->
+
+                            <!--<TabItem Header="Active Nodes" Style="{DynamicResource SubTabItemStyle}">
                                     <Grid Background="#252527">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto" />
@@ -1607,10 +1652,10 @@
                                         </Grid>
 
                                     </Grid>
-                                </TabItem>
+                                </TabItem>-->
 
 
-                            </TabControl>
+                            <!--</TabControl>-->
                         </Grid>
 
 

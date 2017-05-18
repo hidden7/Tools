@@ -146,7 +146,7 @@ namespace vrClusterConfig
             return isValid;
         }
 
-        public new string CreateCfg()
+        public override string CreateCfg()
         {
             string stringCfg = "[input] ";
             stringCfg = string.Concat(stringCfg, "id=", id, " type=", type.ToString(), " addr=", address,

@@ -14,7 +14,7 @@ namespace vrClusterConfig
 {
     public class AppRunner : INotifyPropertyChanged
     {
-        
+
         // net
         public const int nodeListenerPort = 9777;
 
@@ -38,7 +38,7 @@ namespace vrClusterConfig
         private const string cCmdStatus = "status";
 
         // run application params\keys
-        private const string uvrParamStatic = " -uvr_cluster -fullscreen -nosplash";
+        private const string uvrParamStatic = " -uvr_cluster -nosplash";
 
         private const string uvrParamConfig = " uvr_cfg=";     // note:  no need [-] before it
         private const string uvrParamLogFilename = " log=";         // note:  no need [-] before it
@@ -51,6 +51,7 @@ namespace vrClusterConfig
         private const string uvrParamNoSound = " -nosound";
         private const string uvrParamFixedSeed = " -fixedseed";
         private const string uvrParamNoWrite = " -nowrite";
+        private const string uvrParamFullscreen = " -fullscreen";
 
         private const string uvrParamForceLogFlush = " -forcelogflush";
         private const string uvrParamNoTextureStreaming = " -notexturestreaming";
@@ -96,7 +97,7 @@ namespace vrClusterConfig
         private bool _isStereo = true;
         public bool isStereo
         {
-            get { return _isStereo;  }
+            get { return _isStereo; }
             set
             {
                 Set(ref _isStereo, value, "isStereo");
@@ -137,6 +138,18 @@ namespace vrClusterConfig
             {
                 Set(ref _isFixedSeed, value, "isFixedSeed");
                 RegistrySaver.UpdateRegistry(RegistrySaver.paramsList, RegistrySaver.isFixedSeedName, value);
+                GenerateCmdStartApp();
+            }
+        }
+
+        private bool _isFullscreen;
+        public bool isFullscreen
+        {
+            get { return _isFullscreen; }
+            set
+            {
+                Set(ref _isFullscreen, value, "isFullscreen");
+                RegistrySaver.UpdateRegistry(RegistrySaver.paramsList, RegistrySaver.isFullscreen, value);
                 GenerateCmdStartApp();
             }
         }
@@ -188,25 +201,6 @@ namespace vrClusterConfig
         {
             get { return _isLogRemove; }
             set { Set(ref _isLogRemove, value, "isLogRemove"); }
-        }
-
-        private bool _isDebugRun;
-        public bool isDebugRun
-        {
-            get { return _isDebugRun; }
-            set
-            {
-                Set(ref _isDebugRun, value, "isDebugRun");
-                GenerateCmdStartApp();
-            }
-        }
-
-        //Active nodes list
-        private List<ActiveNode> _activeNodes;
-        public List<ActiveNode> activeNodes
-        {
-            get { return _activeNodes; }
-            set { Set(ref _activeNodes, value, "activeNodes"); }
         }
 
         //Applications list
@@ -271,6 +265,9 @@ namespace vrClusterConfig
         }
 
         //Command line string
+        string cmd;
+
+        //Command line string with app path
         private string _commandLine;
         public string commandLine
         {
@@ -290,7 +287,7 @@ namespace vrClusterConfig
             }
         }
 
-        //Selected Config
+        //Selected Config file
         private string _selectedConfig;
         public string selectedConfig
         {
@@ -299,9 +296,13 @@ namespace vrClusterConfig
             {
                 Set(ref _selectedConfig, value, "selectedConfig");
                 GenerateCmdStartApp();
+                runningConfig = new Config();
+                Parser.Parse(_selectedConfig, runningConfig);
                 //SetSelectedConfig();
             }
         }
+
+        private Config runningConfig;
 
         //Selected Camera
         private string _selectedCamera;
@@ -326,6 +327,7 @@ namespace vrClusterConfig
 
         public AppRunner()
         {
+            
             InitOptions();
             InitConfigLists();
             InitLogCategories();
@@ -370,12 +372,12 @@ namespace vrClusterConfig
         //Reloading all config lists
         private void InitConfigLists()
         {
+
             applications = RegistrySaver.ReadStringsFromRegistry(RegistrySaver.appList);
             AppLogger.Add("Applications loaded successfully");
             configs = RegistrySaver.ReadStringsFromRegistry(RegistrySaver.configList);
             SetSelectedConfig();
             AppLogger.Add("Configs loaded successfully");
-            activeNodes = RegistrySaver.ReadNodesFromRegistry(RegistrySaver.nodeList);
             AppLogger.Add("List of Active nodes loaded successfully");
             selectedCamera = cameras.SingleOrDefault(x => x == "camera_dynamic");
 
@@ -405,9 +407,10 @@ namespace vrClusterConfig
             if (!string.IsNullOrEmpty(selected))
             {
                 selectedConfig = configs.Find(x => x == selected);
+
             }
             
-            
+
         }
 
         private void InitOptions()
@@ -416,7 +419,7 @@ namespace vrClusterConfig
             {
                 selectedOpenGlParam = openGlParams.First(x => x.Key == RegistrySaver.ReadStringValue(RegistrySaver.paramsList, RegistrySaver.openGLName));
             }
-            catch(Exception)
+            catch (Exception)
             {
                 selectedOpenGlParam = openGlParams.SingleOrDefault(x => x.Key == "OpenGL3");
             }
@@ -439,22 +442,22 @@ namespace vrClusterConfig
             string swOpengl = "";
             string swStereo = "";
             string swNoSound = "";
-            string swFixedSeed =  "";
-
+            string swFixedSeed = "";
+            string swFullscreen = uvrParamFullscreen;
             string swNoTextureStreaming = "";
             string swUseAllAvailableCores = "";
 
             if (isRunWithParams)
             {
+                swFullscreen = (isFullscreen) ? uvrParamFullscreen : "";
                 swOpengl = selectedOpenGlParam.Value;
                 swStereo = (isStereo) ? uvrParamStereo : "";
                 swNoSound = (isNoSound) ? uvrParamNoSound : "";
                 swFixedSeed = (isFixedSeed) ? uvrParamFixedSeed : "";
-
                 swNoTextureStreaming = (isNotextureStreaming) ? uvrParamNoTextureStreaming : "";
                 swUseAllAvailableCores = (isUseAllCores) ? uvrParamUseAllAvailableCores : "";
             }
-            
+
 
             // logging params
             string swNoWrite = (isLogEnabled) ? "" : uvrParamNoWrite;
@@ -481,7 +484,7 @@ namespace vrClusterConfig
             // additional params
 
             // cmd
-            string cmd = appPath + swOpengl + uvrParamStatic + confString + swStereo + swNoSound + swFixedSeed
+            cmd =  swOpengl + swFullscreen + uvrParamStatic + confString + swStereo + swNoSound + swFixedSeed
                                  + swNoTextureStreaming + swUseAllAvailableCores + swForceLogFlush + swNoWrite
                                  + paramLogFilename + paramDefaultCamera + " " + additionalParams + logLevelsSetup;
             if (isLogEnabled)
@@ -489,14 +492,14 @@ namespace vrClusterConfig
                 cmd = cmd + logLevels;
             }
 
-            if (isDebugRun)
+            if (!isRunWithParams)
             {
                 // this is for debug only! Run application WITHOUT any params
                 cmd = appPath;
             }
 
             // set value
-            commandLine = cmd;
+            commandLine = appPath + cmd;
 
             //return cmd;
         }
@@ -521,23 +524,20 @@ namespace vrClusterConfig
 
         public void RunCommand()
         {
-            List<string> runningList = activeNodes.Where(x => x.value == true).Select(x => x.key).ToList();
-            ClusterCommand(ClusterCommandType.Run, runningList);
+            ClusterCommand(ClusterCommandType.Run, runningConfig.clusterNodes);
         }
 
         public void KillCommand()
         {
-            List<string> runningList = activeNodes.Where(x => x.value == true).Select(x => x.key).ToList();
-            ClusterCommand(ClusterCommandType.Kill, runningList);
+            ClusterCommand(ClusterCommandType.Kill, runningConfig.clusterNodes);
         }
 
         public void StatusCommand()
         {
-            List<string> runningList = activeNodes.Where(x => x.value == true).Select(x => x.key).ToList();
-            ClusterCommand(ClusterCommandType.Status, runningList);
+            ClusterCommand(ClusterCommandType.Status, runningConfig.clusterNodes);
         }
 
-        private void ClusterCommand(ClusterCommandType ccType, List<string> nodes)
+        private void ClusterCommand(ClusterCommandType ccType, List<ClusterNode> nodes)
         {
             // get all nodes address
 
@@ -547,29 +547,34 @@ namespace vrClusterConfig
             }
 
             // gen.command for cluster nodes
-            string clusterCmd = "";
+            string commandCmd = "";
 
             switch (ccType)
             {
                 case ClusterCommandType.Run:
-                    clusterCmd = cCmdStart + commandLine;
+                    commandCmd = cCmdStart + selectedApplication;
                     break;
 
                 case ClusterCommandType.Kill:
-                    clusterCmd = cCmdKill + selectedApplication;
+                    commandCmd = cCmdKill + selectedApplication;
                     break;
 
                 case ClusterCommandType.Status:
-                    clusterCmd = cCmdStatus;
+                    commandCmd = cCmdStatus;
                     break;
             }
 
             // send cmd for each node
-            AppLogger.Add("Command for client is :  " + clusterCmd);
-
-            foreach (string node in nodes)
+            string cl = string.Empty;
+            foreach (ClusterNode node in nodes)
             {
-                SendDaemonCommand(node, clusterCmd);
+                if (ccType == ClusterCommandType.Run)
+                {
+                    cl = " uvr_node=" + node.id + cmd;
+
+                }
+                string clusterCmd = commandCmd +cl;
+                SendDaemonCommand(node.address, clusterCmd);
             }
         }
 
@@ -603,15 +608,14 @@ namespace vrClusterConfig
 
         public void CleanLogs()
         {
-            List<string> nodesList = activeNodes.Where(x => x.value == true).Select(x => x.key).ToList();
-            CleanLogFolders(nodesList);
+            CleanLogFolders(runningConfig.clusterNodes);
         }
 
-        private void CleanLogFolders(List<string> nodes)
+        private void CleanLogFolders(List<ClusterNode> nodes)
         {
-            foreach (string node in nodes)
+            foreach (ClusterNode node in nodes)
             {
-                string dirPath = GetLogFolder(node);
+                string dirPath = GetLogFolder(node.address);
                 if (dirPath != null)
                 {
                     RemoveAllRecursively(dirPath);
@@ -628,7 +632,11 @@ namespace vrClusterConfig
             // remove drive-name, like      [C:]
             if (appPath != null)
             {
-                appPath = appPath.Substring(2, appPath.Length - 2);
+                //fast crutch with localhost. refactoring needed!!
+                if (node != "127.0.0.1")
+                {
+                    appPath = appPath.Substring(2, appPath.Length - 2);
+                }
                 // remove filename and extension
                 string logPath = Path.GetDirectoryName(appPath);
 
@@ -636,8 +644,17 @@ namespace vrClusterConfig
                 logPath.Replace("/", "\\");
 
                 string projectName = Path.GetFileNameWithoutExtension(appPath);
-                fullpath = @"\\" + node + logPath + @"\" + projectName + @"\Saved\Logs\";
+                if (node != "127.0.0.1")
+                {
+                    fullpath = @"\\" + node + logPath + @"\" + projectName + @"\Saved\Logs\";
+                }
+                else
+                {
+                    fullpath = logPath + @"\" + projectName + @"\Saved\Logs\";
+                }
+
             }
+            else
             {
                 AppLogger.Add("WARNING! Cannot create logs, select application for start");
             }
@@ -671,11 +688,10 @@ namespace vrClusterConfig
 
         public void CollectLogs()
         {
-            List<string> nodes = activeNodes.Where(x => x.value == true).Select(x => x.key).ToList();
-            CollectLogFiles(nodes);
+            CollectLogFiles(runningConfig.clusterNodes);
         }
 
-        private void CollectLogFiles(List<string> nodes)
+        private void CollectLogFiles(List<ClusterNode> nodes)
         {
             //List<string> nodes = GetNodes();
 
@@ -695,14 +711,14 @@ namespace vrClusterConfig
             List<string> fileList = new List<string>();
 
             // copy + rename
-            foreach (string node in nodes)
+            foreach (ClusterNode node in nodes)
             {
                 string logFilename = logFile;
 
                 string logFilenameSep = (logFilename == string.Empty) ? "" : ("_");
 
-                string srcLogPath = GetLogFolder(node) + logFilename;
-                string dstLogPath = fbDialog.SelectedPath + @"\" + logFilenamePrefix + node + logFilenameSep + logFilename;
+                string srcLogPath = GetLogFolder(node.address) + Path.GetFileNameWithoutExtension(selectedApplication) + ".log" ;
+                string dstLogPath = fbDialog.SelectedPath + @"\" + logFilenamePrefix + node.id + logFilenameSep + logFilename;
                 string logMsg = "[" + srcLogPath + "] to [" + dstLogPath + "]";
 
                 // add to list
@@ -782,19 +798,6 @@ namespace vrClusterConfig
             }
         }
 
-
-        //private void RewriteListToFile(string filePath, List<string> list)
-        //{
-        //    try
-        //    {
-        //        File.WriteAllLines(filePath, list);
-        //    }
-        //    catch(Exception exception)
-        //    {
-        //        AppLogger.Add("Can't renew file [" + RegistrySaver.nodeList + "]. EXCEPTION: " + exception.Message);
-        //    }
-        //}
-
         public void AddApplication(string appPath)
         {
             if (!applications.Contains(appPath))
@@ -846,7 +849,7 @@ namespace vrClusterConfig
             try
             {
                 configs.Add(configPath);
-                selectedConfig = configs.Find(x=> x==configPath);
+                selectedConfig = configs.Find(x => x == configPath);
                 RegistrySaver.AddRegistryValue(RegistrySaver.configList, configPath);
                 ChangeConfigSelection(configPath);
                 AppLogger.Add("Configuration file [" + configPath + "] added to list");
@@ -865,40 +868,40 @@ namespace vrClusterConfig
             selectedConfig = configs.FirstOrDefault();
         }
 
-        public bool AddNode(string node)
-        {
-            try
-            {
-                if (!activeNodes.Exists(x => x.key == node))
-                {
-                    activeNodes.Add(new ActiveNode(node, true));
-                    RegistrySaver.AddRegistryValue(RegistrySaver.nodeList, node);
-                    AppLogger.Add("Node [" + node + "] added to list");
-                    return true;
-                }
-                else
-                {
-                    AppLogger.Add("WARNING! Node [" + node + "] is already in the list");
-                    return false;
-                }
-            }
-            catch (Exception e)
-            {
-                AppLogger.Add("ERROR! can not add node [" + node + "] to list");
-                return false;
-            }
-        }
+        //public bool AddNode(string node)
+        //{
+        //    try
+        //    {
+        //        if (!activeNodes.Exists(x => x.key == node))
+        //        {
+        //            activeNodes.Add(new ActiveNode(node, true));
+        //            RegistrySaver.AddRegistryValue(RegistrySaver.nodeList, node);
+        //            AppLogger.Add("Node [" + node + "] added to list");
+        //            return true;
+        //        }
+        //        else
+        //        {
+        //            AppLogger.Add("WARNING! Node [" + node + "] is already in the list");
+        //            return false;
+        //        }
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        AppLogger.Add("ERROR! can not add node [" + node + "] to list");
+        //        return false;
+        //    }
+        //}
 
-        public void DeleteNodes(List<ActiveNode> nodes)
-        {
-            
-            foreach (ActiveNode node in nodes)
-            {
-                RegistrySaver.RemoveRegistryValue(RegistrySaver.nodeList, node.key);
-                activeNodes.Remove(node);
-                AppLogger.Add("Node [" + node.key + "] deleted");
-            }
-            
-        }
+        //public void DeleteNodes(List<ActiveNode> nodes)
+        //{
+
+        //    foreach (ActiveNode node in nodes)
+        //    {
+        //        RegistrySaver.RemoveRegistryValue(RegistrySaver.nodeList, node.key);
+        //        activeNodes.Remove(node);
+        //        AppLogger.Add("Node [" + node.key + "] deleted");
+        //    }
+
+        //}
     }
 }
