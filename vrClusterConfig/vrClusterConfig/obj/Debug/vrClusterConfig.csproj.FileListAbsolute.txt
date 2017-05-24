@@ -23,4 +23,8 @@ C:\work\PixelaLabs\UVR\Tools\vrClusterConfig\vrClusterConfig\obj\Debug\DialogWin
 C:\work\PixelaLabs\UVR\Tools\vrClusterConfig\vrClusterConfig\obj\Debug\DialogWindows\InputTypeDialog.baml
 C:\work\PixelaLabs\UVR\Tools\vrClusterConfig\vrClusterConfig\obj\Debug\DialogWindows\YesNoDialog.baml
 C:\work\PixelaLabs\UVR\Tools\vrClusterConfig\vrClusterConfig\bin\Debug\logCategoriesList.conf
+C:\work\PixelaLabs\UVR\Tools\vrClusterConfig\vrClusterConfig\bin\Debug\vrClusterConfig.exe.manifest
+C:\work\PixelaLabs\UVR\Tools\vrClusterConfig\vrClusterConfig\bin\Debug\vrClusterConfig.application
 C:\work\PixelaLabs\UVR\Tools\vrClusterConfig\vrClusterConfig\obj\Debug\vrClusterConfig_Content.g.cs
+C:\work\PixelaLabs\UVR\Tools\vrClusterConfig\vrClusterConfig\obj\Debug\vrClusterConfig.exe.manifest
+C:\work\PixelaLabs\UVR\Tools\vrClusterConfig\vrClusterConfig\obj\Debug\vrClusterConfig.application

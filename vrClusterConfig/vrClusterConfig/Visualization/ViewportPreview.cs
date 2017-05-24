@@ -56,6 +56,26 @@ namespace vrClusterConfig
             set { Set(ref _canvasSize, value, "canvasSize"); }
         }
 
+        //Text zone width and height
+        private double _textZone;
+        public double textZone
+        {
+            get { return _textZone; }
+            set { Set(ref _textZone, value, "textZone"); }
+        }
+
+        //String with params of main screen size
+        public string screenMaxSize
+        {
+            get { return SizeParameters(mainScreenOffsetX, mainScreenOffsetY); }
+        }
+
+        //String with params of viewport size
+        public string viewportOffset
+        {
+            get { return SizeParameters(mainScreenOffsetX, mainScreenOffsetY); }
+        }
+
         //Implementation of INotifyPropertyChanged method for TwoWay binding
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -83,6 +103,7 @@ namespace vrClusterConfig
             try
             {
                 canvasSize = ((mainScreenWidth >= mainScreenHeight) ? mainScreenWidth : mainScreenHeight) * 1.1;
+                textZone = 0.04 * canvasSize;
                 mainScreenOffsetX = (canvasSize - mainScreenWidth) / 2;
                 mainScreenOffsetY = (canvasSize - mainScreenHeight) / 2;
             }
@@ -90,6 +111,11 @@ namespace vrClusterConfig
             {
 
             }
+        }
+
+        private string SizeParameters(double x, double y)
+        {
+            return "(" + x.ToString() + "," + y.ToString() + ")";
         }
 
     }

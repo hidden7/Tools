@@ -495,7 +495,7 @@ namespace vrClusterConfig
             if (!isRunWithParams)
             {
                 // this is for debug only! Run application WITHOUT any params
-                cmd = appPath;
+                cmd = "";
             }
 
             // set value

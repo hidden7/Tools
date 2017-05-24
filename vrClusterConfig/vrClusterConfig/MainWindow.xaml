@@ -30,6 +30,26 @@
     </Window.InputBindings>
 
     <Window.Resources>
+        
+        <!--Converters-->
+        <BooleanToVisibilityConverter x:Key="BoolToVisConverter" />
+        
+        <local:BooleanInverterConverter x:Key="BoolInvertConverter" />
+        <local:BoolToVerticalBorderConverter x:Key="BoolToVerticalConverter" />
+        <local:BoolToHorizontalBorderConverter x:Key="BoolToHorizontalConverter" />
+        <local:SizeConverter x:Key="SizeConverter" />
+
+        <local:ValueConverterGroup x:Key="InvertBoolToVerticalConverter">
+            <local:BooleanInverterConverter/>
+            <local:BoolToVerticalBorderConverter/>
+        </local:ValueConverterGroup>
+
+        <local:ValueConverterGroup x:Key="InvertBoolToHorizontalConverter">
+            <local:BooleanInverterConverter />
+            <local:BoolToHorizontalBorderConverter />
+        </local:ValueConverterGroup>
+
+
         <sys:String x:Key="emailRegex">^[a-zA-Z][\w\.-]*[a-zA-Z0-9]@
         [a-zA-Z0-9][\w\.-]*[a-zA-Z0-9]\.[a-zA-Z][a-zA-Z\.]
         *[a-zA-Z]$</sys:String>
@@ -43,8 +63,8 @@
                 <x:Type TypeName="local:LogCatValue" />
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
-        <BooleanToVisibilityConverter x:Key="BoolToVisConverter" />
-        <local:SizeConverter x:Key="SizeConverter" />
+
+        
         <Style x:Key="CommonStyle" TargetType="{x:Type FrameworkElement}"/>
         <Style x:Key="TabContent" TargetType="{x:Type Grid}">
             <Setter Property="Height" Value="430" />
@@ -965,23 +985,35 @@
 
                         </Grid>
                     </Grid>
-                    <Viewbox Grid.Column="2" Stretch="Uniform" Margin="5">
+                    <Viewbox x:Name="previewVb" Grid.Column="2" Stretch="Uniform" Margin="5">
                         <Canvas x:Name="viewportCanvas" Background="#FF3F3F46" Width="{Binding canvasSize}" Height="{Binding canvasSize}" ClipToBounds="True" >
-                            <Canvas Canvas.Left="{Binding mainScreenOffsetX}" Canvas.Top="{Binding mainScreenOffsetY}" Width="{Binding mainScreenWidth}" Height="{Binding mainScreenHeight}" Background="#FF0FBDBD" >
-                                <Border x:Name="previewViewport" TextBlock.TextAlignment="Center" Background="#7FB15656" Width="{Binding selectedViewport.width}" Height="{Binding selectedViewport.height}" Canvas.Left="{Binding selectedViewport.x}" Canvas.Top="{Binding selectedViewport.y}" >
+                           
+                            <Canvas Canvas.Left="{Binding mainScreenOffsetX}" Canvas.Top="{Binding mainScreenOffsetY}" Width="{Binding mainScreenWidth}" Height="{Binding mainScreenHeight}" Background="#FF0FBDBD" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,0" >
+
+                                <Border x:Name="previewViewport" TextBlock.TextAlignment="Center" Background="#7FB15656" Width="{Binding selectedViewport.width}" Height="{Binding selectedViewport.height}" Canvas.Left="{Binding selectedViewport.x}" Canvas.Top="{Binding selectedViewport.y}" SnapsToDevicePixels="True" >
                                     <Grid>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="*" />
-                                            <RowDefinition Height="8*" />
-                                            <RowDefinition Height="*" />
-                                        </Grid.RowDefinitions>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*" />
-                                            <ColumnDefinition Width="8*" />
-                                            <ColumnDefinition Width="*" />
-                                        </Grid.ColumnDefinitions>
-                                        <Viewbox Grid.Column="1" Grid.Row="1" Stretch="Uniform" OpacityMask="Black" Opacity="0.5" >
+                                        <Viewbox Stretch="Uniform" MaxHeight="{Binding ElementName=viewportCanvas, Path=DataContext.textZone }" HorizontalAlignment="{Binding selectedViewport.horizontalFlip, Converter={StaticResource InvertBoolToHorizontalConverter}}" VerticalAlignment="{Binding selectedViewport.verticalFlip, Converter={StaticResource InvertBoolToVerticalConverter}}"  OpacityMask="Black" Opacity="0.5" >
+                                            <TextBlock  HorizontalAlignment="Center" VerticalAlignment="Center"  >
+                                                <TextBlock.Text>
+                                                    <MultiBinding StringFormat="({0},{1})">
+                                                        <Binding Path="selectedViewport.x"/>
+                                                        <Binding Path="selectedViewport.y"/>
+                                                    </MultiBinding>
+                                                </TextBlock.Text>
+                                            </TextBlock>
+                                        </Viewbox>
+                                        <Viewbox MinHeight="{Binding ElementName=viewportCanvas, Path=DataContext.textZone }" Stretch="Uniform">
                                             <TextBlock Text="{Binding selectedViewport.id}" HorizontalAlignment="Center" VerticalAlignment="Center"  />
+                                        </Viewbox>
+                                        <Viewbox  Stretch="Uniform" MaxHeight="{Binding ElementName=viewportCanvas, Path=DataContext.textZone }" VerticalAlignment="{Binding selectedViewport.verticalFlip, Converter={StaticResource BoolToVerticalConverter}}" HorizontalAlignment="{Binding selectedViewport.horizontalFlip, Converter={StaticResource BoolToHorizontalConverter}}" OpacityMask="Black" Opacity="0.5" >
+                                            <TextBlock  HorizontalAlignment="Center" VerticalAlignment="Center"  >
+                                                <TextBlock.Text>
+                                                    <MultiBinding StringFormat="({0},{1})">
+                                                        <Binding Path="selectedViewport.width"/>
+                                                        <Binding Path="selectedViewport.height"/>
+                                                    </MultiBinding>
+                                                </TextBlock.Text>
+                                            </TextBlock>
                                         </Viewbox>
                                     </Grid>
                                 </Border>

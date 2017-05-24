@@ -24,3 +24,7 @@ C:\work\PixelaLabs\UVR\Tools\vrClusterConfig\vrClusterConfig\obj\Release\vrClust
 C:\work\PixelaLabs\UVR\Tools\vrClusterConfig\vrClusterConfig\bin\Release\logCategoriesList.conf
 C:\work\PixelaLabs\UVR\Tools\vrClusterConfig\vrClusterConfig\obj\Release\vrClusterConfig_Content.g.cs
 C:\work\PixelaLabs\UVR\Tools\vrClusterConfig\vrClusterConfig\obj\Release\vrClusterConfig.csprojResolveAssemblyReference.cache
+C:\work\PixelaLabs\UVR\Tools\vrClusterConfig\vrClusterConfig\obj\Release\vrClusterConfig.exe.manifest
+C:\work\PixelaLabs\UVR\Tools\vrClusterConfig\vrClusterConfig\bin\Release\vrClusterConfig.exe.manifest
+C:\work\PixelaLabs\UVR\Tools\vrClusterConfig\vrClusterConfig\bin\Release\vrClusterConfig.application
+C:\work\PixelaLabs\UVR\Tools\vrClusterConfig\vrClusterConfig\obj\Release\vrClusterConfig.application
