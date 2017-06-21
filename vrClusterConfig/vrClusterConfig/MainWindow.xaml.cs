@@ -148,19 +148,20 @@ namespace vrClusterConfig
         {
             CreateConfig();
             Parser.Parse(filePath, currentConfig);
-                //Set first items in listboxes and treeview as default if existed
-                currentConfig.SelectFirstItems();
-                RefreshUiControls();
-                try
-                {
-                    ((CollectionViewSource)this.Resources["cvsInputTrackers"]).View.Refresh();
-                }
-                catch (NullReferenceException)
-                {
+            //Set first items in listboxes and treeview as default if existed
+            currentConfig.SelectFirstItems();
+            RefreshUiControls();
+            try
+            {
+                ((CollectionViewSource)this.Resources["cvsInputTrackers"]).View.Refresh();
+            }
+            catch (NullReferenceException)
+            {
 
-                }
-                //sceneNodeTrackerCb.SelectedIndex = -1;
-                SetTitle();
+            }
+            //sceneNodeTrackerCb.SelectedIndex = -1;
+            SetTitle();
+            //SetViewportPreview();
         }
 
         //crutch for refreshing all listboxes and comboboxes after binding
@@ -194,6 +195,7 @@ namespace vrClusterConfig
             currentConfig.selectedSceneNodeView = null;
             AppLogger.Add("New config inited");
             SetTitle();
+            SetViewportPreview();
         }
 
         public static void ConfigModifyIndicator()
