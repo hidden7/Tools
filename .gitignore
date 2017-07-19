@@ -1,0 +1,14 @@
+Intermediate
+Binaries
+Build
+Saved
+.vs
+*.sdf
+*.sln
+*.db
+*.opendb
+obj
+bin
+.git
+enc_temp_folder
+
