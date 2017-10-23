@@ -296,13 +296,13 @@ namespace vrClusterConfig
             {
                 Set(ref _selectedConfig, value, "selectedConfig");
                 GenerateCmdStartApp();
-                runningConfig = new Config();
-                Parser.Parse(_selectedConfig, runningConfig);
+                //runningConfig = new Config();
+                //Parser.Parse(_selectedConfig, runningConfig);
                 //SetSelectedConfig();
             }
         }
 
-        private Config runningConfig;
+        //private Config runningConfig;
 
         //Selected Camera
         private string _selectedCamera;
@@ -429,6 +429,7 @@ namespace vrClusterConfig
             isUseAllCores = RegistrySaver.ReadBoolValue(RegistrySaver.paramsList, RegistrySaver.isAllCoresName);
             isFixedSeed = RegistrySaver.ReadBoolValue(RegistrySaver.paramsList, RegistrySaver.isFixedSeedName);
             isNotextureStreaming = RegistrySaver.ReadBoolValue(RegistrySaver.paramsList, RegistrySaver.isNoTextureStreamingName);
+            isFullscreen = RegistrySaver.ReadBoolValue(RegistrySaver.paramsList, RegistrySaver.isFullscreen);
             AppLogger.Add("Application Options inited");
         }
 
@@ -484,7 +485,7 @@ namespace vrClusterConfig
             // additional params
 
             // cmd
-            cmd =  swOpengl + swFullscreen + uvrParamStatic + confString + swStereo + swNoSound + swFixedSeed
+            cmd = confString + swOpengl + swFullscreen + uvrParamStatic + swStereo + swNoSound + swFixedSeed
                                  + swNoTextureStreaming + swUseAllAvailableCores + swForceLogFlush + swNoWrite
                                  + paramLogFilename + paramDefaultCamera + " " + additionalParams + logLevelsSetup;
             if (isLogEnabled)
@@ -522,19 +523,25 @@ namespace vrClusterConfig
             GenerateCmdStartApp();
         }
 
+        private List<ClusterNode> GetClusterNodes()
+        {
+            Config runningConfig = new Config();
+            return Parser.Parse(selectedConfig, runningConfig).clusterNodes;
+        }
+
         public void RunCommand()
         {
-            ClusterCommand(ClusterCommandType.Run, runningConfig.clusterNodes);
+            ClusterCommand(ClusterCommandType.Run, GetClusterNodes());
         }
 
         public void KillCommand()
         {
-            ClusterCommand(ClusterCommandType.Kill, runningConfig.clusterNodes);
+            ClusterCommand(ClusterCommandType.Kill, GetClusterNodes());
         }
 
         public void StatusCommand()
         {
-            ClusterCommand(ClusterCommandType.Status, runningConfig.clusterNodes);
+            ClusterCommand(ClusterCommandType.Status, GetClusterNodes());
         }
 
         private void ClusterCommand(ClusterCommandType ccType, List<ClusterNode> nodes)
@@ -568,23 +575,32 @@ namespace vrClusterConfig
             string cl = string.Empty;
             foreach (ClusterNode node in nodes)
             {
+                string windowCommand = string.Empty;
+                if (node.viewport.isWindowed)
+                {
+                    Viewport currentViewport = node.viewport;
+                    windowCommand = windowCommand + " WinX=" + currentViewport.x + " WinY=" + currentViewport.y + " ResX=" + currentViewport.width + " ResY=" + currentViewport.height;
+                }
                 if (ccType == ClusterCommandType.Run)
                 {
-                    cl = " uvr_node=" + node.id + cmd;
+                    cl = " uvr_node=" + node.id + windowCommand + cmd;
 
                 }
                 string clusterCmd = commandCmd +cl;
                 SendDaemonCommand(node.address, clusterCmd);
             }
+
+            
+
         }
 
-        private void SendDaemonCommand(string nodeAddress, string cmd)
+        private async void SendDaemonCommand(string nodeAddress, string cmd)
         {
             TcpClient nodeClient = new TcpClient();
 
             try
             {
-                nodeClient.Connect(nodeAddress, nodeListenerPort);
+                await nodeClient.ConnectAsync(nodeAddress, nodeListenerPort);
                 NetworkStream networkStream = nodeClient.GetStream();
                 StreamWriter clientStreamWriter = new StreamWriter(networkStream);
 
@@ -599,16 +615,17 @@ namespace vrClusterConfig
                 }
 
                 nodeClient.Close();
-            }
+                            }
             catch (Exception exception)
             {
                 AppLogger.Add("Can't connect to node " + nodeAddress + ". EXCEPTION: " + exception.Message);
             }
+            
         }
 
         public void CleanLogs()
         {
-            CleanLogFolders(runningConfig.clusterNodes);
+            CleanLogFolders(GetClusterNodes());
         }
 
         private void CleanLogFolders(List<ClusterNode> nodes)
@@ -688,7 +705,7 @@ namespace vrClusterConfig
 
         public void CollectLogs()
         {
-            CollectLogFiles(runningConfig.clusterNodes);
+            CollectLogFiles(GetClusterNodes());
         }
 
         private void CollectLogFiles(List<ClusterNode> nodes)

@@ -16,6 +16,7 @@ namespace vrClusterConfig
         public string height { get; set; }
         public bool horizontalFlip { get; set; }
         public bool verticalFlip { get; set; }
+        public bool isWindowed { get; set; }
 
         public Viewport()
         {
@@ -26,9 +27,10 @@ namespace vrClusterConfig
             height = "0";
             horizontalFlip = false;
             verticalFlip = false;
+            isWindowed = false;
         }
 
-        public Viewport(string _id, string _x, string _y, string _width, string _height, bool _horizontalFlip, bool _verticalFlip)
+        public Viewport(string _id, string _x, string _y, string _width, string _height, bool _horizontalFlip, bool _verticalFlip, bool _isWindowed)
         {
             id = _id;
             x = _x;
@@ -37,6 +39,7 @@ namespace vrClusterConfig
             height = _height;
             horizontalFlip = _horizontalFlip;
             verticalFlip = _verticalFlip;
+            isWindowed = _isWindowed;
         }
 
         //Implementation IDataErrorInfo methods for validation
@@ -148,7 +151,7 @@ namespace vrClusterConfig
         public override string CreateCfg()
         {
             string stringCfg = "[viewport] ";
-            stringCfg = string.Concat(stringCfg, "id=", id, " x=", x, " y=", y, " width=", width, " height=", height, " flip_h=", horizontalFlip.ToString(), "flip_v=", verticalFlip, "\n");
+            stringCfg = string.Concat(stringCfg, "id=", id, " x=", x, " y=", y, " width=", width, " height=", height, " flip_h=", horizontalFlip.ToString(), " flip_v=", verticalFlip, " windowed=", isWindowed.ToString(), "\n");
 
             return stringCfg;
         }

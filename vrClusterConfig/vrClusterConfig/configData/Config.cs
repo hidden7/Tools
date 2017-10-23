@@ -569,10 +569,12 @@ namespace vrClusterConfig
             string y = GetRegEx("y").Match(line).Value;
             string width = GetRegEx("width").Match(line).Value;
             string height = GetRegEx("height").Match(line).Value;
-            string _flip_h = GetRegEx("flip_h").Match(line).Value;
-            string _flip_v = GetRegEx("flip_v").Match(line).Value;
+            string _flip_h = GetRegEx("flip_h").Match(line).Value.ToLower();
+            string _flip_v = GetRegEx("flip_v").Match(line).Value.ToLower();
+            string _isWindowed = GetRegEx("windowed").Match(line).Value.ToLower();
             bool flip_h = false;
             bool flip_v = false;
+            bool isWindowed = false;
             if (_flip_h == "true")
             {
                 flip_h = true;
@@ -581,7 +583,11 @@ namespace vrClusterConfig
             {
                 flip_v = true;
             }
-            viewports.Add(new Viewport(id, x, y, width, height, flip_h, flip_v));
+            if (_isWindowed == "true")
+            {
+                isWindowed = true;
+            }
+            viewports.Add(new Viewport(id, x, y, width, height, flip_h, flip_v, isWindowed));
         }
 
         //Camera Parser

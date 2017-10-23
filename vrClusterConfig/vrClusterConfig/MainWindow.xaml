@@ -5,9 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:vrClusterConfig"
         xmlns:scm ="clr-namespace:System.ComponentModel;assembly=WindowsBase"
-        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero" x:Class="vrClusterConfig.MainWindow"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        xmlns:fa="http://schemas.fontawesome.io/icons/"
         mc:Ignorable="d"
         Title="VRCluster config" 
         Loaded="Window_Loaded"
@@ -30,6 +30,8 @@
     </Window.InputBindings>
 
     <Window.Resources>
+        
+        
         
         <!--Converters-->
         <BooleanToVisibilityConverter x:Key="BoolToVisConverter" />
@@ -442,6 +444,7 @@
     </Window.Resources>
 
     <Grid Background="#2D2D30">
+        
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -467,6 +470,7 @@
             <MenuItem Header="About" HorizontalAlignment="Right" Click="MenuItem_Click" Template="{DynamicResource MenuItemControlTemplate}" />
 
         </Menu>
+
         <TabControl Grid.Row="1" x:Name="tabControl" VerticalAlignment="Top" MinWidth="500" MinHeight="200" Background="#FF2D2D30" BorderThickness="0,3,0,0" BorderBrush="#0079CB" Margin="10" Padding="0" Style="{DynamicResource TabControlStyle}" >
             <TabItem Header="Inputs" >
                 <Grid Style="{StaticResource TabContent}">
@@ -895,7 +899,7 @@
                     </Grid>
                 </Grid>
             </TabItem>
-            <TabItem Header="Viewports">
+            <TabItem Header="Viewports" Margin="3,0,-3,0">
                 <Grid Style="{StaticResource TabContent}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="auto"/>
@@ -967,6 +971,9 @@
                         </Grid>
                         <Grid Grid.Row="3">
                             <CheckBox x:Name="isHorizontalFlip" Content="Horizontal Flip" HorizontalAlignment="Left" Template="{DynamicResource CustomCheckBoxControlTemplate}" IsChecked="{Binding selectedViewport.horizontalFlip}" />
+                        </Grid>
+                        <Grid Grid.Row="4">
+                            <CheckBox x:Name="isWindowed" Content="Windowed" HorizontalAlignment="Left" Template="{DynamicResource CustomCheckBoxControlTemplate}" IsChecked="{Binding selectedViewport.isWindowed}" />
                         </Grid>
                         <Label Grid.Row="5" Content="Full screen resolution(Is used only for preview)" />
                         <Grid Grid.Row="6" x:Name="screenResolutionGrid" >
@@ -1598,7 +1605,7 @@
                                         <RowDefinition Height="Auto" />
                                     </Grid.RowDefinitions>
                                     <Label Content="Applications" Grid.Column="0" Grid.Row="0" />
-                                    <ListBox x:Name="applicationsListBox" Height="Auto" MinWidth="150" Grid.Column="0" Grid.Row="1"  ItemsSource="{Binding applications}" SelectedItem="{Binding selectedApplication}" MaxWidth="780" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" MinHeight="150" UseLayoutRounding="True" ToolTip="List of applications"/>
+                                    <ListBox x:Name="applicationsListBox" Height="150" MinWidth="150" Grid.Column="0" Grid.Row="1"  ItemsSource="{Binding applications}" SelectedItem="{Binding selectedApplication}" MaxWidth="780" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" MinHeight="150" UseLayoutRounding="True" ToolTip="List of applications"/>
                                     <Grid Grid.Row="2">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*"/>
@@ -1705,11 +1712,12 @@
                         </Grid.ColumnDefinitions>
                         <Label Grid.Row="0" Content="Command" />
                         <Grid Grid.Row="1" >
+
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
-                            <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto">
+                            <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto" Margin="3,0,0,0">
                                 <TextBox x:Name="commandTextBox" Text="{Binding commandLine, UpdateSourceTrigger=PropertyChanged}"  TextWrapping="Wrap" Background="#3F3F46" MinWidth="300" Margin="5"  ScrollViewer.CanContentScroll="True" Height="64" ScrollViewer.VerticalScrollBarVisibility="Auto" ToolTip="Generated command line" HorizontalAlignment="Stretch" MaxWidth="Infinity" />
                             </ScrollViewer>
                             <Button x:Name="copyLogBtn" Grid.Column="1" Content="Copy" Template="{DynamicResource ButtonTemplate}" HorizontalAlignment="Left" Width="50" Click="copyLogBtn_Click" Margin="5,0,2,0" ToolTip="Copy command line to bufer" />
