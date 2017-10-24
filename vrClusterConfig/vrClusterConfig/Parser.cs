@@ -32,47 +32,47 @@ namespace vrClusterConfig
                     }
                     else
                     {
-                        if (line.Contains("[input]"))
+                        if (line.ToLower().Contains("[input]"))
                         {
                             inputLines.Add(line);
                         }
-                        if (line.Contains("[scene_node]"))
+                        if (line.ToLower().Contains("[scene_node]"))
                         {
                             sceneNodeLines.Add(line);
                         }
-                        if (line.Contains("[screen]"))
+                        if (line.ToLower().Contains("[screen]"))
                         {
                             screenLines.Add(line);
                         }
-                        if (line.Contains("[viewport]"))
+                        if (line.ToLower().Contains("[viewport]"))
                         {
                             viewportLines.Add(line);
                         }
-                        if (line.Contains("[cluster_node]"))
+                        if (line.ToLower().Contains("[cluster_node]"))
                         {
                             clusterNodeLines.Add(line);
                         }
-                        if (line.Contains("[camera]"))
+                        if (line.ToLower().Contains("[camera]"))
                         {
                             cameraLines.Add(line);
                         }
-                        if (line.Contains("[general]"))
+                        if (line.ToLower().Contains("[general]"))
                         {
                             generalLines.Add(line);
                         }
-                        if (line.Contains("[stereo]"))
+                        if (line.ToLower().Contains("[stereo]"))
                         {
                             stereoLines.Add(line);
                         }
-                        if (line.Contains("[debug]"))
+                        if (line.ToLower().Contains("[debug]"))
                         {
                             debugLines.Add(line);
                         }
-                        if (line.Contains("[render]"))
+                        if (line.ToLower().Contains("[render]"))
                         {
                             //todo 
                         }
-                        if (line.Contains("[custom]"))
+                        if (line.ToLower().Contains("[custom]"))
                         {
                             //todo 
                         }

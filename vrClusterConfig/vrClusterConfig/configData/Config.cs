@@ -658,34 +658,34 @@ namespace vrClusterConfig
         //Create Regex for string-num values 
         Regex GetRegEx(string key)
         {
-            Regex reg = new Regex("(?<=" + key + "=)(-??\\w*\\.??\\w*)(?=\\s|$)");
+            Regex reg = new Regex("(?<=(?i)(" + key + ")=)(-??\\w*\\.??\\w*)(?=\\s|$)");
             return reg;
         }
         ////Create Regex for complex values(location, rotation, size) 
         Regex GetRegComplex(string key)
         {
-            Regex reg = new Regex("(?<=" + key + "=\")(.*)(?=\"\\s|$)");
+            Regex reg = new Regex("(?<=(?i)(" + key + ")=\")(.*)(?=\"\\s|$)");
             return reg;
         }
 
         //Create Regex for IP address values 
         Regex GetRegIp(string key)
         {
-            Regex reg = new Regex("(?<=" + key + "=)((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]).){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))(?=\\s|$)");
+            Regex reg = new Regex("(?<=(?i)(" + key + ")=)((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]).){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))(?=\\s|$)");
             return reg;
         }
 
         //Create Regex input address values 
         Regex GetRegAddr(string key)
         {
-            Regex reg = new Regex("(?<=" + key + "=)(\\w*)@((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]).){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))(?=\\s|$)");
+            Regex reg = new Regex("(?<=(?i)(" + key + ")=)(\\w*)@((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]).){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))(?=\\s|$)");
             return reg;
         }
 
         //Create Regex for location, rotation and size properties
         Regex GetRegProp(string key)
         {
-            Regex reg = new Regex("(?<=" + key + "=)(-??\\w*.??\\w*)(?=,|\"|$)");
+            Regex reg = new Regex("(?<=(?i)(" + key + ")=)(-??\\w*.??\\w*)(?=,|\"|$)");
             return reg;
         }
 
