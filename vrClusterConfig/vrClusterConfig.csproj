@@ -99,7 +99,6 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="AppLogger.cs" />
-    <Compile Include="AppRunner\ActiveNode.cs" />
     <Compile Include="ValueConverters\BooleanInverterConverter.cs" />
     <Compile Include="ValueConverters\BoolToHorizontalBorderConverter.cs" />
     <Compile Include="ValueConverters\BoolToVerticalBorderConverter.cs" />
