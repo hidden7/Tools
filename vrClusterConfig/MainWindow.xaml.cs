@@ -220,12 +220,12 @@ namespace vrClusterConfig
 
         protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
         {
-            YesNoDialog dialogResult = new YesNoDialog("Do you really want to close?");
-            dialogResult.Owner = this;
-            if (!(bool)dialogResult.ShowDialog())
-            {
-                e.Cancel = true;
-            }
+            //YesNoDialog dialogResult = new YesNoDialog("Do you really want to close?");
+            //dialogResult.Owner = this;
+            //if (!(bool)dialogResult.ShowDialog())
+            //{
+            //    e.Cancel = true;
+            //}
             base.OnClosing(e);
         }
 
