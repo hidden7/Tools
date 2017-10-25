@@ -502,7 +502,25 @@ namespace vrClusterConfig
             string address = GetRegIp("addr").Match(line).Value;
             string screen = GetRegEx("screen").Match(line).Value;
             string viewport = GetRegEx("viewport").Match(line).Value;
-            string master = GetRegEx("master").Match(line).Value;
+            string master = GetRegEx("master").Match(line).Value.ToLower();
+
+            //window settings
+            string windowed = GetRegEx("windowed").Match(line).Value.ToLower();
+            string winX = string.Empty;
+            string winY = string.Empty;
+            string resX = string.Empty;
+            string resY = string.Empty;
+            bool isWindowed = false;
+            if (windowed == "true")
+            {
+                isWindowed = true;
+                winX = GetRegEx("winX").Match(line).Value;
+                winY = GetRegEx("winY").Match(line).Value;
+                resX = GetRegEx("resX").Match(line).Value;
+                resY = GetRegEx("resY").Match(line).Value;
+            }
+
+            //Master node settings
             bool isMaster = false;
             if (master == "true")
             {
@@ -512,10 +530,9 @@ namespace vrClusterConfig
                 string port_ss = GetRegEx("port_ss").Match(line).Value;
                 portSs = port_ss;
             }
-
             Screen currentScreen = screens.Find(x => x.id == screen);
             Viewport currentViewport = viewports.Find(x => x.id == viewport);
-            clusterNodes.Add(new ClusterNode(id, address, currentScreen, currentViewport, isMaster));
+            clusterNodes.Add(new ClusterNode(id, address, currentScreen, currentViewport, isMaster, isWindowed, winX, winY, resX, resY));
         }
 
         //Scene Node Parser
@@ -571,10 +588,10 @@ namespace vrClusterConfig
             string height = GetRegEx("height").Match(line).Value;
             string _flip_h = GetRegEx("flip_h").Match(line).Value.ToLower();
             string _flip_v = GetRegEx("flip_v").Match(line).Value.ToLower();
-            string _isWindowed = GetRegEx("windowed").Match(line).Value.ToLower();
+            //string _isWindowed = GetRegEx("windowed").Match(line).Value.ToLower();
             bool flip_h = false;
             bool flip_v = false;
-            bool isWindowed = false;
+            //bool isWindowed = false;
             if (_flip_h == "true")
             {
                 flip_h = true;
@@ -583,11 +600,11 @@ namespace vrClusterConfig
             {
                 flip_v = true;
             }
-            if (_isWindowed == "true")
-            {
-                isWindowed = true;
-            }
-            viewports.Add(new Viewport(id, x, y, width, height, flip_h, flip_v, isWindowed));
+            //if (_isWindowed == "true")
+            //{
+            //    isWindowed = true;
+            //}
+            viewports.Add(new Viewport(id, x, y, width, height, flip_h, flip_v));
         }
 
         //Camera Parser

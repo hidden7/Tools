@@ -957,10 +957,10 @@
                             </Grid.RowDefinitions>
                             <Label Grid.Column="0" Grid.Row="0" Content="Viewport ID" />
                             <TextBox x:Name="viewportIdTb" Grid.Column="1" Grid.Row="0" Style="{DynamicResource NameTB}" Text="{Binding selectedViewport.id, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.HelpText="help text" ToolTip="Viewport ID, you can use letters, numbers and _" />
-                            <Label Grid.Column="0" Grid.Row="2" Content="X" ToolTip="X coordinate in meters, floating point number" />
-                            <TextBox x:Name="viewportXTb" Grid.Column="1" Grid.Row="2" Style="{DynamicResource SizeTB}" Text="{Binding selectedViewport.x, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" ToolTip="X coordinate in meters, floating point number" />
-                            <Label Grid.Column="0" Grid.Row="3" Content="Y" ToolTip="Y coordinate in meters, floating point number"/>
-                            <TextBox x:Name="viewportYTb" Grid.Column="1" Grid.Row="3" Style="{DynamicResource SizeTB}" Text="{Binding selectedViewport.y, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" ToolTip="Y coordinate in meters, floating point number"  />
+                            <Label Grid.Column="0" Grid.Row="2" Content="X" ToolTip="X coordinate of top-left corner in pixels" />
+                            <TextBox x:Name="viewportXTb" Grid.Column="1" Grid.Row="2" Style="{DynamicResource SizeTB}" Text="{Binding selectedViewport.x, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" ToolTip="X coordinate of top-left corner in pixels" />
+                            <Label Grid.Column="0" Grid.Row="3" Content="Y" ToolTip="Y coordinate of top-left corner in pixels"/>
+                            <TextBox x:Name="viewportYTb" Grid.Column="1" Grid.Row="3" Style="{DynamicResource SizeTB}" Text="{Binding selectedViewport.y, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" ToolTip="Y coordinate of top-left corner in pixels"  />
                             <Label Grid.Column="0" Grid.Row="4" Content="Width" />
                             <TextBox x:Name="viewportWidthTb" Grid.Column="1" Grid.Row="4" Style="{DynamicResource SizeTB}" Text="{Binding selectedViewport.width, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" ToolTip="Width of viewport in pixels" />
                             <Label Grid.Column="0" Grid.Row="5" Content="Height"/>
@@ -973,7 +973,7 @@
                             <CheckBox x:Name="isHorizontalFlip" Content="Horizontal Flip" HorizontalAlignment="Left" Template="{DynamicResource CustomCheckBoxControlTemplate}" IsChecked="{Binding selectedViewport.horizontalFlip}" />
                         </Grid>
                         <Grid Grid.Row="4">
-                            <CheckBox x:Name="isWindowed" Content="Windowed" HorizontalAlignment="Left" Template="{DynamicResource CustomCheckBoxControlTemplate}" IsChecked="{Binding selectedViewport.isWindowed}" />
+                            <!--<CheckBox x:Name="isWindowed" Content="Windowed" HorizontalAlignment="Left" Template="{DynamicResource CustomCheckBoxControlTemplate}" IsChecked="{Binding selectedViewport.isWindowed}" />-->
                         </Grid>
                         <Label Grid.Row="5" Content="Full screen resolution(Is used only for preview)" />
                         <Grid Grid.Row="6" x:Name="screenResolutionGrid" >
@@ -1070,6 +1070,8 @@
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
                                 <Grid Grid.Row="0" >
                                     <Grid.ColumnDefinitions>
@@ -1146,6 +1148,39 @@
                                         <ComboBox x:Name="viewportsCb" ItemsSource="{Binding viewports}" DisplayMemberPath="id" SelectedItem="{Binding selectedNode.viewport}" Template="{DynamicResource ComboBoxTemplate}" ToolTip="Select viewport, required"/>
 
 
+                                    </Grid>
+                                </Grid>
+                                <Grid Grid.Row="5">
+                                    <CheckBox x:Name="isWindowed"  Content="Windowed" IsChecked="{Binding selectedNode.isWindowed}" Template="{DynamicResource CustomCheckBoxControlTemplate}" />
+                                </Grid>
+                                <Grid Grid.Row="6" Visibility="{Binding selectedNode.isWindowed, Converter={StaticResource BoolToVisConverter}, FallbackValue=Collapsed}">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Label Grid.Row="0" Content="Window parameters" />
+                                    <Grid Grid.Row="1" Margin="20,0,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="5" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+                                    
+                                    <Label Grid.Column="0" Grid.Row="2" Content="X" ToolTip="X coordinate of top-left corner in pixels" />
+                                        <TextBox x:Name="windowXTb" Grid.Column="1" Grid.Row="2" Style="{DynamicResource SizeTB}" Text="{Binding selectedNode.winX, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" ToolTip="X coordinate of top-left corner in pixels" />
+                                    <Label Grid.Column="0" Grid.Row="3" Content="Y" ToolTip="Y coordinate of top-left corner in pixels"/>
+                                        <TextBox x:Name="windowYTb" Grid.Column="1" Grid.Row="3" Style="{DynamicResource SizeTB}" Text="{Binding selectedNode.winY, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" ToolTip="Y coordinate of top-left corner in pixels"  />
+                                        <Label Grid.Column="0" Grid.Row="4" Content="Width" />
+                                        <TextBox x:Name="windowWidthTb" Grid.Column="1" Grid.Row="4" Style="{DynamicResource SizeTB}" Text="{Binding selectedNode.resX, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" ToolTip="Width of viewport in pixels" />
+                                        <Label Grid.Column="0" Grid.Row="5" Content="Height"/>
+                                        <TextBox x:Name="windowHeightTb" Grid.Column="1" Grid.Row="5" Style="{DynamicResource SizeTB}" Text="{Binding selectedNode.resY, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" ToolTip="Height of viewport in pixels" />
                                     </Grid>
                                 </Grid>
                             </Grid>
@@ -1529,7 +1564,7 @@
                                         <CheckBox x:Name="coresCheckBox" Grid.Row="2" Content="Use All Available Cores" Template="{DynamicResource CustomCheckBoxControlTemplate}" IsChecked="{Binding isUseAllCores}" />
                                         <CheckBox x:Name="fixedSeedCheckBox" Grid.Row="3" Content="Fixed Seed" Template="{DynamicResource CustomCheckBoxControlTemplate}" IsChecked="{Binding isFixedSeed}" />
                                         <CheckBox x:Name="textureStreamingCheckBox" Grid.Row="4" Content="No Texture Streaming" Template="{DynamicResource CustomCheckBoxControlTemplate}" IsChecked="{Binding isNotextureStreaming}" />
-                                        <CheckBox x:Name="fullscreenCheckBox" Grid.Row="5" Content="Fullscreen" Template="{DynamicResource CustomCheckBoxControlTemplate}" IsChecked="{Binding isFullscreen}" />
+                                        <!--<CheckBox x:Name="fullscreenCheckBox" Grid.Row="5" Content="Fullscreen" Template="{DynamicResource CustomCheckBoxControlTemplate}" IsChecked="{Binding isFullscreen}" />-->
                                         <Label Grid.Row="6" Content="Additional cmd params:" />
                                         <TextBox x:Name="commandLineTb" Grid.Row="7" Style="{DynamicResource NameTB}" Width="Auto" Text="{Binding additionalParams, UpdateSourceTrigger=PropertyChanged}" Margin="20,2,2,2" HorizontalAlignment="Stretch" MaxWidth="400" />
                                     </Grid>
@@ -1537,7 +1572,7 @@
                             </Grid>
                             <Grid Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top" >
 
-                                <ToggleButton x:Name="showPanelToggle" Content="Options" Padding="1" Background="#2D2D30" Foreground="WhiteSmoke" Margin="-15,15,-15,0" RenderTransformOrigin="0.5,0.5" BorderBrush="{x:Null}" HorizontalAlignment="Right" Width="50"  >
+                                <ToggleButton x:Name="showPanelToggle" Content="Options" Padding="1" Background="#2D2D30" Foreground="WhiteSmoke" Margin="-15,15,-15,0" RenderTransformOrigin="0.5,0.5" BorderBrush="{x:Null}" HorizontalAlignment="Right" Width="50" Height="20" VerticalAlignment="Top"  >
                                     <ToggleButton.Template>
                                         <ControlTemplate TargetType="{x:Type ButtonBase}">
                                             <Border x:Name="border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="True">

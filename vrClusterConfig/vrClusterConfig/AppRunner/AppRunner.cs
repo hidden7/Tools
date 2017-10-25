@@ -52,7 +52,7 @@ namespace vrClusterConfig
         private const string uvrParamFixedSeed = " -fixedseed";
         private const string uvrParamNoWrite = " -nowrite";
         private const string uvrParamFullscreen = " -fullscreen";
-
+        private const string uvrParamWindowed = " -windowed";
         private const string uvrParamForceLogFlush = " -forcelogflush";
         private const string uvrParamNoTextureStreaming = " -notexturestreaming";
         private const string uvrParamUseAllAvailableCores = " -useallavailablecores";
@@ -444,13 +444,13 @@ namespace vrClusterConfig
             string swStereo = "";
             string swNoSound = "";
             string swFixedSeed = "";
-            string swFullscreen = uvrParamFullscreen;
+            //string swFullscreen = uvrParamFullscreen;
             string swNoTextureStreaming = "";
             string swUseAllAvailableCores = "";
 
             if (isRunWithParams)
             {
-                swFullscreen = (isFullscreen) ? uvrParamFullscreen : "";
+                //swFullscreen = (isFullscreen) ? uvrParamFullscreen : "";
                 swOpengl = selectedOpenGlParam.Value;
                 swStereo = (isStereo) ? uvrParamStereo : "";
                 swNoSound = (isNoSound) ? uvrParamNoSound : "";
@@ -485,9 +485,9 @@ namespace vrClusterConfig
             // additional params
 
             // cmd
-            cmd = confString + swOpengl + swFullscreen + uvrParamStatic + swStereo + swNoSound + swFixedSeed
+            cmd = confString + paramDefaultCamera + swOpengl + uvrParamStatic + swStereo + swNoSound + swFixedSeed
                                  + swNoTextureStreaming + swUseAllAvailableCores + swForceLogFlush + swNoWrite
-                                 + paramLogFilename + paramDefaultCamera + " " + additionalParams + logLevelsSetup;
+                                 + paramLogFilename + " " + additionalParams + logLevelsSetup;// + swFullscreen
             if (isLogEnabled)
             {
                 cmd = cmd + logLevels;
@@ -576,14 +576,17 @@ namespace vrClusterConfig
             foreach (ClusterNode node in nodes)
             {
                 string windowCommand = string.Empty;
-                if (node.viewport.isWindowed)
+                string fullscreenParam = uvrParamFullscreen;
+                if (node.isWindowed)
                 {
-                    Viewport currentViewport = node.viewport;
-                    windowCommand = windowCommand + " WinX=" + currentViewport.x + " WinY=" + currentViewport.y + " ResX=" + currentViewport.width + " ResY=" + currentViewport.height;
+                    windowCommand = windowCommand + " WinX=" + node.winX + " WinY=" + node.winY + " ResX=" + node.resX + " ResY=" + node.resY;
+                    fullscreenParam = uvrParamWindowed;
                 }
+                //quick crutch. refactoring needed
+                fullscreenParam = (isRunWithParams) ? fullscreenParam : string.Empty;
                 if (ccType == ClusterCommandType.Run)
                 {
-                    cl = " uvr_node=" + node.id + windowCommand + cmd;
+                    cl = " uvr_node=" + node.id + windowCommand + cmd + fullscreenParam;
 
                 }
                 string clusterCmd = commandCmd +cl;

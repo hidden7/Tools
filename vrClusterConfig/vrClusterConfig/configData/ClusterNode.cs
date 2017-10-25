@@ -16,13 +16,23 @@ namespace vrClusterConfig
         public string address { get; set; }
         public Screen screen { get; set; }
         public Viewport viewport { get; set; }
-        public ClusterNode()
+        public bool isWindowed { get; set; }
+        public string winX { get; set; }
+        public string winY { get; set; }
+        public string resX { get; set; }
+        public string resY { get; set; }
+    public ClusterNode()
         {
             id = "ClusterNodeId";
             address = "127.0.0.1";
             screen = null;
             viewport = null;
             isMaster = false;
+            isWindowed = false;
+            winX = string.Empty;
+            winY = string.Empty;
+            resX = string.Empty;
+            resY = string.Empty;
         }
 
         public ClusterNode(string _id, string _address, Screen _screen, Viewport _viewport, bool _isMaster)
@@ -32,6 +42,25 @@ namespace vrClusterConfig
             screen = _screen;
             viewport = _viewport;
             isMaster = _isMaster;
+            isWindowed = false;
+            winX = string.Empty;
+            winY = string.Empty;
+            resX = string.Empty;
+            resY = string.Empty;
+        }
+
+        public ClusterNode(string _id, string _address, Screen _screen, Viewport _viewport, bool _isMaster, bool _isWindowed, string _winX, string _winY, string _resX, string _resY)
+        {
+            id = _id;
+            address = _address;
+            screen = _screen;
+            viewport = _viewport;
+            isMaster = _isMaster;
+            isWindowed = _isWindowed;
+            winX = _winX;
+            winY = _winY;
+            resX = _resX;
+            resY = _resY;
         }
 
         //Implementation IDataErrorInfo methods for validation
@@ -57,6 +86,40 @@ namespace vrClusterConfig
                     }
                 }
 
+                if (columnName == "winX" || columnName == validationName)
+                {
+                    if (!ValidationRules.IsInt(winX.ToString()))
+                    {
+                        error = "x should be an integer";
+                        AppLogger.Add("ERROR! " + error);
+                    }
+                }
+                if (columnName == "winY" || columnName == validationName)
+                {
+                    if (!ValidationRules.IsInt(winY.ToString()))
+                    {
+                        error = "y should be an integer";
+                        AppLogger.Add("ERROR! " + error);
+                    }
+                }
+                if (columnName == "resX" || columnName == validationName)
+                {
+                    if (!ValidationRules.IsInt(resX.ToString()) || Convert.ToInt32(resX) < 0)
+                    {
+                        error = "Width should be an integer";
+                        AppLogger.Add("ERROR! " + error);
+                    }
+                }
+
+                if (columnName == "resY" || columnName == validationName)
+                {
+                    if (!ValidationRules.IsInt(resY.ToString()) || Convert.ToInt32(resY) < 0)
+                    {
+                        error = "Height should be an integer";
+                        AppLogger.Add("ERROR! " + error);
+                    }
+                }
+
                 MainWindow.ConfigModifyIndicator();
                 return error;
             }
@@ -71,7 +134,7 @@ namespace vrClusterConfig
             bool isValid = ValidationRules.IsName(id) && ValidationRules.IsIp(address);
             if (!isValid)
             {
-                AppLogger.Add("ERROR! Errors in Clustr Node [" + id + "]");
+                AppLogger.Add("ERROR! Errors in Cluster Node [" + id + "]");
                 string a = this[validationName];
 
             }
@@ -91,6 +154,11 @@ namespace vrClusterConfig
             {
 
                 stringCfg = string.Concat(stringCfg, " viewport=", viewport.id);
+            }
+
+            if (isWindowed)
+            {
+                stringCfg = string.Concat(stringCfg, " windowed=true ", " WinX=", winX, " WinY=", winY, " ResX=", resX, " ResY=", resY);
             }
 
             if (isMaster)
