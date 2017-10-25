@@ -32,7 +32,7 @@ namespace UnrealTools
 				server = new TcpListener(localAddr, port);
 
 				server.Start();
-				Console.WriteLine("PixelaLabs, 2016\n");
+				Console.WriteLine("PixelaLabs, 2017\n");
 
 				Console.WriteLine("UnrealListener started on {0}:{1}. Waiting connection...\n", localAddr.ToString(), port.ToString());
 
