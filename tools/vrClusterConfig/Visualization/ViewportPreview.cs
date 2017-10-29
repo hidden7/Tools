@@ -107,7 +107,7 @@ namespace vrClusterConfig
                 mainScreenOffsetX = (canvasSize - mainScreenWidth) / 2;
                 mainScreenOffsetY = (canvasSize - mainScreenHeight) / 2;
             }
-            catch (DivideByZeroException e)
+            catch (DivideByZeroException)
             {
 
             }

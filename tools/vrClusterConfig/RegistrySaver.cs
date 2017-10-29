@@ -121,7 +121,7 @@ namespace vrClusterConfig
                 RegistryKey regKey = Registry.CurrentUser.OpenSubKey(registryPath + "\\" + key, true);
                 return regKey.GetValue(name);
             }
-            catch (Exception exception)
+            catch (Exception /*exception*/)
             {
                 //AppLogger.Add("Can't read value from registry. EXCEPTION: " + exception.Message);
                 return null;
@@ -185,7 +185,7 @@ namespace vrClusterConfig
 
                 }
             }
-            catch (Exception exception)
+            catch (Exception /*exception*/)
             {
                 //AppLogger.Add("Can't find registry value. EXCEPTION: " + exception.Message);
             }
@@ -214,7 +214,7 @@ namespace vrClusterConfig
                 }
                 regKey.SetValue(name, value);
             }
-            catch (Exception exception)
+            catch (Exception /*exception*/)
             {
                 //AppLogger.Add("Can't update registry value. EXCEPTION: " + exception.Message);
             }

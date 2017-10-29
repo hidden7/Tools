@@ -49,10 +49,11 @@ namespace vrClusterConfig
             front = _front;
             right = _right;
             up = _up;
-        }
+		}
 
-        //Implementation IDataErrorInfo methods for validation
-        public string this[string columnName]
+		//Implementation IDataErrorInfo methods for validation
+		//ayamashev: check this 'new'
+		public new string this[string columnName]
         {
             get
             {
@@ -126,7 +127,8 @@ namespace vrClusterConfig
                 return error;
             }
         }
-        public string Error
+		//ayamashev: check this 'new'
+        public new string Error
         {
             get { throw new NotImplementedException(); }
         }

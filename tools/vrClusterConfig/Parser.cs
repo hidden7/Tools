@@ -121,11 +121,11 @@ namespace vrClusterConfig
                 RegistrySaver.AddRegistryValue(RegistrySaver.configName, filePath);
                 
             }
-            catch (FileNotFoundException e)
+            catch (FileNotFoundException)
             {
                 AppLogger.Add("ERROR! Config " + currentConfig.name + "not found!");
             }
-            catch (System.ArgumentException e)
+            catch (System.ArgumentException)
             {
                 AppLogger.Add("ERROR! Config " + currentConfig.name + "not found!");
             }
