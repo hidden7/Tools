@@ -7,8 +7,8 @@
     <ProjectGuid>{89224712-325D-4500-A4A5-B102A3A8EE2F}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Listener</RootNamespace>
-    <AssemblyName>Listener</AssemblyName>
+    <RootNamespace>vrClusterListener</RootNamespace>
+    <AssemblyName>vrClusterListener</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -53,7 +53,7 @@
     <ManifestCertificateThumbprint>0CD8DD0A7EFDEA56A966F4ECC00BD1A3043860AF</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>Listener_TemporaryKey.pfx</ManifestKeyFile>
+    <ManifestKeyFile>vrClusterListener_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
     <GenerateManifests>true</GenerateManifests>
@@ -77,7 +77,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="Listener_TemporaryKey.pfx" />
+    <None Include="vrClusterListener_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5.2">

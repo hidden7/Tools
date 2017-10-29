@@ -8,11 +8,11 @@ using System.Windows;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("vrClusterConfig")]
-[assembly: AssemblyDescription("Application management tool for vrCluster plugin for Unreal Engine")]
+[assembly: AssemblyDescription("vrCluster configuration & management tool")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Pixela Labs")]
+[assembly: AssemblyCompany("Pixela Labs LLC")]
 [assembly: AssemblyProduct("vrClusterConfig")]
-[assembly: AssemblyCopyright("Copyright ©  2017")]
+[assembly: AssemblyCopyright("Copyright © 2017 Pixela Labs LLC")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -53,3 +53,5 @@ using System.Windows;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.3.5")]
 [assembly: AssemblyFileVersion("1.0.3.5")]
+[assembly: Guid("88B280E0-96FB-48F1-AD54-AD770DA27395")]
+

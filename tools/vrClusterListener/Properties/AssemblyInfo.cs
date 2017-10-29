@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Listener")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("vrClusterListener")]
+[assembly: AssemblyDescription("vrCluster daemon, responsible for command processing on cluster nodes (remote machines)")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Listener")]
-[assembly: AssemblyCopyright("Copyright ©  2016")]
+[assembly: AssemblyCompany("Pixela Labs LLC")]
+[assembly: AssemblyProduct("vrClusterListener")]
+[assembly: AssemblyCopyright("Copyright © 2017 Pixela Labs LLC")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

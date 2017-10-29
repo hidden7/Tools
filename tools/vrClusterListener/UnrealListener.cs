@@ -12,19 +12,18 @@ namespace UnrealTools
 {
 	class UnrealListener
 	{
-		
 		static Int32 port = 9777;
 		static IPAddress localAddr = IPAddress.Parse("0.0.0.0");
 
 		static string unrealExeName = "UnrealEngine.exe";
 
-		static Int32  processPid  = 0;
+		static Int32 processPid = 0;
 		static string processName = "";
 
-        static string startCmd = "start ";
-        static string killCmd = "kill ";
+		static string startCmd = "start ";
+		static string killCmd = "kill ";
 
-        static void Main(string[] args)
+		static void Main(string[] args)
 		{
 			TcpListener server = null;
 			try
@@ -63,7 +62,7 @@ namespace UnrealTools
 			TcpClient client = (TcpClient)client_obj;
 
 			NetworkStream stream = client.GetStream();
-            string clientIP = ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString();
+			string clientIP = ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString();
 
 			Console.WriteLine("Client [{0}] connected.", clientIP);
 
@@ -85,61 +84,63 @@ namespace UnrealTools
 		{
 			if (data.Length == 0)
 			{
-                Console.WriteLine("Empty data received.");
-                return;
+				Console.WriteLine("Empty data received.");
+				return;
 			}
 
-            Console.WriteLine("Command [{0}] received.", data);
+			Console.WriteLine("Command [{0}] received.", data);
 
-            if (data.Contains(startCmd))
+			if (data.Contains(startCmd))
 			{
-                // remove "start "
-                int cmdLen = startCmd.Length;
-                data = data.Substring(cmdLen, data.Length - cmdLen);                
-                StartApplication(data);
-			}else
-            if (data.Contains(killCmd))
-            {
-                int cmdLen = killCmd.Length;
-                data = data.Substring(cmdLen, data.Length - cmdLen);
-                KillApplication(data);
-            }
-            else
-            if (data.Contains("info") || data.Contains("status"))
-            {
-                PrintStatus();
-            }
-            else
-            {
+				// remove "start "
+				int cmdLen = startCmd.Length;
+				data = data.Substring(cmdLen, data.Length - cmdLen);
+				StartApplication(data);
+			}
+			else
+			if (data.Contains(killCmd))
+			{
+				int cmdLen = killCmd.Length;
+				data = data.Substring(cmdLen, data.Length - cmdLen);
+				KillApplication(data);
+			}
+			else
+			if (data.Contains("info") || data.Contains("status"))
+			{
+				PrintStatus();
+			}
+			else
+			{
 
-                Console.WriteLine("Error! Unknown command : " + data);
-            }
-        }
+				Console.WriteLine("Error! Unknown command : " + data);
+			}
+		}
 
 		private static void StartApplication(string appPath)
-		{			
+		{
 			if (appPath == String.Empty)
 			{
 				Console.WriteLine("Application path is empty. Stop.");
 				return;
 			}
 
-			try {
-                // parse
-                string[] launchStrings = appPath.Split(' ');
+			try
+			{
+				// parse
+				string[] launchStrings = appPath.Split(' ');
 
-                string executablePath = launchStrings[0];
-                string arguments = "";
-                for(int i = 1; i < launchStrings.Length; i++)
-                {
-                    arguments += launchStrings[i] + " ";
-                }
+				string executablePath = launchStrings[0];
+				string arguments = "";
+				for (int i = 1; i < launchStrings.Length; i++)
+				{
+					arguments += launchStrings[i] + " ";
+				}
 
-                Process appProccess = new Process();
+				Process appProccess = new Process();
 
 				appProccess.StartInfo.FileName = executablePath;
-                appProccess.StartInfo.Arguments = arguments;
-                appProccess.Start();
+				appProccess.StartInfo.Arguments = arguments;
+				appProccess.Start();
 
 				try
 				{
@@ -152,51 +153,54 @@ namespace UnrealTools
 					processPid = 0;
 				}
 			}
-			catch(Exception e){
-                Console.WriteLine(e.ToString());
-			}			
+			catch (Exception e)
+			{
+				Console.WriteLine(e.ToString());
+			}
 		}
 
 		private static void KillApplication(string data)
 		{
-            processName = Path.GetFileNameWithoutExtension(data);
+			processName = Path.GetFileNameWithoutExtension(data);
 
-            try
+			try
 			{
-				Process proc = Process.GetProcessById(processPid);                
-                Console.WriteLine("Killed " + GetAppInfo());
+				Process proc = Process.GetProcessById(processPid);
+				Console.WriteLine("Killed " + GetAppInfo());
 				proc.Kill();
 			}
-			catch {
+			catch
+			{
 				Console.WriteLine("Can't kill it, pid [{0}]", processPid);
 			}
 
-            // try to kill by name all processes
-            try {
-                KillProcessesByName(processName);
-                KillProcessesByName(unrealExeName);
-            }
-            catch(Exception e)
-            {
-                Console.WriteLine(e.ToString());
-            }
-        }
+			// try to kill by name all processes
+			try
+			{
+				KillProcessesByName(processName);
+				KillProcessesByName(unrealExeName);
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e.ToString());
+			}
+		}
 
 		private static void KillProcessesByName(string procName)
 		{
-            List<Process> processes = new List<Process>();
-            processes.AddRange(Process.GetProcessesByName(procName));
+			List<Process> processes = new List<Process>();
+			processes.AddRange(Process.GetProcessesByName(procName));
 
-            if (processes.Count == 0)
+			if (processes.Count == 0)
 			{
-                List<Process> allProcesses = new List<Process>();
-                allProcesses.AddRange(Process.GetProcesses());
-                foreach (Process p in allProcesses)
-                {
-                    if (p.ProcessName.Contains(procName))
-                        processes.Add(p);
-                }
-            }
+				List<Process> allProcesses = new List<Process>();
+				allProcesses.AddRange(Process.GetProcesses());
+				foreach (Process p in allProcesses)
+				{
+					if (p.ProcessName.Contains(procName))
+						processes.Add(p);
+				}
+			}
 
 			foreach (Process p in processes)
 			{
@@ -211,7 +215,7 @@ namespace UnrealTools
 				Console.WriteLine("No application runned.");
 				return;
 			}
-			
+
 			Console.WriteLine("Runned " + GetAppInfo());
 		}
 
@@ -222,11 +226,13 @@ namespace UnrealTools
 			{
 				Process app = Process.GetProcessById(processPid);
 				appInfo = "application [" + app.MainModule.FileName + "] with pid [" + processPid + "]";
-			}catch{
+			}
+			catch
+			{
 
 			}
-			
-			return appInfo; 
+
+			return appInfo;
 		}
 	}
 }
