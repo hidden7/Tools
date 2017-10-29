@@ -738,7 +738,7 @@ namespace vrClusterConfig
 
         private void MenuItem_Click(object sender, RoutedEventArgs e)
         {
-            InfoDialog aboutDialog = new InfoDialog("Application for configuration and launching VR Cluster version " + versionInfo + "\n \u00a9 Copiright Pixela Labs. All rights reserved.\n more info http://vrcluster.io/");
+            InfoDialog aboutDialog = new InfoDialog("Application for configuration and launching VR Cluster version " + versionInfo + "\n \u00a9 Copyright Pixela Labs LLC. All rights reserved.\n More info http://vrcluster.io/");
             aboutDialog.Owner = this;
             aboutDialog.Width = 350;
             aboutDialog.Height = 200;
