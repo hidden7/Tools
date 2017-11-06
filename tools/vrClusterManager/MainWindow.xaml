@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:vrClusterManager"
 		xmlns:conv="clr-namespace:vrClusterManager.ValueConversion"
+		xmlns:uictrl="clr-namespace:vrClusterManager.UIControl"
         xmlns:scm ="clr-namespace:System.ComponentModel;assembly=WindowsBase"
         xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero" x:Class="vrClusterManager.MainWindow"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
@@ -158,7 +159,7 @@
             <Setter Property="MaxWidth" Value="200" />
             <Setter Property="Height" Value="300" />
         </Style>
-        <Style TargetType="{x:Type local:UnselectableListBox}" BasedOn="{StaticResource ControlsStyle}">
+        <Style TargetType="{x:Type uictrl:UnselectableListBox}" BasedOn="{StaticResource ControlsStyle}">
             <Setter Property="MinWidth" Value="100" />
             <Setter Property="MaxWidth" Value="200" />
             <Setter Property="Height" Value="300" />
@@ -1783,7 +1784,7 @@
                 <Button Grid.Column="0" x:Name="copyAppLogBtn" Content="Copy" Width="100" Template="{DynamicResource ButtonTemplate}" ToolTip="Copy application log to Buffer" Click="copyAppLogBtn_Click" />
                 <Button Grid.Column="1" x:Name="cleanAppLogBtn" Content="Clean" Width="100" Template="{DynamicResource ButtonTemplate}" ToolTip="Clean log" Click="cleanAppLogBtn_Click" />
             </StackPanel>
-            <ScrollViewer  Height="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=ActualHeight, Converter={StaticResource SizeConverter}, ConverterParameter=550}" local:AutoScroller.AutoScroll="True" >
+            <ScrollViewer  Height="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=ActualHeight, Converter={StaticResource SizeConverter}, ConverterParameter=550}" uictrl:AutoScroller.AutoScroll="True" >
                 <TextBox x:Name="appLogTextBox" IsReadOnly="True" Text="{Binding Log, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" AcceptsReturn="True" CaretIndex="{x:Static sys:Int32.MaxValue}" Foreground="White" ToolTip="Log Window" HorizontalAlignment="Stretch" ScrollViewer.CanContentScroll="True" VerticalScrollBarVisibility="Auto" MaxWidth="Infinity" MinWidth="200"  />
             </ScrollViewer>
         </DockPanel>

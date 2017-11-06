@@ -120,7 +120,7 @@
     <Compile Include="ValueConversion\ValueConverterGroup.cs" />
     <Compile Include="Visualization\Draw.cs" />
     <Compile Include="Parser.cs" />
-    <Compile Include="UiControls\AutoScroller.cs" />
+    <Compile Include="UIControl\AutoScroller.cs" />
     <Compile Include="Config\AnalogInput.cs" />
     <Compile Include="AppRunner\AppRunner.cs" />
     <Compile Include="Config\BaseInput.cs" />
@@ -142,7 +142,7 @@
       <DependentUpon>InfoDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="RegistrySaver.cs" />
-    <Compile Include="UiControls\UnselectableListBox.cs" />
+    <Compile Include="UIControl\UnselectableListBox.cs" />
     <Compile Include="DialogWindows\YesNoDialog.xaml.cs">
       <DependentUpon>YesNoDialog.xaml</DependentUpon>
     </Compile>
