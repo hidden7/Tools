@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:vrClusterManager"
+		xmlns:conv="clr-namespace:vrClusterManager.ValueConversion"
         xmlns:scm ="clr-namespace:System.ComponentModel;assembly=WindowsBase"
         xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero" x:Class="vrClusterManager.MainWindow"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
@@ -35,21 +36,21 @@
         
         <!--Converters-->
         <BooleanToVisibilityConverter x:Key="BoolToVisConverter" />
-        
-        <local:BooleanInverterConverter x:Key="BoolInvertConverter" />
-        <local:BoolToVerticalBorderConverter x:Key="BoolToVerticalConverter" />
-        <local:BoolToHorizontalBorderConverter x:Key="BoolToHorizontalConverter" />
-        <local:SizeConverter x:Key="SizeConverter" />
 
-        <local:ValueConverterGroup x:Key="InvertBoolToVerticalConverter">
-            <local:BooleanInverterConverter/>
-            <local:BoolToVerticalBorderConverter/>
-        </local:ValueConverterGroup>
+		<conv:BooleanInverterConverter x:Key="BoolInvertConverter" />
+		<conv:BoolToVerticalBorderConverter x:Key="BoolToVerticalConverter" />
+		<conv:BoolToHorizontalBorderConverter x:Key="BoolToHorizontalConverter" />
+        <conv:SizeConverter x:Key="SizeConverter" />
 
-        <local:ValueConverterGroup x:Key="InvertBoolToHorizontalConverter">
-            <local:BooleanInverterConverter />
-            <local:BoolToHorizontalBorderConverter />
-        </local:ValueConverterGroup>
+		<conv:ValueConverterGroup x:Key="InvertBoolToVerticalConverter">
+			<conv:BooleanInverterConverter/>
+			<conv:BoolToVerticalBorderConverter/>
+		</conv:ValueConverterGroup>
+
+		<conv:ValueConverterGroup x:Key="InvertBoolToHorizontalConverter">
+			<conv:BooleanInverterConverter />
+			<conv:BoolToHorizontalBorderConverter />
+        </conv:ValueConverterGroup>
 
 
         <sys:String x:Key="emailRegex">^[a-zA-Z][\w\.-]*[a-zA-Z0-9]@
