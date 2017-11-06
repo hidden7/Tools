@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace vrClusterManager
+namespace vrClusterManager.Config
 {
 	public class Viewport : ConfigItem, IDataErrorInfo
 	{

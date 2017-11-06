@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace vrClusterManager
+namespace vrClusterManager.Config
 {
-    public abstract class ConfigItem
-    {
-        public string validationName = "Object validation";
+	public abstract class ConfigItem
+	{
+		public string validationName = "Object validation";
 
-        public abstract string CreateCfg();
-        public abstract bool Validate();
-    }
+		public abstract string CreateCfg();
+		public abstract bool Validate();
+	}
 }

@@ -16,6 +16,7 @@ using System.IO;
 using System.ComponentModel;
 using System.Reflection;
 //using System.Windows.Controls.Primitives;
+using vrClusterManager.Config;
 
 namespace vrClusterManager
 {
@@ -27,7 +28,7 @@ namespace vrClusterManager
         static string defaultDir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
         static readonly string configFileExtention = "CAVE config file (*.cfg)|*.cfg";
         static readonly string applicationFileExtention = "CAVE VR application (*.exe)|*.exe";
-        public Config currentConfig;
+        public VRConfig currentConfig;
         public AppRunner appRunner;
         //string currentFileName = null;
         readonly string versionInfo = Assembly.GetExecutingAssembly().GetName().Version.ToString();
@@ -189,11 +190,11 @@ namespace vrClusterManager
         void CreateConfig()
         {
             RegistrySaver.RemoveAllRegistryValues(RegistrySaver.configName);
-            currentConfig = new Config();
+            currentConfig = new VRConfig();
             this.DataContext = currentConfig;
             //crutch. for refactoring
             currentConfig.selectedSceneNodeView = null;
-            AppLogger.Add("New config inited");
+            AppLogger.Add("New config initialized");
             SetTitle();
             SetViewportPreview();
         }
@@ -351,7 +352,7 @@ namespace vrClusterManager
                 }
                 else
                 {
-                    InputType currentType = (InputType)System.Enum.Parse(typeof(InputType), type);
+					InputDeviceType currentType = (InputDeviceType)System.Enum.Parse(typeof(InputDeviceType), type);
                     currentConfig.inputs.Add(new BaseInput { id = "InputId", type = currentType, address = "InputName@127.0.0.1" });
                 }
                 currentConfig.selectedInput = currentConfig.inputs.LastOrDefault();

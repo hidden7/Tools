@@ -126,7 +126,7 @@
     <Compile Include="Config\BaseInput.cs" />
     <Compile Include="Config\Camera.cs" />
     <Compile Include="Config\ClusterNode.cs" />
-    <Compile Include="Config\Config.cs" />
+    <Compile Include="Config\VRConfig.cs" />
     <Compile Include="Config\ConfigItem.cs" />
     <Compile Include="DialogWindows\InputStringDialog.xaml.cs">
       <DependentUpon>InputStringDialog.xaml</DependentUpon>

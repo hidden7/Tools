@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.ComponentModel;
 
-namespace vrClusterManager
+namespace vrClusterManager.Config
 {
 	public class ClusterNode : ConfigItem, IDataErrorInfo
 	{

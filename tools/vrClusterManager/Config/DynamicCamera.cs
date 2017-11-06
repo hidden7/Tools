@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace vrClusterManager
+namespace vrClusterManager.Config
 {
-    class DynamicCamera : Camera
-    {
-        public BaseInput tracker { get; set; }
-        public string trackerChannel { get; set; }
-    }
+	class DynamicCamera : Camera
+	{
+		public BaseInput tracker { get; set; }
+		public string trackerChannel { get; set; }
+	}
 }

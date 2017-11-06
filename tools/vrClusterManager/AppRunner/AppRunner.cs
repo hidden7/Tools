@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO.Compression;
 //using Microsoft.Win32;
+using vrClusterManager.Config;
 
 namespace vrClusterManager
 {
@@ -222,8 +223,8 @@ namespace vrClusterManager
 		//Cameras list
 		private List<string> _cameras = new List<string>()
 		{
-		   "camera_static",
-		   "camera_dynamic"
+			"camera_static",
+			"camera_dynamic"
 		};
 		public List<string> cameras
 		{
@@ -525,7 +526,7 @@ namespace vrClusterManager
 
 		private List<ClusterNode> GetClusterNodes()
 		{
-			Config runningConfig = new Config();
+			VRConfig runningConfig = new VRConfig();
 			return Parser.Parse(selectedConfig, runningConfig).clusterNodes;
 		}
 
