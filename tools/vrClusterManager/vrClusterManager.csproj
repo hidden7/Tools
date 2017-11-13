@@ -113,13 +113,13 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="AppLogger.cs" />
+    <Compile Include="Log\AppLogger.cs" />
     <Compile Include="ValueConversion\BooleanInverterConverter.cs" />
     <Compile Include="ValueConversion\BoolToHorizontalBorderConverter.cs" />
     <Compile Include="ValueConversion\BoolToVerticalBorderConverter.cs" />
     <Compile Include="ValueConversion\ValueConverterGroup.cs" />
     <Compile Include="Visualization\Draw.cs" />
-    <Compile Include="Parser.cs" />
+    <Compile Include="Config\Parser.cs" />
     <Compile Include="UIControl\AutoScroller.cs" />
     <Compile Include="Config\AnalogInput.cs" />
     <Compile Include="AppRunner\AppRunner.cs" />
@@ -141,7 +141,7 @@
     <Compile Include="DialogWindows\InfoDialog.xaml.cs">
       <DependentUpon>InfoDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="RegistrySaver.cs" />
+    <Compile Include="Settings\RegistrySaver.cs" />
     <Compile Include="UIControl\UnselectableListBox.cs" />
     <Compile Include="DialogWindows\YesNoDialog.xaml.cs">
       <DependentUpon>YesNoDialog.xaml</DependentUpon>

@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using System.IO.Compression;
 //using Microsoft.Win32;
 using vrClusterManager.Config;
+using vrClusterManager.Settings;
 
 namespace vrClusterManager
 {

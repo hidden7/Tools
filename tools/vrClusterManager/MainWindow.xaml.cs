@@ -17,6 +17,7 @@ using System.ComponentModel;
 using System.Reflection;
 //using System.Windows.Controls.Primitives;
 using vrClusterManager.Config;
+using vrClusterManager.Settings;
 
 namespace vrClusterManager
 {
