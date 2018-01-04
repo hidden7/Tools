@@ -113,8 +113,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="DialogWindows\AboutDialog.xaml.cs">
+      <DependentUpon>AboutDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Log\AppLogger.cs" />
-    <Compile Include="ValueConversion\BooleanInverterConverter.cs" />
+    <Compile Include="ValueConversion\InverseBooleanConverter.cs" />
     <Compile Include="ValueConversion\BoolToHorizontalBorderConverter.cs" />
     <Compile Include="ValueConversion\BoolToVerticalBorderConverter.cs" />
     <Compile Include="ValueConversion\ValueConverterGroup.cs" />
@@ -150,6 +153,10 @@
     <Compile Include="ValueConversion\SizeConverter.cs" />
     <Compile Include="Visualization\Viewport3d.cs" />
     <Compile Include="Visualization\ViewportPreview.cs" />
+    <Page Include="DialogWindows\AboutDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="DialogWindows\InfoDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

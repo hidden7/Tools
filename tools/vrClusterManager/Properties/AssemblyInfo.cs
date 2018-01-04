@@ -12,7 +12,7 @@ using System.Windows;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Pixela Labs LLC")]
 [assembly: AssemblyProduct("vrClusterManager")]
-[assembly: AssemblyCopyright("Copyright © 2017 Pixela Labs LLC")]
+[assembly: AssemblyCopyright("Copyright © 2018 Pixela Labs LLC")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -51,6 +51,6 @@ using System.Windows;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.3.*")]
+[assembly: AssemblyVersion("1.3.0.0")]
 [assembly: AssemblyFileVersion("1.3.0.0")]
 [assembly: Guid("88B280E0-96FB-48F1-AD54-AD770DA27395")]
