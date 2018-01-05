@@ -32,8 +32,8 @@ namespace vrClusterManager
 			MessageTextBlock.Text = 
 				"VR Cluster management application\n" +
 				"version " + Assembly.GetExecutingAssembly().GetName().Version.ToString() + "\n" +
-				"\u00a9 Pixela Labs LLC. All rights reserved.\n" +
-				"http://vrcluster.io/";
+				"Copyright \u00a9 Pixela Labs LLC. All rights reserved.\n" +
+				"http://vrcluster.io";
 		}
 
 		private void OkBtn_Click(object sender, RoutedEventArgs e)
