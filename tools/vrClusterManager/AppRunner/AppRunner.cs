@@ -432,7 +432,7 @@ namespace vrClusterManager
 			isFixedSeed = RegistrySaver.ReadBoolValue(RegistrySaver.paramsList, RegistrySaver.isFixedSeedName);
 			isNotextureStreaming = RegistrySaver.ReadBoolValue(RegistrySaver.paramsList, RegistrySaver.isNoTextureStreamingName);
 			isFullscreen = RegistrySaver.ReadBoolValue(RegistrySaver.paramsList, RegistrySaver.isFullscreen);
-			AppLogger.Add("Application Options inited");
+			AppLogger.Add("Application Options initialized");
 		}
 
 		//Generating command line for the App

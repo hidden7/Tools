@@ -483,7 +483,7 @@
 							<ColumnDefinition Width="auto" />
 							<ColumnDefinition Width="*" />
 						</Grid.ColumnDefinitions>
-						<Grid Grid.Column="0" x:Name="nodesListPanel">
+						<Grid Grid.Column="0" x:Name="clusterNodesListPanel">
 							<Grid.RowDefinitions>
 								<RowDefinition Height="*"/>
 								<RowDefinition Height="Auto"/>
@@ -538,9 +538,9 @@
 											<ColumnDefinition Width="*" />
 										</Grid.ColumnDefinitions>
 
-										<Label Grid.Column="0" Content="Client Port:" ToolTip="Client port, number" />
+										<Label Grid.Column="0" Content="CS Port:" ToolTip="Cluster sync port, number" />
 										<TextBox x:Name="portCsTb" Grid.Column="1" Style="{DynamicResource SizeTB}" Text="{Binding portCs, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" ToolTip="Client port, number"/>
-										<Label Grid.Column="2" Content="Server Port:" ToolTip="Server port, number" />
+										<Label Grid.Column="2" Content="SS Port:" ToolTip="Swap sync port, number" />
 										<TextBox x:Name="portSsTb" Grid.Column="3" Style="{DynamicResource SizeTB}" Text="{Binding portSs, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" ToolTip="Server port, number" />
 									</Grid>
 								</Grid>
@@ -597,7 +597,7 @@
 									</Grid>
 								</Grid>
 								<Grid Grid.Row="5">
-									<CheckBox x:Name="isWindowed"  Content="Fullscreen" IsChecked="{Binding selectedNode.isWindowed}" Template="{DynamicResource CustomCheckBoxControlTemplate}" HorizontalAlignment="Left" Margin="2,2,0,2" Width="88" />
+									<CheckBox x:Name="isWindowed"  Content="Windowed" IsChecked="{Binding selectedNode.isWindowed}" Template="{DynamicResource CustomCheckBoxControlTemplate}" HorizontalAlignment="Left" Margin="2,2,0,2" />
 								</Grid>
 								<Grid Grid.Row="6" Visibility="{Binding selectedNode.isWindowed, Converter={StaticResource BoolToVisConverter}, FallbackValue=Collapsed}">
 									<Grid.RowDefinitions>
@@ -1118,7 +1118,7 @@
 									<RowDefinition Height="Auto" />
 									<RowDefinition Height="Auto" />
 								</Grid.RowDefinitions>
-								<Label Grid.Row="0" Content="Tracker Location Parameters" />
+								<Label Grid.Row="0" Content="Tracker Location" />
 								<Grid Grid.Row="1" Margin="20,0,0,0">
 									<Grid.ColumnDefinitions>
 										<ColumnDefinition Width="37" />
@@ -1142,7 +1142,7 @@
 									<RowDefinition Height="Auto" />
 									<RowDefinition Height="Auto" />
 								</Grid.RowDefinitions>
-								<Label Grid.Row="0" Content="Tracker Rotation Parameters"/>
+								<Label Grid.Row="0" Content="Tracker Rotation"/>
 								<Grid Grid.Row="1" Margin="20,0,0,0">
 									<Grid.ColumnDefinitions>
 										<ColumnDefinition Width="37" />
@@ -1166,7 +1166,7 @@
 									<RowDefinition Height="Auto" />
 									<RowDefinition Height="Auto" />
 								</Grid.RowDefinitions>
-								<Label Grid.Row="0" Content="Tracker Axis Parameters" />
+								<Label Grid.Row="0" Content="Coordinate system mapping" />
 								<Grid Grid.Row="1" Margin="20,0,0,0">
 									<Grid.ColumnDefinitions>
 										<ColumnDefinition Width="37" />
@@ -1572,7 +1572,7 @@
 							</Grid>
 							<Grid Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top" >
 
-								<ToggleButton x:Name="showPanelToggle" Content="Options" Padding="1" Background="#2D2D30" Foreground="WhiteSmoke" Margin="-15,15,-15,0" RenderTransformOrigin="0.5,0.5" BorderBrush="{x:Null}" HorizontalAlignment="Right" Width="50" Height="20" VerticalAlignment="Top"  >
+								<ToggleButton x:Name="showPanelToggle" Content="Options" Padding="1" Background="#2D2D30" Foreground="WhiteSmoke" Margin="-15,15,-15,0" RenderTransformOrigin="0.5,0.5" BorderBrush="{x:Null}" HorizontalAlignment="Right" Width="50" Height="20" VerticalAlignment="Top" IsChecked="True"  >
 									<ToggleButton.Template>
 										<ControlTemplate TargetType="{x:Type ButtonBase}">
 											<Border x:Name="border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
