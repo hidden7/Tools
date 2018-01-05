@@ -40,7 +40,7 @@ namespace UnrealTools
 				server = new TcpListener(IPAddress.Any, DefaultPort);
 				server.Start();
 
-				PrintColorText("Pixela Labs LLC, 2017", ConsoleColor.Cyan);
+				PrintColorText("Pixela Labs LLC, 2018", ConsoleColor.Cyan);
 				PrintColorText(string.Format("VRCListener is listening to port {0}", DefaultPort.ToString()), ConsoleColor.Cyan);
 				Console.WriteLine("---------------------------------------------------------");
 
