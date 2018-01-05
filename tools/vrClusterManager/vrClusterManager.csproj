@@ -62,7 +62,7 @@
   </PropertyGroup>
   <PropertyGroup />
   <PropertyGroup>
-    <ApplicationIcon>Icon_gray.ico</ApplicationIcon>
+    <ApplicationIcon>Icons\Icon_gray.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup />
   <PropertyGroup />
@@ -113,43 +113,50 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="AppLogger.cs" />
-    <Compile Include="ValueConverters\BooleanInverterConverter.cs" />
-    <Compile Include="ValueConverters\BoolToHorizontalBorderConverter.cs" />
-    <Compile Include="ValueConverters\BoolToVerticalBorderConverter.cs" />
-    <Compile Include="ValueConverters\ValueConverterGroup.cs" />
+    <Compile Include="DialogWindows\AboutDialog.xaml.cs">
+      <DependentUpon>AboutDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Log\AppLogger.cs" />
+    <Compile Include="ValueConversion\InverseBooleanConverter.cs" />
+    <Compile Include="ValueConversion\BoolToHorizontalBorderConverter.cs" />
+    <Compile Include="ValueConversion\BoolToVerticalBorderConverter.cs" />
+    <Compile Include="ValueConversion\ValueConverterGroup.cs" />
     <Compile Include="Visualization\Draw.cs" />
-    <Compile Include="Parser.cs" />
-    <Compile Include="UiControls\AutoScroller.cs" />
-    <Compile Include="ConfigData\AnalogInput.cs" />
+    <Compile Include="Config\Parser.cs" />
+    <Compile Include="UIControl\AutoScroller.cs" />
+    <Compile Include="Config\AnalogInput.cs" />
     <Compile Include="AppRunner\AppRunner.cs" />
-    <Compile Include="ConfigData\BaseInput.cs" />
-    <Compile Include="ConfigData\Camera.cs" />
-    <Compile Include="ConfigData\ClusterNode.cs" />
-    <Compile Include="ConfigData\Config.cs" />
-    <Compile Include="ConfigData\ConfigItem.cs" />
+    <Compile Include="Config\BaseInput.cs" />
+    <Compile Include="Config\Camera.cs" />
+    <Compile Include="Config\ClusterNode.cs" />
+    <Compile Include="Config\VRConfig.cs" />
+    <Compile Include="Config\ConfigItem.cs" />
     <Compile Include="DialogWindows\InputStringDialog.xaml.cs">
       <DependentUpon>InputStringDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="EnumBindingSourceExtension.cs" />
-    <Compile Include="ConfigData\DynamicCamera.cs" />
+    <Compile Include="Other\EnumBindingSourceExtension.cs" />
+    <Compile Include="Config\DynamicCamera.cs" />
     <Compile Include="AppRunner\LogCategory.cs" />
-    <Compile Include="ConfigData\MasterNode.cs" />
-    <Compile Include="ConfigData\SceneNode.cs" />
-    <Compile Include="ConfigData\SceneNodeView.cs" />
-    <Compile Include="ConfigData\Screen.cs" />
+    <Compile Include="Config\MasterNode.cs" />
+    <Compile Include="Config\SceneNode.cs" />
+    <Compile Include="Config\SceneNodeView.cs" />
+    <Compile Include="Config\Screen.cs" />
     <Compile Include="DialogWindows\InfoDialog.xaml.cs">
       <DependentUpon>InfoDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="RegistrySaver.cs" />
-    <Compile Include="UiControls\UnselectableListBox.cs" />
+    <Compile Include="Settings\RegistrySaver.cs" />
+    <Compile Include="UIControl\UnselectableListBox.cs" />
     <Compile Include="DialogWindows\YesNoDialog.xaml.cs">
       <DependentUpon>YesNoDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ValidationRules.cs" />
-    <Compile Include="ValueConverters\SizeConverter.cs" />
+    <Compile Include="Other\ValidationRules.cs" />
+    <Compile Include="ValueConversion\SizeConverter.cs" />
     <Compile Include="Visualization\Viewport3d.cs" />
     <Compile Include="Visualization\ViewportPreview.cs" />
+    <Page Include="DialogWindows\AboutDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="DialogWindows\InfoDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -170,8 +177,8 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ConfigData\TrackerInput.cs" />
-    <Compile Include="ConfigData\Viewport.cs" />
+    <Compile Include="Config\TrackerInput.cs" />
+    <Compile Include="Config\Viewport.cs" />
     <Compile Include="DialogWindows\InputTypeDialog.xaml.cs">
       <DependentUpon>InputTypeDialog.xaml</DependentUpon>
     </Compile>
@@ -216,12 +223,12 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Icon_gray.ico">
+    <Resource Include="Icons\Icon_gray.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Icon.ico">
+    <Resource Include="Icons\Icon.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>

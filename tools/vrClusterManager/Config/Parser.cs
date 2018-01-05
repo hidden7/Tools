@@ -4,13 +4,15 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using vrClusterManager.Settings;
+using vrClusterManager.Config;
 
 namespace vrClusterManager
 {
     public static class Parser
     {
         //Config file parser
-        public static Config Parse(string filePath, Config currentConfig)
+        public static VRConfig Parse(string filePath, VRConfig currentConfig)
         {
             // refactoring needed
             List<string> inputLines = new List<string>();

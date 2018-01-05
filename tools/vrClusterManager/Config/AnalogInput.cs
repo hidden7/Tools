@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace vrClusterManager
+namespace vrClusterManager.Config
 {
-    class AnalogInput : BaseInput
-    {
-    }
+	class AnalogInput : BaseInput
+	{
+	}
 }
