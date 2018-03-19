@@ -24,7 +24,8 @@ namespace vrClusterManager.Settings
         public const string isFixedSeedName = "isFixedSeed";
         public const string isNoTextureStreamingName = "isNoTextureStreaming";
         public const string isFullscreen = "isFullscreen";
-        public const string openGLName = "openGL";
+        public const string renderApiName = "renderApi";
+		public const string renderModeName = "renderMode";
         public const string additionalParamsName = "additionalParams";
 
         private static string[] ReadRegistry(string key)

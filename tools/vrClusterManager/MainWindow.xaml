@@ -1524,30 +1524,25 @@
 							</Grid.ColumnDefinitions>
 							<Grid Grid.Column="0" Visibility="{Binding IsChecked, Converter={StaticResource BoolToVisConverter}, ElementName=showPanelToggle}" >
 								<Grid Background="#252527">
-									<!--<Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="Auto" />
-                                    </Grid.ColumnDefinitions>-->
 									<Grid.RowDefinitions>
 										<RowDefinition Height="Auto" />
-										<RowDefinition Height="5" />
 										<RowDefinition Height="Auto" />
 										<RowDefinition Height="Auto" />
 										<RowDefinition Height="*" />
 									</Grid.RowDefinitions>
+
 									<StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,5,0">
-										<Label Grid.Column="0" Grid.Row="0" Content="OpenGL options" />
-										<ComboBox x:Name="openGlCb" Grid.Column="1" Grid.Row="0" ItemsSource="{Binding openGlParams}" SelectedItem="{Binding selectedOpenGlParam}" DisplayMemberPath="Key" Template="{DynamicResource ComboBoxTemplate}" Width="160"/>
+											<Label Grid.Column="0" Grid.Row="0" Content="Render API" />
+											<ComboBox x:Name="renderApi" Grid.Column="1" Grid.Row="0" ItemsSource="{Binding renderApiParams}" SelectedItem="{Binding selectedRenderApiParam}" DisplayMemberPath="Key" Template="{DynamicResource ComboBoxTemplate}" HorizontalAlignment="Stretch" Width="172"/>
 									</StackPanel>
 
-									<CheckBox x:Name="runParamsCheckBox" Grid.Row="2" Grid.Column="0" Content="Run With Params" Template="{DynamicResource CustomCheckBoxControlTemplate}" IsChecked="{Binding isRunWithParams}" />
-									<Grid Grid.Row="3" Margin="20,0,5,0" >
-										<Grid.Style>
-											<Style TargetType="{x:Type Grid}">
-												<Setter Property="Visibility" Value="{Binding IsChecked, Converter={StaticResource BoolToVisConverter}, ElementName=runParamsCheckBox}" />
-											</Style>
-										</Grid.Style>
+									<StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,5,0">
+										<Label Grid.Column="0" Grid.Row="0" Content="Render mode" />
+										<ComboBox x:Name="renderMode" Grid.Column="1" Grid.Row="0" ItemsSource="{Binding renderModeParams}" SelectedItem="{Binding selectedRenderModelParam}" DisplayMemberPath="Key" Template="{DynamicResource ComboBoxTemplate}" Width="160"/>
+									</StackPanel>
+
+									<!--<CheckBox x:Name="runParamsCheckBox" Grid.Row="4" Grid.Column="0" Content="Run With Params" Template="{DynamicResource CustomCheckBoxControlTemplate}" IsChecked="{Binding isRunWithParams}" />-->
+									<Grid Grid.Row="2" Margin="0,10,5,0" >
 										<Grid.RowDefinitions>
 											<RowDefinition Height="Auto" />
 											<RowDefinition Height="Auto" />
@@ -1559,14 +1554,11 @@
 											<RowDefinition Height="Auto" />
 											<RowDefinition Height="*" />
 										</Grid.RowDefinitions>
-										<CheckBox x:Name="stereoCheckBox" Grid.Row="0" Content="Stereo Enabled" Template="{DynamicResource CustomCheckBoxControlTemplate}" IsChecked="{Binding isStereo}" />
-										<CheckBox x:Name="soundCheckBox" Grid.Row="1" Content="No Sound" Template="{DynamicResource CustomCheckBoxControlTemplate}" IsChecked="{Binding isNoSound}" />
-										<CheckBox x:Name="coresCheckBox" Grid.Row="2" Content="Use All Available Cores" Template="{DynamicResource CustomCheckBoxControlTemplate}" IsChecked="{Binding isUseAllCores}" />
-										<CheckBox x:Name="fixedSeedCheckBox" Grid.Row="3" Content="Fixed Seed" Template="{DynamicResource CustomCheckBoxControlTemplate}" IsChecked="{Binding isFixedSeed}" />
-										<CheckBox x:Name="textureStreamingCheckBox" Grid.Row="4" Content="No Texture Streaming" Template="{DynamicResource CustomCheckBoxControlTemplate}" IsChecked="{Binding isNotextureStreaming}" />
-										<!--<CheckBox x:Name="fullscreenCheckBox" Grid.Row="5" Content="Fullscreen" Template="{DynamicResource CustomCheckBoxControlTemplate}" IsChecked="{Binding isFullscreen}" />-->
-										<Label Grid.Row="6" Content="Additional cmd params:" />
-										<TextBox x:Name="commandLineTb" Grid.Row="7" Style="{DynamicResource NameTB}" Width="Auto" Text="{Binding additionalParams, UpdateSourceTrigger=PropertyChanged}" Margin="20,2,2,2" HorizontalAlignment="Stretch" MaxWidth="400" />
+										<Label Grid.Column="0" Grid.Row="0" Content="Optional parameters:" />
+										<CheckBox x:Name="coresCheckBox" Grid.Row="1" Content="Use All Available Cores" Template="{DynamicResource CustomCheckBoxControlTemplate}" IsChecked="{Binding isUseAllCores}" />
+										<CheckBox x:Name="textureStreamingCheckBox" Grid.Row="2" Content="No Texture Streaming" Template="{DynamicResource CustomCheckBoxControlTemplate}" IsChecked="{Binding isNotextureStreaming}" />
+										<Label Grid.Row="3" Content="Custom command line arguments:" />
+										<TextBox x:Name="commandLineTb" Grid.Row="4" Style="{DynamicResource NameTB}" Width="Auto" Text="{Binding additionalParams, UpdateSourceTrigger=PropertyChanged}" Margin="20,2,2,2" HorizontalAlignment="Stretch" MaxWidth="400" />
 									</Grid>
 								</Grid>
 							</Grid>

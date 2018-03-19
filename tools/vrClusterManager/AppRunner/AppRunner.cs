@@ -59,30 +59,59 @@ namespace vrClusterManager
 		private const string uvrParamNoTextureStreaming = " -notexturestreaming";
 		private const string uvrParamUseAllAvailableCores = " -useallavailablecores";
 
-		//OpenGL parameters dictionary
-		private Dictionary<string, string> _openGlParams = new Dictionary<string, string>
+
+		private Dictionary<string, string> _renderApiParams = new Dictionary<string, string>
 		{
 			{"OpenGL3", " -opengl3" },
-			{"OpenGL4", " -opengl4" }
+			{"OpenGL4", " -opengl4" },
+			{"DirectX 11", " -dx11" }
 		};
-		public Dictionary<string, string> openGlParams
+		public Dictionary<string, string> renderApiParams
 		{
-			get { return _openGlParams; }
-			set { Set(ref _openGlParams, value, "openGlParams"); }
+			get { return _renderApiParams; }
+			set { Set(ref _renderApiParams, value, "renderApiParams"); }
 		}
 
 		//Selected OpenGL parameter
-		private KeyValuePair<string, string> _selectedOpenGlParam;
-		public KeyValuePair<string, string> selectedOpenGlParam
+		private KeyValuePair<string, string> _selectedRenderApiParam;
+		public KeyValuePair<string, string> selectedRenderApiParam
 		{
-			get { return _selectedOpenGlParam; }
+			get { return _selectedRenderApiParam; }
 			set
 			{
-				Set(ref _selectedOpenGlParam, value, "selectedOpenGlParam");
-				RegistrySaver.UpdateRegistry(RegistrySaver.paramsList, RegistrySaver.openGLName, value.Key);
+				Set(ref _selectedRenderApiParam, value, "selectedRenderApiParam");
+				RegistrySaver.UpdateRegistry(RegistrySaver.paramsList, RegistrySaver.renderApiName, value.Key);
 				GenerateCmdStartApp();
 			}
 		}
+
+		private Dictionary<string, string> _renderModeParams = new Dictionary<string, string>
+		{
+			{"Mono", " -uvr_dev_mono" },
+			{"Frame packed", " -quad_buffer_stereo" },
+			{"Side-by-side", " -uvr_dev_side_by_side" },
+			{"Top-bottom", " -uvr_dev_top_bottom" }
+		};
+		public Dictionary<string, string> renderModeParams
+		{
+			get { return _renderModeParams; }
+			set { Set(ref _renderModeParams, value, "renderModeParams"); }
+		}
+
+		//Selected OpenGL parameter
+		private KeyValuePair<string, string> _selectedRenderModeParam;
+		public KeyValuePair<string, string> selectedRenderModeParam
+		{
+			get { return _selectedRenderModeParam; }
+			set
+			{
+				Set(ref _selectedRenderModeParam, value, "selectedRenderModeParam");
+				RegistrySaver.UpdateRegistry(RegistrySaver.paramsList, RegistrySaver.renderModeName, value.Key);
+				GenerateCmdStartApp();
+			}
+		}
+
+
 
 		//Properties for binding switches
 		private bool _isRunWithParams = true;
@@ -419,11 +448,11 @@ namespace vrClusterManager
 		{
 			try
 			{
-				selectedOpenGlParam = openGlParams.First(x => x.Key == RegistrySaver.ReadStringValue(RegistrySaver.paramsList, RegistrySaver.openGLName));
+				selectedRenderApiParam = renderApiParams.First(x => x.Key == RegistrySaver.ReadStringValue(RegistrySaver.paramsList, RegistrySaver.renderApiName));
 			}
 			catch (Exception)
 			{
-				selectedOpenGlParam = openGlParams.SingleOrDefault(x => x.Key == "OpenGL3");
+				selectedRenderApiParam = renderApiParams.SingleOrDefault(x => x.Key == "OpenGL3");
 			}
 			additionalParams = RegistrySaver.ReadStringValue(RegistrySaver.paramsList, RegistrySaver.additionalParamsName);
 			isStereo = RegistrySaver.ReadBoolValue(RegistrySaver.paramsList, RegistrySaver.isStereoName);
@@ -453,7 +482,7 @@ namespace vrClusterManager
 			if (isRunWithParams)
 			{
 				//swFullscreen = (isFullscreen) ? uvrParamFullscreen : "";
-				swOpengl = selectedOpenGlParam.Value;
+				swOpengl = selectedRenderModeParam.Value;
 				swStereo = (isStereo) ? uvrParamStereo : "";
 				swNoSound = (isNoSound) ? uvrParamNoSound : "";
 				swFixedSeed = (isFixedSeed) ? uvrParamFixedSeed : "";
