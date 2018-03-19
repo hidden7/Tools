@@ -440,8 +440,6 @@ namespace vrClusterManager
 				selectedConfig = configs.Find(x => x == selected);
 
 			}
-
-
 		}
 
 		private void InitOptions()
@@ -454,6 +452,17 @@ namespace vrClusterManager
 			{
 				selectedRenderApiParam = renderApiParams.SingleOrDefault(x => x.Key == "OpenGL3");
 			}
+
+			try
+			{
+				selectedRenderModeParam = renderModeParams.First(x => x.Key == RegistrySaver.ReadStringValue(RegistrySaver.paramsList, RegistrySaver.renderModeName));
+			}
+			catch (Exception)
+			{
+				selectedRenderApiParam = renderModeParams.SingleOrDefault(x => x.Key == "Mono");
+			}
+
+
 			additionalParams = RegistrySaver.ReadStringValue(RegistrySaver.paramsList, RegistrySaver.additionalParamsName);
 			isStereo = RegistrySaver.ReadBoolValue(RegistrySaver.paramsList, RegistrySaver.isStereoName);
 			isNoSound = RegistrySaver.ReadBoolValue(RegistrySaver.paramsList, RegistrySaver.isNoSoundName);
