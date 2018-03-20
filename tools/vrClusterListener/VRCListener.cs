@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Diagnostics;
+using System.Management;
 using System.Text;
 using System.IO;
 
@@ -18,15 +19,16 @@ namespace UnrealTools
 		const string CmdKill   = "kill";
 		const string CmdStatus = "status";
 
-		const int DefaultPort = 41000;
+		const int DefaultPort = 9777;
 
-		static HashSet<int> ProcIDs     = new HashSet<int>();
-		static int          LastProcID  = -1;
+		static HashSet<int> ProcIDs      = new HashSet<int>();
+		static int          LastProcID   = -1;
+		static string       LastProcName = string.Empty;
 
 		// The listener will kill all names listed below each time it receives KILL command. This is
 		// similar to black list. Just enumerate your enemies.
 		static List<string> ProcessesToAlwaysKill = new List<string> {
-			//"UnrealEngine.exe"
+			//"UE4Game.exe"
 		};
 
 		static void Main(string[] args)
@@ -91,21 +93,9 @@ namespace UnrealTools
 			Console.WriteLine("Client [{0}] connected.", clientIP);
 			PrintColorText(string.Format("New message from [{0}]", clientIP), ConsoleColor.Green);
 
-			// We don't expect to receive too long strings
-			if (stream.Length > MessageMaxLength)
-			{
-				PrintColorText(string.Format("Incoming message is too long. Maximum allowed length is {0}. Dropping the message.", MessageMaxLength), ConsoleColor.Red);
-				return;
-			}
+			StreamReader msgReader = new StreamReader(stream);
+			string cmd = msgReader.ReadToEnd();
 
-			Byte[] bytes = new Byte[stream.Length];
-			if(stream.Read(bytes, 0, (int)stream.Length) != stream.Length)
-			{
-				PrintColorText("An internal error has occurred", ConsoleColor.Red);
-				return;
-			}
-
-			string cmd = Encoding.ASCII.GetString(bytes, 0, (int)stream.Length);
 			ParseData(cmd);
 		}
 
@@ -176,7 +166,7 @@ namespace UnrealTools
 
 			try
 			{
-				string appPath = ExtractApplicationPath(data);
+				string appPath = ExtractApplicationPath(data).Trim();
 				string argList = data.Substring(appPath.Length).Trim();
 
 				// For now we just forward arguments list as is.
@@ -187,8 +177,9 @@ namespace UnrealTools
 
 				ProcIDs.Add(proc.Id);
 				LastProcID = proc.Id;
+				LastProcName = Path.GetFileNameWithoutExtension(appPath);
 
-				PrintColorText(string.Format("Process started: {0} | {1}" + proc.Id, proc.ProcessName), ConsoleColor.White);
+				PrintColorText(string.Format("Process started: {0} | {1}", proc.Id, proc.ProcessName), ConsoleColor.White);
 			}
 			catch (Exception e)
 			{
@@ -198,11 +189,18 @@ namespace UnrealTools
 
 		private static void KillAll()
 		{
+			/*
 			// Kill processes from 'black list'
 			if (ProcessesToAlwaysKill.Count > 0)
 			{
 				foreach (string name in ProcessesToAlwaysKill)
 					KillProcessesByName(name);
+			}
+
+			// Kill last started process by name
+			if (LastProcName.Length > 0)
+			{
+				KillProcessesByName(LastProcName);
 			}
 
 			// Check if we start any process before
@@ -214,7 +212,31 @@ namespace UnrealTools
 
 			foreach (int pid in ProcIDs)
 				KillProcessByPID(pid);
+			*/
 
+			if (LastProcID > 0)
+			{
+				KillProcessAndChildren(LastProcID);
+			}
+		}
+
+		private static void KillProcessAndChildren(int pid)
+		{
+			ManagementObjectSearcher searcher = new ManagementObjectSearcher("Select * From Win32_Process Where ParentProcessID=" + pid);
+			ManagementObjectCollection moc = searcher.Get();
+			foreach (ManagementObject mo in moc)
+			{
+				KillProcessAndChildren(Convert.ToInt32(mo["ProcessID"]));
+			}
+			try
+			{
+				Process proc = Process.GetProcessById(pid);
+				proc.Kill();
+			}
+			catch (ArgumentException)
+			{
+				/* process already exited */
+			}
 		}
 
 		private static void KillProcessByPID(int PID)
@@ -222,12 +244,14 @@ namespace UnrealTools
 			try
 			{
 				Process proc = Process.GetProcessById(PID);
+
 				proc.Kill();
 				PrintColorText("Killed " + proc.ProcessName, ConsoleColor.White);
 			}
-			catch
+			catch(Exception e)
 			{
 				// Enclose any exceptions here
+				PrintColorText(e.Message, ConsoleColor.White);
 			}
 		}
 

@@ -111,32 +111,6 @@ namespace vrClusterManager
 			}
 		}
 
-
-
-		//Properties for binding switches
-		private bool _isRunWithParams = true;
-		public bool isRunWithParams
-		{
-			get { return _isRunWithParams; }
-			set
-			{
-				Set(ref _isRunWithParams, value, "isRunWithParams");
-				GenerateCmdStartApp();
-			}
-		}
-
-		private bool _isStereo = true;
-		public bool isStereo
-		{
-			get { return _isStereo; }
-			set
-			{
-				Set(ref _isStereo, value, "isStereo");
-				RegistrySaver.UpdateRegistry(RegistrySaver.paramsList, RegistrySaver.isStereoName, value);
-				GenerateCmdStartApp();
-			}
-		}
-
 		private bool _isUseAllCores;
 		public bool isUseAllCores
 		{
@@ -149,18 +123,6 @@ namespace vrClusterManager
 			}
 		}
 
-		private bool _isNoSound = true;
-		public bool isNoSound
-		{
-			get { return _isNoSound; }
-			set
-			{
-				Set(ref _isNoSound, value, "isNoSound");
-				RegistrySaver.UpdateRegistry(RegistrySaver.paramsList, RegistrySaver.isNoSoundName, value);
-				GenerateCmdStartApp();
-			}
-		}
-
 		private bool _isFixedSeed;
 		public bool isFixedSeed
 		{
@@ -169,18 +131,6 @@ namespace vrClusterManager
 			{
 				Set(ref _isFixedSeed, value, "isFixedSeed");
 				RegistrySaver.UpdateRegistry(RegistrySaver.paramsList, RegistrySaver.isFixedSeedName, value);
-				GenerateCmdStartApp();
-			}
-		}
-
-		private bool _isFullscreen;
-		public bool isFullscreen
-		{
-			get { return _isFullscreen; }
-			set
-			{
-				Set(ref _isFullscreen, value, "isFullscreen");
-				RegistrySaver.UpdateRegistry(RegistrySaver.paramsList, RegistrySaver.isFullscreen, value);
 				GenerateCmdStartApp();
 			}
 		}
@@ -464,12 +414,9 @@ namespace vrClusterManager
 
 
 			additionalParams = RegistrySaver.ReadStringValue(RegistrySaver.paramsList, RegistrySaver.additionalParamsName);
-			isStereo = RegistrySaver.ReadBoolValue(RegistrySaver.paramsList, RegistrySaver.isStereoName);
-			isNoSound = RegistrySaver.ReadBoolValue(RegistrySaver.paramsList, RegistrySaver.isNoSoundName);
 			isUseAllCores = RegistrySaver.ReadBoolValue(RegistrySaver.paramsList, RegistrySaver.isAllCoresName);
 			isFixedSeed = RegistrySaver.ReadBoolValue(RegistrySaver.paramsList, RegistrySaver.isFixedSeedName);
 			isNotextureStreaming = RegistrySaver.ReadBoolValue(RegistrySaver.paramsList, RegistrySaver.isNoTextureStreamingName);
-			isFullscreen = RegistrySaver.ReadBoolValue(RegistrySaver.paramsList, RegistrySaver.isFullscreen);
 			AppLogger.Add("Application Options initialized");
 		}
 
@@ -480,24 +427,18 @@ namespace vrClusterManager
 			string confString = uvrParamConfig + selectedConfig;
 
 			// switches
-			string swOpengl = "";
-			string swStereo = "";
-			string swNoSound = "";
+			string swRenderApi = "";
+			string swRenderMode = "";
 			string swFixedSeed = "";
 			//string swFullscreen = uvrParamFullscreen;
 			string swNoTextureStreaming = "";
 			string swUseAllAvailableCores = "";
 
-			if (isRunWithParams)
-			{
-				//swFullscreen = (isFullscreen) ? uvrParamFullscreen : "";
-				swOpengl = selectedRenderModeParam.Value;
-				swStereo = (isStereo) ? uvrParamStereo : "";
-				swNoSound = (isNoSound) ? uvrParamNoSound : "";
-				swFixedSeed = (isFixedSeed) ? uvrParamFixedSeed : "";
-				swNoTextureStreaming = (isNotextureStreaming) ? uvrParamNoTextureStreaming : "";
-				swUseAllAvailableCores = (isUseAllCores) ? uvrParamUseAllAvailableCores : "";
-			}
+			swRenderApi = selectedRenderApiParam.Value;
+			swRenderMode = selectedRenderModeParam.Value;
+			swFixedSeed = uvrParamFixedSeed;
+			swNoTextureStreaming = (isNotextureStreaming) ? uvrParamNoTextureStreaming : "";
+			swUseAllAvailableCores = (isUseAllCores) ? uvrParamUseAllAvailableCores : "";
 
 
 			// logging params
@@ -525,18 +466,12 @@ namespace vrClusterManager
 			// additional params
 
 			// cmd
-			cmd = confString + paramDefaultCamera + swOpengl + uvrParamStatic + swStereo + swNoSound + swFixedSeed
+			cmd = confString + paramDefaultCamera + swRenderApi + swRenderMode + uvrParamStatic + swFixedSeed
 								 + swNoTextureStreaming + swUseAllAvailableCores + swForceLogFlush + swNoWrite
-								 + paramLogFilename + " " + additionalParams + logLevelsSetup;// + swFullscreen
+								 + paramLogFilename + " " + additionalParams + logLevelsSetup;
 			if (isLogEnabled)
 			{
 				cmd = cmd + logLevels;
-			}
-
-			if (!isRunWithParams)
-			{
-				// this is for debug only! Run application WITHOUT any params
-				cmd = "";
 			}
 
 			// set value
@@ -603,7 +538,7 @@ namespace vrClusterManager
 					break;
 
 				case ClusterCommandType.Kill:
-					commandCmd = cCmdKill + selectedApplication;
+					commandCmd = cCmdKill;
 					break;
 
 				case ClusterCommandType.Status:
@@ -622,8 +557,7 @@ namespace vrClusterManager
 					windowCommand = windowCommand + " WinX=" + node.winX + " WinY=" + node.winY + " ResX=" + node.resX + " ResY=" + node.resY;
 					fullscreenParam = uvrParamWindowed;
 				}
-				//quick crutch. refactoring needed
-				fullscreenParam = (isRunWithParams) ? fullscreenParam : string.Empty;
+
 				if (ccType == ClusterCommandType.Run)
 				{
 					cl = " uvr_node=" + node.id + windowCommand + cmd + fullscreenParam;
