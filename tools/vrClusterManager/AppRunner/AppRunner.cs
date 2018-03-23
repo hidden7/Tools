@@ -88,7 +88,7 @@ namespace vrClusterManager
 		private Dictionary<string, string> _renderModeParams = new Dictionary<string, string>
 		{
 			{"Mono", " -uvr_dev_mono" },
-			{"Frame packed", " -quad_buffer_stereo" },
+			{"Frame sequential", " -quad_buffer_stereo" },
 			{"Side-by-side", " -uvr_dev_side_by_side" },
 			{"Top-bottom", " -uvr_dev_top_bottom" }
 		};
