@@ -20,7 +20,7 @@ namespace vrClusterManager.Config
 			{ "viewport", "\n# List of viewport configurations \n"},
 			{ "cluster_node", "\n# List of cluster nodes \n"},
 			{ "stereo", "\n# eye_swap - false(L|R) <--> true(R|L) eye switch \n# eye_dist - interoccular distance (meters)\n"},
-			{"scene_node", "\n# List of empty hierarchy nodes (transforms) \n" },
+			{ "scene_node", "\n# List of empty hierarchy nodes (transforms) \n" },
 			{ "debug", "\n# lag_simulation - enable/disable lag simulation \n# lag_max_time   - maximum delay time for randome delay simulation \n"},
 			{ "general", "\n# 0 - no swap sync (V-sync off) \n# 1 - software swap synchronization over network \n# 2 - NVIDIA hardware swap synchronization (nv swaplock)\n"},
 			{ "input", "\n"}

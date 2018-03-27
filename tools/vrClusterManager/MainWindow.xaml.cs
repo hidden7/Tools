@@ -21,18 +21,17 @@ namespace vrClusterManager
 		static readonly string configFileExtention = "CAVE config file (*.cfg)|*.cfg";
 		static readonly string applicationFileExtention = "CAVE VR application (*.exe)|*.exe";
 
-		static string defaultDir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-
 		public VRConfig currentConfig;
-		public AppRunner appRunner;
-		string windowTitle = string.Empty;
+		public AppRunner m_AppRunner;
+		//string windowTitle = string.Empty;
 
 		public MainWindow()
 		{
 			InitializeComponent();
-			appRunner = new AppRunner();
-			launcherTab.DataContext = appRunner;
-			logTab.DataContext = appRunner;
+
+			m_AppRunner = new AppRunner();
+			TabAppsLauncher.DataContext = m_AppRunner;
+			TabAppsLogging.DataContext = m_AppRunner;
 			appLogTextBox.DataContext = AppLogger.instance;
 			SetDefaultConfig();
 			SetViewportPreview();
@@ -49,7 +48,7 @@ namespace vrClusterManager
 
 		private void Window_Loaded(object sender, RoutedEventArgs e)
 		{
-			SetTitle();
+			UpdateWindowTitle();
 		}
 
 
@@ -88,7 +87,7 @@ namespace vrClusterManager
 							File.WriteAllText(currentFileName, currentConfig.CreateConfig());
 						}
 					}
-					SetTitle();
+					UpdateWindowTitle();
 					AppLogger.Add("Config saved to " + currentFileName);
 				}
 				catch (Exception exception)
@@ -154,7 +153,7 @@ namespace vrClusterManager
 
 			}
 			//sceneNodeTrackerCb.SelectedIndex = -1;
-			SetTitle();
+			UpdateWindowTitle();
 			//SetViewportPreview();
 		}
 
@@ -174,10 +173,9 @@ namespace vrClusterManager
 		}
 
 		//Setting title of widow.
-		private void SetTitle()
+		private void UpdateWindowTitle()
 		{
-			windowTitle = currentConfig.name + " - vrCluster runner & configurator ver. " + Assembly.GetExecutingAssembly().GetName().Version.ToString();
-			this.Title = windowTitle;
+			this.Title = currentConfig.name + " - vrCluster runner & configurator ver. " + Assembly.GetExecutingAssembly().GetName().Version.ToString();
 		}
 
 		void CreateConfig()
@@ -188,7 +186,7 @@ namespace vrClusterManager
 			//crutch. for refactoring
 			currentConfig.selectedSceneNodeView = null;
 			AppLogger.Add("New config initialized");
-			SetTitle();
+			UpdateWindowTitle();
 			SetViewportPreview();
 		}
 
@@ -673,33 +671,33 @@ namespace vrClusterManager
 
 		private void CheckBox_Checked(object sender, RoutedEventArgs e)
 		{
-			appRunner.GenerateLogLevelsString();
+			m_AppRunner.GenerateLogLevelsString();
 		}
 
 		private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
 		{
-			appRunner.GenerateLogLevelsString();
+			m_AppRunner.GenerateLogLevelsString();
 		}
 
 		private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			appRunner.GenerateLogLevelsString();
+			m_AppRunner.GenerateLogLevelsString();
 		}
 
 		private void runBtn_Click(object sender, RoutedEventArgs e)
 		{
-			appRunner.RunCommand();
+			m_AppRunner.RunCommand();
 		}
 
 
 		private void statusBtn_Click(object sender, RoutedEventArgs e)
 		{
-			appRunner.StatusCommand();
+			m_AppRunner.StatusCommand();
 		}
 
 		private void killBtn_Click(object sender, RoutedEventArgs e)
 		{
-			appRunner.KillCommand();
+			m_AppRunner.KillCommand();
 		}
 
 		private void copyLogBtn_Click(object sender, RoutedEventArgs e)
@@ -721,13 +719,13 @@ namespace vrClusterManager
 			dialogResult.Owner = this;
 			if ((bool)dialogResult.ShowDialog())
 			{
-				appRunner.CleanLogs();
+				m_AppRunner.CleanLogs();
 			}
 		}
 
 		private void logsFolderBtn_Click(object sender, RoutedEventArgs e)
 		{
-			appRunner.CollectLogs();
+			m_AppRunner.CollectLogs();
 		}
 
 		private void About_Click(object sender, RoutedEventArgs e)
@@ -745,7 +743,7 @@ namespace vrClusterManager
 			if (openFileDialog.ShowDialog() == true)
 			{
 				string appPath = openFileDialog.FileName;
-				appRunner.AddApplication(appPath);
+				m_AppRunner.AddApplication(appPath);
 				applicationsListBox.Items.Refresh();
 			}
 		}
@@ -758,44 +756,39 @@ namespace vrClusterManager
 				dialogResult.Owner = this;
 				if ((bool)dialogResult.ShowDialog())
 				{
-					appRunner.DeleteApplication();
+					m_AppRunner.DeleteApplication();
 					applicationsListBox.Items.Refresh();
 				}
 			}
 		}
 
-		private void addConfigButton_Click(object sender, RoutedEventArgs e)
+		private void configsCb_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			m_AppRunner.ChangeConfigSelection(m_AppRunner.selectedConfig);
+		}
+
+		#region Config buttons
+		private void onBtnConfigNew_Click(object sender, RoutedEventArgs e)
+		{
+
+		}
+
+		private void onBtnConfigAdd_Click(object sender, RoutedEventArgs e)
 		{
 			OpenFileDialog openFileDialog = new OpenFileDialog();
 			openFileDialog.Filter = configFileExtention;
 			if (openFileDialog.ShowDialog() == true)
 			{
 				string configPath = openFileDialog.FileName;
-				if (!appRunner.configs.Exists(x => x == configPath))
+				if (!m_AppRunner.configs.Exists(x => x == configPath))
 				{
-					appRunner.AddConfig(configPath);
+					m_AppRunner.AddConfig(configPath);
 					configsCb.Items.Refresh();
 				}
 			}
 		}
 
-		private void copyAppLogBtn_Click(object sender, RoutedEventArgs e)
-		{
-			CopyToClipboard(appLogTextBox.Text);
-		}
-
-		private void cleanAppLogBtn_Click(object sender, RoutedEventArgs e)
-		{
-			AppLogger.CleanLog();
-		}
-
-
-		private void configsCb_SelectionChanged(object sender, SelectionChangedEventArgs e)
-		{
-			appRunner.ChangeConfigSelection(appRunner.selectedConfig);
-		}
-
-		private void deleteConfigButton_Click(object sender, RoutedEventArgs e)
+		private void onBtnConfigDel_Click(object sender, RoutedEventArgs e)
 		{
 			if (configsCb.SelectedItem != null)
 			{
@@ -803,13 +796,33 @@ namespace vrClusterManager
 				dialogResult.Owner = this;
 				if ((bool)dialogResult.ShowDialog())
 				{
-					appRunner.DeleteConfig();
+					m_AppRunner.DeleteConfig();
 
 					configsCb.Items.Refresh();
 				}
 			}
 		}
 
+		private void onBtnConfigDelAll_Click(object sender, RoutedEventArgs e)
+		{
 
+		}
+		#endregion
+
+		#region Log buttons
+		private void onBtnLogCopy_Click(object sender, RoutedEventArgs e)
+		{
+			CopyToClipboard(appLogTextBox.Text);
+		}
+
+		private void onBtnLogSave_Click(object sender, RoutedEventArgs e) => throw new NotImplementedException();
+
+		private void onBtnLogClean_Click(object sender, RoutedEventArgs e)
+		{
+			AppLogger.CleanLog();
+		}
+
+
+		#endregion
 	}
 }

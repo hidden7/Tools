@@ -123,18 +123,6 @@ namespace vrClusterManager
 			}
 		}
 
-		private bool _isFixedSeed;
-		public bool isFixedSeed
-		{
-			get { return _isFixedSeed; }
-			set
-			{
-				Set(ref _isFixedSeed, value, "isFixedSeed");
-				RegistrySaver.UpdateRegistry(RegistrySaver.paramsList, RegistrySaver.isFixedSeedName, value);
-				GenerateCmdStartApp();
-			}
-		}
-
 		private bool _isNotextureStreaming;
 		public bool isNotextureStreaming
 		{
@@ -415,7 +403,6 @@ namespace vrClusterManager
 
 			additionalParams = RegistrySaver.ReadStringValue(RegistrySaver.paramsList, RegistrySaver.additionalParamsName);
 			isUseAllCores = RegistrySaver.ReadBoolValue(RegistrySaver.paramsList, RegistrySaver.isAllCoresName);
-			isFixedSeed = RegistrySaver.ReadBoolValue(RegistrySaver.paramsList, RegistrySaver.isFixedSeedName);
 			isNotextureStreaming = RegistrySaver.ReadBoolValue(RegistrySaver.paramsList, RegistrySaver.isNoTextureStreamingName);
 			AppLogger.Add("Application Options initialized");
 		}
