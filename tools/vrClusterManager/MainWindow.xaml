@@ -15,7 +15,7 @@
 		Title="VRCluster config" 
 		Loaded="Window_Loaded"
 		MinWidth="1024"
-		MinHeight="600" Icon="Icons/Icon.ico" ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto">
+		MinHeight="601" Icon="Icons/Icon.ico" ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" Height="900">
 
 	<Window.CommandBindings>
 		<CommandBinding Command="Save" Executed="SaveConfig" />
@@ -477,7 +477,7 @@
 
 			<StackPanel Grid.Column="0" Margin="2,2,0,2" Orientation="Horizontal" HorizontalAlignment="Left" Width="Auto">
 				<Label Content="Config" />
-				<ComboBox x:Name="configsCb" ItemsSource="{Binding configs}" SelectedItem="{Binding selectedConfig}" VerticalAlignment="Top" Template="{DynamicResource ComboBoxTemplate}" DropDownOpened="configsCb_DropDownOpened" Width="Auto" Height="Auto" MinWidth="350" MaxWidth="720" ToolTip="Select config file" HorizontalAlignment="Stretch" SelectionChanged="configsCb_SelectionChanged" Margin="2,2,10,2" />
+				<ComboBox x:Name="ctrlComboConfigs" ItemsSource="{Binding configs}" SelectedItem="{Binding selectedConfig}" VerticalAlignment="Top" Template="{DynamicResource ComboBoxTemplate}" DropDownOpened="configsCb_DropDownOpened" Width="Auto" Height="Auto" MinWidth="350" MaxWidth="720" ToolTip="Select config file" HorizontalAlignment="Stretch" SelectionChanged="configsCb_SelectionChanged" Margin="2,2,10,2" />
 				<Button x:Name="ctrlBtnConfigNew" Content="New" Template="{DynamicResource ButtonTemplate}" ToolTip="Create new empty config" Click="onBtnConfigNew_Click" Padding="1.8,0,2,0" Margin="2,0" />
 				<Button x:Name="ctrlBtnConfigAdd" Content="Add" Template="{DynamicResource ButtonTemplate}" ToolTip="Add existing config" Click="onBtnConfigAdd_Click" Padding="2,0" Margin="2,0"/>
 				<Button x:Name="ctrlBtnConfigDel" Content="Delete" Template="{DynamicResource ButtonTemplate}" ToolTip="Delete selected config" Click="onBtnConfigDel_Click" Padding="2,0" Height="22" Margin="2,0" />
@@ -611,8 +611,8 @@
 													<ColumnDefinition Width="*"/>
 													<ColumnDefinition Width="*"/>
 												</Grid.ColumnDefinitions>
-												<Button Grid.Column="0" x:Name="addAppBtn" Content="Add" Template="{DynamicResource ButtonTemplate}" Click="addAppButton_Click" ToolTip="Add new application to list" />
-												<Button Grid.Column="1" x:Name="deleteAppBtn" Content="Delete" Template="{DynamicResource ButtonTemplate}" Click="deleteAppButton_Click" ToolTip="Delete selected  application" />
+												<Button Grid.Column="0" x:Name="addAppBtn" Content="Add" Template="{DynamicResource ButtonTemplate}" Click="onBtnApplicationAdd_Click" ToolTip="Add new application to list" />
+												<Button Grid.Column="1" x:Name="deleteAppBtn" Content="Delete" Template="{DynamicResource ButtonTemplate}" Click="onBtnApplicationDel_Click" ToolTip="Delete selected  application" />
 											</Grid>
 											<Grid Grid.Row="4">
 												<Grid.ColumnDefinitions>
@@ -741,10 +741,10 @@
 									<ColumnDefinition Width="145" />
 									<ColumnDefinition Width="145" />
 								</Grid.ColumnDefinitions>
-								<Button x:Name="logsFolderBtn" Grid.Column="0" Template="{DynamicResource ButtonTemplate}" Padding="2" HorizontalContentAlignment="Center" Click="logsFolderBtn_Click" ToolTip="Collect logs from all nodes to local folder" >
+								<Button x:Name="ctrBtnCollectClusterLogs" Grid.Column="0" Template="{DynamicResource ButtonTemplate}" Padding="2" HorizontalContentAlignment="Center" Click="logsFolderBtn_Click" ToolTip="Collect logs from all nodes to local folder" >
 									<TextBlock TextWrapping="Wrap" TextAlignment="Center" ><Run Text="Collect logs"/></TextBlock>
 								</Button>
-								<Button x:Name="logsClearBtn" Grid.Column="1" Content="Clear all logs" Template="{DynamicResource ButtonTemplate}" Padding="2"  Click="logsClearBtn_Click" />
+								<Button x:Name="ctrlBtnClearClusterLogs" Grid.Column="1" Content="Clear all logs" Template="{DynamicResource ButtonTemplate}" Padding="2"  Click="logsClearBtn_Click" />
 							</Grid>
 							<Grid Grid.Row="1">
 								<Grid.ColumnDefinitions>
@@ -942,40 +942,54 @@
 										<ColumnDefinition Width="*"/>
 										<ColumnDefinition Width="*"/>
 									</Grid.ColumnDefinitions>
-									<Button Grid.Column="0" x:Name="ctrlBtnAddNode" Content="Add" Click="addNodeButton_Click" Template="{DynamicResource ButtonTemplate}" ToolTip="Add new node to cluster" />
-									<Button Grid.Column="1" x:Name="ctrlBtnDelNode" Content="Delete" Click="deleteNodeButton_Click" Template="{DynamicResource ButtonTemplate}" ToolTip="Delete selected node" />
+									<Button Grid.Column="0" x:Name="ctrlBtnAddClusterNode" Content="Add" Click="onBtnClusterNodeAdd_Click" Template="{DynamicResource ButtonTemplate}" ToolTip="Add new node to cluster" />
+									<Button Grid.Column="1" x:Name="ctrlBtnDelClusterNode" Content="Delete" Click="onBtnClusterNodeDel_Click" Template="{DynamicResource ButtonTemplate}" ToolTip="Delete selected node" />
 								</Grid>
 							</Grid>
 							<Grid Grid.Column="1">
 								<ScrollViewer VerticalScrollBarVisibility="Auto" Style="{DynamicResource CommonStyle}">
 									<StackPanel>
-										<CheckBox x:Name="isMasterCheckBox" Content="Master Node" Checked="isMasterCheckBox_Checked" IsChecked="{Binding selectedNode.isMaster}" Template="{DynamicResource CustomCheckBoxControlTemplate}" />
+										<CheckBox x:Name="ctrlCbMasterNode" Content="Master Node" Checked="onCbMasterNode_Click" IsChecked="{Binding selectedNode.isMaster}" Template="{DynamicResource CustomCheckBoxControlTemplate}" />
 
 										<StackPanel Orientation="Horizontal" Margin="0,0,0,0">
-											<Label Content="Node ID" Width="80" />
+											<Label Content="Node ID" Width="100" />
 											<TextBox x:Name="nodeIdTb" Width="150" Style="{DynamicResource NameTB}" Text="{Binding selectedNode.id, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" ToolTip="Node ID, you can use letters, numbers and _" />
 										</StackPanel>
 
 										<StackPanel Orientation="Horizontal" Margin="0,0,0,0">
-											<Label Content="Node Host" Width="80"/>
+											<Label Content="Node Host" Width="100"/>
 											<TextBox x:Name="nodeAddressTb" Width="150" Style="{DynamicResource NameTB}" Text="{Binding selectedNode.address, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" ToolTip="Selected node IP address" />
 										</StackPanel>
+
 										<StackPanel Orientation="Horizontal" Margin="0,0,0,0">
-											<Label Content="Projection" Width="80" />
+											<Label Content="Projection screen" Width="100" />
 											<ComboBox x:Name="screensCb" Template="{DynamicResource ComboBoxTemplate}" ItemsSource="{Binding screens}"  SelectedItem="{Binding selectedNode.screen}"  DisplayMemberPath="id" ToolTip="Select screen, required" Width="150"/>
-											<CheckBox x:Name="ctrlChkboxSameProjection" Content="Inherit from master" Checked="isMasterCheckBox_Checked" IsChecked="{Binding selectedNode.isMaster}" Template="{DynamicResource CustomCheckBoxControlTemplate}" />
 										</StackPanel>
+
 										<StackPanel Orientation="Horizontal" Margin="0,0,0,0">
-											<Label Content="Viewport" Width="80" />
+											<Label Content="Viewport" Width="100" />
 											<ComboBox x:Name="viewportsCb" ItemsSource="{Binding viewports}" DisplayMemberPath="id" SelectedItem="{Binding selectedNode.viewport}" Template="{DynamicResource ComboBoxTemplate}" ToolTip="Select viewport, required"/>
 										</StackPanel>
+
 										<StackPanel Orientation="Horizontal" Margin="0,0,0,0">
-											<Label Content="Camera" Grid.Row="2" Grid.Column="0" Width="80" />
-											<ComboBox x:Name="camerasCb" Height="Auto" Grid.Row="2" Grid.Column="1" ItemsSource="{Binding cameras}" SelectedItem="{Binding selectedCamera}" VerticalAlignment="Top" Template="{DynamicResource ComboBoxTemplate}"  ToolTip="Select camera" />
+											<Label Content="Camera" Width="100" />
+											<ComboBox x:Name="camerasCb" Height="Auto" ItemsSource="{Binding cameras}" SelectedItem="{Binding selectedCamera}" VerticalAlignment="Top" Template="{DynamicResource ComboBoxTemplate}"  ToolTip="Select camera" />
 										</StackPanel>
+
+										<StackPanel Orientation="Horizontal" Margin="0,0,5,0">
+											<Label Content="Render API" Width="100"/>
+											<ComboBox x:Name="renderApi" ItemsSource="{Binding renderApiParams}" SelectedItem="{Binding selectedRenderApiParam}" DisplayMemberPath="Key" Template="{DynamicResource ComboBoxTemplate}" HorizontalAlignment="Stretch" Width="150"/>
+										</StackPanel>
+
+										<StackPanel Orientation="Horizontal" Margin="0,0,5,0">
+											<Label Content="Render mode" Width="100"/>
+											<ComboBox x:Name="renderMode" ItemsSource="{Binding renderModeParams}" SelectedItem="{Binding selectedRenderModeParam}" DisplayMemberPath="Key" Template="{DynamicResource ComboBoxTemplate}" Width="150"/>
+										</StackPanel>
+
 										<StackPanel Orientation="Horizontal" Margin="0,0,0,0">
 											<CheckBox x:Name="isWindowed"  Content="Windowed" IsChecked="{Binding selectedNode.isWindowed}" Template="{DynamicResource CustomCheckBoxControlTemplate}" HorizontalAlignment="Left" Margin="2,2,0,2" />
 										</StackPanel>
+
 										<Grid Visibility="{Binding selectedNode.isWindowed, Converter={StaticResource BoolToVisConverter}, FallbackValue=Collapsed}">
 											<Grid.RowDefinitions>
 												<RowDefinition Height="Auto" />
@@ -1006,25 +1020,151 @@
 												<TextBox x:Name="windowHeightTb" Grid.Column="1" Grid.Row="5" Style="{DynamicResource SizeTB}" Text="{Binding selectedNode.resY, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" ToolTip="Height of viewport in pixels" />
 											</Grid>
 										</Grid>
+
 										<StackPanel Orientation="Horizontal" Margin="0,0,5,0">
-											<Label Grid.Column="0" Grid.Row="0" Content="Render API" />
-											<ComboBox x:Name="renderApi" Grid.Column="1" Grid.Row="0" ItemsSource="{Binding renderApiParams}" SelectedItem="{Binding selectedRenderApiParam}" DisplayMemberPath="Key" Template="{DynamicResource ComboBoxTemplate}" HorizontalAlignment="Stretch" Width="172"/>
+											<CheckBox x:Name="coresCheckBox" Content="Use All Available Cores" Template="{DynamicResource CustomCheckBoxControlTemplate}" IsChecked="{Binding isUseAllCores}" Width="230" />
 										</StackPanel>
+
 										<StackPanel Orientation="Horizontal" Margin="0,0,5,0">
-											<Label Grid.Column="0" Grid.Row="0" Content="Render mode" />
-											<ComboBox x:Name="renderMode" Grid.Column="1" Grid.Row="0" ItemsSource="{Binding renderModeParams}" SelectedItem="{Binding selectedRenderModeParam}" DisplayMemberPath="Key" Template="{DynamicResource ComboBoxTemplate}" Width="160"/>
-										</StackPanel>
-										<StackPanel Orientation="Horizontal" Margin="0,0,5,0">
-											<Label Grid.Column="0" Grid.Row="0" Content="Optional parameters:" />
-										</StackPanel>
-										<StackPanel Orientation="Horizontal" Margin="0,0,5,0">
-											<CheckBox x:Name="coresCheckBox" Grid.Row="1" Content="Use All Available Cores" Template="{DynamicResource CustomCheckBoxControlTemplate}" IsChecked="{Binding isUseAllCores}" />
-										</StackPanel>
-										<StackPanel Orientation="Horizontal" Margin="0,0,5,0">
-											<CheckBox x:Name="textureStreamingCheckBox" Grid.Row="2" Content="No Texture Streaming" Template="{DynamicResource CustomCheckBoxControlTemplate}" IsChecked="{Binding isNotextureStreaming}" />
+											<CheckBox x:Name="textureStreamingCheckBox" Content="No Texture Streaming" Template="{DynamicResource CustomCheckBoxControlTemplate}" IsChecked="{Binding isNotextureStreaming}" Width="230" />
 										</StackPanel>
 									</StackPanel>
 								</ScrollViewer>
+							</Grid>
+						</Grid>
+					</TabItem>
+					<TabItem Header="Screens" x:Name="TabEditConfigScreens" >
+						<Grid Style="{StaticResource TabContent}" >
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="auto"/>
+								<ColumnDefinition Width="*"/>
+							</Grid.ColumnDefinitions>
+							<Grid Grid.Column="0" x:Name="screensListPanel">
+								<Grid.RowDefinitions>
+									<RowDefinition Height="*"/>
+									<RowDefinition Height="Auto"/>
+								</Grid.RowDefinitions>
+								<ListBox Grid.Row="0" x:Name="screensListBox" ItemsSource="{Binding screens}" DisplayMemberPath="id" SelectedItem="{Binding selectedScreen, Mode=TwoWay}" Height="Auto" ToolTip="List of Screens" SelectedIndex="0" MaxWidth="400" Width="120"/>
+
+								<Grid Grid.Row="1">
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="*"/>
+										<ColumnDefinition Width="*"/>
+									</Grid.ColumnDefinitions>
+									<Button Grid.Column="0" x:Name="ctrlBtnScreenAdd" Content="Add" Click="onBtnScreenAdd_Click" Template="{DynamicResource ButtonTemplate}" ToolTip="Add new screen"/>
+									<Button Grid.Column="1" x:Name="ctrlBtnScreenDel" Content="Delete" Click="onBtnScreenDel_Click" Template="{DynamicResource ButtonTemplate}" ToolTip="Delete selected screen"/>
+								</Grid>
+							</Grid>
+							<Grid Grid.Column="1" >
+								<Grid.Style>
+									<Style TargetType="{x:Type Grid}">
+										<Setter Property="IsEnabled" Value="True" />
+										<Style.Triggers>
+											<DataTrigger Binding="{Binding selectedScreen}" Value="{x:Null}" >
+												<Setter Property="IsEnabled" Value="False" />
+											</DataTrigger>
+										</Style.Triggers>
+									</Style>
+								</Grid.Style>
+								<Grid.RowDefinitions>
+									<RowDefinition Height="Auto" />
+									<RowDefinition Height="Auto" />
+								</Grid.RowDefinitions>
+								<Grid Grid.Row="0">
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="Auto" />
+										<ColumnDefinition Width="*" />
+									</Grid.ColumnDefinitions>
+									<Grid.RowDefinitions>
+										<RowDefinition Height="Auto" />
+										<RowDefinition Height="Auto" />
+									</Grid.RowDefinitions>
+									<Label Grid.Column="0" Grid.Row="0" Content="Screen ID"/>
+									<TextBox x:Name="screenIdTb" Grid.Column="1" Grid.Row="0" Style="{DynamicResource NameTB}" Text="{Binding selectedScreen.id, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" ToolTip="Screen ID, you can use letters, numbers and _" />
+									<Label Grid.Column="0" Grid.Row="1" Content="Parent Scene Node" />
+									<ComboBox x:Name="parentWallsCb" Grid.Column="1" Grid.Row="1" Template="{DynamicResource ComboBoxTemplate}" ItemsSource="{Binding sceneNodes}" DisplayMemberPath="id" SelectedItem="{Binding selectedScreen.parentWall}" ToolTip="Select parent scene node" />
+								</Grid>
+								<Grid Grid.Row="1" HorizontalAlignment="Left" >
+									<Grid.RowDefinitions>
+										<RowDefinition Height="5" />
+										<RowDefinition Height="Auto" />
+										<RowDefinition Height="5" />
+										<RowDefinition Height="Auto" />
+										<RowDefinition Height="5" />
+										<RowDefinition Height="Auto" />
+										<RowDefinition Height="*" />
+									</Grid.RowDefinitions>
+									<Grid  Grid.Row="1">
+										<Grid.RowDefinitions>
+											<RowDefinition Height="Auto" />
+											<RowDefinition Height="Auto" />
+										</Grid.RowDefinitions>
+										<Label Grid.Row="0" Content="Relative Location (m)" />
+										<Grid Grid.Row="1" Margin="20,0,0,0">
+											<Grid.ColumnDefinitions>
+												<ColumnDefinition Width="37" />
+												<ColumnDefinition Width="*" />
+											</Grid.ColumnDefinitions>
+											<Grid.RowDefinitions>
+												<RowDefinition Height="Auto" />
+												<RowDefinition Height="Auto" />
+												<RowDefinition Height="Auto" />
+											</Grid.RowDefinitions>
+											<Label Grid.Column="0" Grid.Row="0" Content="X" ToolTip="X coordinate in meters, floating point number" />
+											<TextBox x:Name="screenLocationXTb" Grid.Column="1" Grid.Row="0" Style="{DynamicResource SizeTB}" Text="{Binding selectedScreen.locationX, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"  ToolTip="X coordinate in meters, floating point number"/>
+											<Label Grid.Column="0" Grid.Row="1" Content="Y" ToolTip="Y coordinate in meters, floating point number" />
+											<TextBox x:Name="screenLocationYTb" Grid.Column="1" Grid.Row="1" Style="{DynamicResource SizeTB}" Text="{Binding selectedScreen.locationY, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" ToolTip="Y coordinate in meters, floating point number" />
+											<Label Grid.Column="0" Grid.Row="2" Content="Z" ToolTip="Z coordinate in meters, floating point number" />
+											<TextBox x:Name="screenLocationZTb" Grid.Column="1" Grid.Row="2" Style="{DynamicResource SizeTB}" Text="{Binding selectedScreen.locationZ, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" ToolTip="Z coordinate in meters, floating point number" />
+										</Grid>
+									</Grid>
+									<Grid Grid.Row="3">
+										<Grid.RowDefinitions>
+											<RowDefinition Height="Auto" />
+											<RowDefinition Height="Auto" />
+										</Grid.RowDefinitions>
+										<Label Grid.Row="0" Content="Relative Rotation (deg)" />
+										<Grid  Grid.Row="1" Margin="20,0,0,0">
+											<Grid.ColumnDefinitions>
+												<ColumnDefinition Width="37" />
+												<ColumnDefinition Width="*" />
+											</Grid.ColumnDefinitions>
+											<Grid.RowDefinitions>
+												<RowDefinition Height="Auto" />
+												<RowDefinition Height="Auto" />
+												<RowDefinition Height="Auto" />
+											</Grid.RowDefinitions>
+											<Label Grid.Column="0" Grid.Row="0" Content="Pitch" ToolTip="Pitch in degrees, floating point number" />
+											<TextBox x:Name="screenRotationPTb" Grid.Column="1" Grid.Row="0" Style="{DynamicResource SizeTB}" Text="{Binding selectedScreen.rotationP, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"  ToolTip="Pitch in degrees, floating point number" />
+											<Label Grid.Column="0" Grid.Row="1" Content="Yaw" ToolTip="Yaw in degrees, floating point number" />
+											<TextBox x:Name="screenRotationYTb" Grid.Column="1" Grid.Row="1" Style="{DynamicResource SizeTB}" Text="{Binding selectedScreen.rotationY, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" ToolTip="Yaw in degrees, floating point number" />
+											<Label Grid.Column="0" Grid.Row="2" Content="Roll" ToolTip="Roll in degrees, floating point number" />
+											<TextBox x:Name="screenRotationRTb" Grid.Column="1" Grid.Row="2" Style="{DynamicResource SizeTB}" Text="{Binding selectedScreen.rotationR, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" ToolTip="Roll in degrees, floating point number" />
+										</Grid>
+									</Grid>
+									<Grid Grid.Row="5">
+										<Grid.RowDefinitions>
+											<RowDefinition Height="Auto" />
+											<RowDefinition Height="Auto" />
+										</Grid.RowDefinitions>
+										<Label  Grid.Row="0" Content="Screen Size (m)" />
+										<Grid Grid.Row="1" Margin="20,0,0,0">
+											<Grid.ColumnDefinitions>
+												<ColumnDefinition Width="37" />
+												<ColumnDefinition Width="*" />
+											</Grid.ColumnDefinitions>
+											<Grid.RowDefinitions>
+												<RowDefinition Height="Auto" />
+												<RowDefinition Height="Auto" />
+												<RowDefinition Height="Auto" />
+											</Grid.RowDefinitions>
+											<Label Grid.Column="0" Grid.Row="0" Content="X" ToolTip="X size in meters, floating point number" />
+											<TextBox x:Name="screenSizeXTb" Grid.Column="1" Grid.Row="0" Style="{DynamicResource SizeTB}" Text="{Binding selectedScreen.sizeX, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" ToolTip="X size in meters, floating point number" />
+											<Label Grid.Column="0" Grid.Row="1" Content="Y" ToolTip="Y size in meters, floating point number" />
+											<TextBox x:Name="screenSizeYTb" Grid.Column="1" Grid.Row="1" Style="{DynamicResource SizeTB}" Text="{Binding selectedScreen.sizeY, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" ToolTip="Y size in meters, floating point number" />
+										</Grid>
+									</Grid>
+								</Grid>
 							</Grid>
 						</Grid>
 					</TabItem>
@@ -1040,14 +1180,14 @@
 									<RowDefinition Height="*"/>
 									<RowDefinition Height="Auto"/>
 								</Grid.RowDefinitions>
-								<ListBox Grid.Row="0" x:Name="viewportsListBox" ItemsSource="{Binding viewports}" DisplayMemberPath="id" SelectedItem="{Binding selectedViewport, Mode=TwoWay}" Height="Auto" SelectedIndex="0" MaxWidth="400"/>
+								<ListBox Grid.Row="0" x:Name="viewportsListBox" ItemsSource="{Binding viewports}" DisplayMemberPath="id" SelectedItem="{Binding selectedViewport, Mode=TwoWay}" Height="Auto" SelectedIndex="0" MaxWidth="400" Width="120"/>
 								<Grid Grid.Row="1">
 									<Grid.ColumnDefinitions>
 										<ColumnDefinition Width="*"/>
 										<ColumnDefinition Width="*"/>
 									</Grid.ColumnDefinitions>
-									<Button Grid.Column="0" x:Name="addViewportBtn" Content="Add" Click="addViewportButton_Click" Template="{DynamicResource ButtonTemplate}" ToolTip="Add new viewport"/>
-									<Button Grid.Column="1" x:Name="deleteViewportBtn" Content="Delete" Click="deleteViewportButton_Click" Template="{DynamicResource ButtonTemplate}" ToolTip="Delete selected viewport"/>
+									<Button Grid.Column="0" x:Name="ctrlBtnViewportAdd" Content="Add" Click="onBtnViewportAdd_Click" Template="{DynamicResource ButtonTemplate}" ToolTip="Add new viewport"/>
+									<Button Grid.Column="1" x:Name="ctrlBtnViewportDel" Content="Delete" Click="onBtnViewportDel_Click" Template="{DynamicResource ButtonTemplate}" ToolTip="Delete selected viewport"/>
 								</Grid>
 							</Grid>
 							<Grid Grid.Column="1">
@@ -1158,275 +1298,7 @@
 							</Viewbox>
 						</Grid>
 					</TabItem>
-					<TabItem Header="Scene nodes" x:Name="TabEditConfigSceneNodes" >
-						<Grid Style="{StaticResource TabContent}">
-							<Grid.ColumnDefinitions>
-								<ColumnDefinition Width="Auto" />
-								<ColumnDefinition Width="*" />
-								<ColumnDefinition Width="Auto" />
-							</Grid.ColumnDefinitions>
-							<Grid Grid.Column="0">
-								<Grid.RowDefinitions>
-									<RowDefinition Height="*"/>
-									<RowDefinition Height="Auto" />
-								</Grid.RowDefinitions>
-								<TreeView x:Name="sceneNodesTreeView" Grid.Row="0" SelectedItemChanged="sceneNodesTreeView_SelectedItemChanged" MouseDown="treeView_MouseDown" MouseMove="treeView_MouseMove" Focusable="True" MouseUp="sceneNodesTreeView_MouseUp" AllowDrop="True" ItemsSource="{Binding sceneNodesView}" Height="Auto" ToolTip="List of empty hierarchy nodes (transforms)" MaxWidth="600" IsTabStop="False" >
-									<TreeView.ItemContainerStyle>
-										<Style TargetType="{x:Type TreeViewItem}">
-											<Setter Property="IsSelected" Value="{Binding isSelected, Mode=TwoWay}" />
-											<Setter Property="IsExpanded" Value="true" />
-											<Setter Property="Foreground" Value="WhiteSmoke" />
-											<Setter Property="Padding" Value="1,1,5,1" />
-											<EventSetter Event="UIElement.DragOver"  Handler="treeView_DragOver"/>
-											<EventSetter Event="UIElement.Drop" Handler="treeView_Drop"/>
-											<EventSetter Event="UIElement.MouseMove" Handler="treeView_MouseMove"/>
-											<EventSetter Event="UIElement.MouseDown" Handler="treeView_MouseDown"/>
-										</Style>
-									</TreeView.ItemContainerStyle>
-									<TreeView.ItemTemplate>
-										<HierarchicalDataTemplate ItemsSource="{Binding children}">
-											<TextBlock Text="{Binding node.id}" />
-										</HierarchicalDataTemplate>
-									</TreeView.ItemTemplate>
-								</TreeView>
-								<Grid Grid.Row="1">
-									<Grid.ColumnDefinitions>
-										<ColumnDefinition Width="*" />
-										<ColumnDefinition Width="*" />
-									</Grid.ColumnDefinitions>
-									<Button x:Name="addSceneNodeBtn" Grid.Column="0" Content="Add" Click="addSceneNode_Click" Template="{DynamicResource ButtonTemplate}" ToolTip="Add new empty hierarchy node (transform)" />
-									<Button x:Name="deleteSceneNodeBtn" Grid.Column="1" Content="Delete" Click="deleteSceneNode_Click" Template="{DynamicResource ButtonTemplate}" ToolTip="Delete selected empty hierarchy node (transform)" />
-								</Grid>
-							</Grid>
-							<Grid Grid.Column="1">
-								<Grid.Style>
-									<Style TargetType="{x:Type Grid}">
-										<Setter Property="IsEnabled" Value="True" />
-										<Style.Triggers>
-											<DataTrigger Binding="{Binding selectedSceneNodeView}" Value="{x:Null}" >
-												<Setter Property="IsEnabled" Value="False" />
-											</DataTrigger>
-										</Style.Triggers>
-									</Style>
-								</Grid.Style>
-								<Grid.RowDefinitions>
-									<RowDefinition Height="Auto" />
-									<RowDefinition Height="Auto" />
-									<RowDefinition Height="*" />
-								</Grid.RowDefinitions>
-								<Grid Grid.Row="0" >
-									<Grid.RowDefinitions>
-										<RowDefinition Height="Auto" />
-										<RowDefinition Height="Auto" />
-										<RowDefinition Height="Auto" />
-									</Grid.RowDefinitions>
-									<Grid.ColumnDefinitions>
-										<ColumnDefinition Width="Auto" />
-										<ColumnDefinition Width="Auto" />
-										<ColumnDefinition Width="Auto"/>
-									</Grid.ColumnDefinitions>
-									<Label Grid.Column="0" Grid.Row="0"  Content="Scene Node ID"/>
-									<TextBox x:Name="sceneNodeIdTb" Grid.Column="1" Grid.Row="0" Text="{Binding selectedSceneNodeView.node.id, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" Style="{DynamicResource NameTB}" ToolTip="ID of empty hierarchy node (transform), you can use letters, numbers and _" />
-									<Label Grid.Column="0" Grid.Row="1" Content="Tracker ID"  />
-									<ComboBox Grid.Row="1" Grid.Column="1" x:Name="sceneNodeTrackerCb" Template="{DynamicResource ComboBoxTemplate}" DisplayMemberPath="id" ItemsSource="{Binding Source={StaticResource cvsInputTrackers}}" SelectedItem="{Binding selectedSceneNodeView.node.tracker}" ToolTip="Select Tracker ID, not required" />
-									<Label Grid.Column="0" Grid.Row="2" Content="Tracker Channel" />
-									<TextBox x:Name="sceneNodeTrackerChTb" Grid.Column="1" Grid.Row="2" Style="{DynamicResource NameTB}" Text="{Binding selectedSceneNodeView.node.trackerCh, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" ToolTip="Tracker channel, number, not required"/>
-								</Grid>
-								<Grid Grid.Row="1" HorizontalAlignment="Left" >
-									<Grid.RowDefinitions >
-										<RowDefinition Height="5" />
-										<RowDefinition Height="Auto" />
-										<RowDefinition Height="5" />
-										<RowDefinition Height="Auto" />
-									</Grid.RowDefinitions>
-									<Grid Grid.Row="1" >
-										<Grid.RowDefinitions>
-											<RowDefinition Height="Auto" />
-											<RowDefinition Height="Auto" />
-										</Grid.RowDefinitions>
-										<Label Grid.Row="0" Content="Location" />
-										<Grid Grid.Row="1" Margin="20,0,0,0" >
-											<Grid.RowDefinitions>
-												<RowDefinition Height="Auto" />
-												<RowDefinition Height="Auto" />
-												<RowDefinition Height="Auto" />
-											</Grid.RowDefinitions>
-											<Grid.ColumnDefinitions>
-												<ColumnDefinition Width="37" />
-												<ColumnDefinition Width="*" />
-											</Grid.ColumnDefinitions>
-											<Label Grid.Column="0" Grid.Row="0" Content="X" ToolTip="X coordinate in meters, floating point number" />
-											<TextBox x:Name="sceneNodeLocationXTb" Grid.Column="1" Grid.Row="0" Style="{DynamicResource SizeTB}" Text="{Binding selectedSceneNodeView.node.locationX, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"  ToolTip="X coordinate in meters, floating point number" />
-											<Label Grid.Column="0" Grid.Row="1" Content="Y" ToolTip="Y coordinate in meters, floating point number" />
-											<TextBox x:Name="sceneNodeLocationYTb" Grid.Column="1" Grid.Row="1" Style="{DynamicResource SizeTB}" Text="{Binding selectedSceneNodeView.node.locationY, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"  ToolTip="Y coordinate in meters, floating point number" />
-											<Label Grid.Column="0" Grid.Row="2" Content="Z" ToolTip="Z coordinate in meters, floating point number" />
-											<TextBox x:Name="sceneNodeLocationZTb" Grid.Column="1" Grid.Row="2" Style="{DynamicResource SizeTB}" Text="{Binding selectedSceneNodeView.node.locationZ, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" ToolTip="Z coordinate in meters, floating point number" />
-										</Grid>
-									</Grid>
-									<Grid Grid.Row="3">
-										<Grid.RowDefinitions>
-											<RowDefinition Height="Auto" />
-											<RowDefinition Height="Auto" />
-										</Grid.RowDefinitions>
-										<Label Grid.Row="0" Content="Rotation" />
-										<Grid Grid.Row="1" Margin="20,0,0,0" >
-											<Grid.RowDefinitions>
-												<RowDefinition Height="Auto" />
-												<RowDefinition Height="Auto" />
-												<RowDefinition Height="Auto" />
-											</Grid.RowDefinitions>
-											<Grid.ColumnDefinitions>
-												<ColumnDefinition Width="37" />
-												<ColumnDefinition Width="Auto" />
-											</Grid.ColumnDefinitions>
-											<Label Grid.Column="0" Grid.Row="0" Content="Pitch" ToolTip="Pitch in degrees, floating point number" />
-											<TextBox x:Name="sceneNodeRotationPTb" Grid.Column="1" Grid.Row="0" Style="{DynamicResource SizeTB}" Text="{Binding selectedSceneNodeView.node.rotationP, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" ToolTip="Pitch in degrees, floating point number" />
-											<Label Grid.Column="0" Grid.Row="1" Content="Yaw" ToolTip="Yaw in degrees, floating point number" />
-											<TextBox x:Name="sceneNodeRotationYTb" Grid.Column="1" Grid.Row="1" Style="{DynamicResource SizeTB}" Text="{Binding selectedSceneNodeView.node.rotationY, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" ToolTip="Yaw in degrees, floating point number" />
-											<Label Grid.Column="0" Grid.Row="2" Content="Roll" ToolTip="Roll in degrees, floating point number" />
-											<TextBox x:Name="sceneNodeRotationRTb" Grid.Column="1" Grid.Row="2" Style="{DynamicResource SizeTB}" Text="{Binding selectedSceneNodeView.node.rotationR, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" ToolTip="Roll in degrees, floating point number" />
-										</Grid>
-									</Grid>
-								</Grid>
-							</Grid>
-						</Grid>
-					</TabItem>
-					<TabItem Header="Screens" x:Name="TabEditConfigScreens" >
-						<Grid Style="{StaticResource TabContent}" >
-							<Grid.ColumnDefinitions>
-								<ColumnDefinition Width="auto"/>
-								<ColumnDefinition Width="*"/>
-							</Grid.ColumnDefinitions>
-							<Grid Grid.Column="0" x:Name="screensListPanel">
-								<Grid.RowDefinitions>
-									<RowDefinition Height="*"/>
-									<RowDefinition Height="Auto"/>
-								</Grid.RowDefinitions>
-								<ListBox Grid.Row="0" x:Name="screensListBox" ItemsSource="{Binding screens}" DisplayMemberPath="id" SelectedItem="{Binding selectedScreen, Mode=TwoWay}" Height="Auto" ToolTip="List of Screens" SelectedIndex="0" MaxWidth="400"/>
-
-								<Grid Grid.Row="1">
-									<Grid.ColumnDefinitions>
-										<ColumnDefinition Width="*"/>
-										<ColumnDefinition Width="*"/>
-									</Grid.ColumnDefinitions>
-									<Button Grid.Column="0" x:Name="addScreenBtn" Content="Add" Click="addScreenButton_Click" Template="{DynamicResource ButtonTemplate}" ToolTip="Add new screen"/>
-									<Button Grid.Column="1" x:Name="deleteScreenBtn" Content="Delete" Click="deleteScreenButton_Click" Template="{DynamicResource ButtonTemplate}" ToolTip="Delete selected screen"/>
-								</Grid>
-							</Grid>
-							<Grid Grid.Column="1" >
-								<Grid.Style>
-									<Style TargetType="{x:Type Grid}">
-										<Setter Property="IsEnabled" Value="True" />
-										<Style.Triggers>
-											<DataTrigger Binding="{Binding selectedScreen}" Value="{x:Null}" >
-												<Setter Property="IsEnabled" Value="False" />
-											</DataTrigger>
-										</Style.Triggers>
-									</Style>
-								</Grid.Style>
-								<Grid.RowDefinitions>
-									<RowDefinition Height="Auto" />
-									<RowDefinition Height="Auto" />
-								</Grid.RowDefinitions>
-								<Grid Grid.Row="0">
-									<Grid.ColumnDefinitions>
-										<ColumnDefinition Width="Auto" />
-										<ColumnDefinition Width="*" />
-									</Grid.ColumnDefinitions>
-									<Grid.RowDefinitions>
-										<RowDefinition Height="Auto" />
-										<RowDefinition Height="Auto" />
-									</Grid.RowDefinitions>
-									<Label Grid.Column="0" Grid.Row="0" Content="Screen ID"/>
-									<TextBox x:Name="screenIdTb" Grid.Column="1" Grid.Row="0" Style="{DynamicResource NameTB}" Text="{Binding selectedScreen.id, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" ToolTip="Screen ID, you can use letters, numbers and _" />
-									<Label Grid.Column="0" Grid.Row="1" Content="Parent Scene Node" />
-									<ComboBox x:Name="parentWallsCb" Grid.Column="1" Grid.Row="1" Template="{DynamicResource ComboBoxTemplate}" ItemsSource="{Binding sceneNodes}" DisplayMemberPath="id" SelectedItem="{Binding selectedScreen.parentWall}" ToolTip="Select parent scene node" />
-								</Grid>
-								<Grid Grid.Row="1" HorizontalAlignment="Left" >
-									<Grid.RowDefinitions>
-										<RowDefinition Height="5" />
-										<RowDefinition Height="Auto" />
-										<RowDefinition Height="5" />
-										<RowDefinition Height="Auto" />
-										<RowDefinition Height="5" />
-										<RowDefinition Height="Auto" />
-										<RowDefinition Height="*" />
-									</Grid.RowDefinitions>
-									<Grid  Grid.Row="1">
-										<Grid.RowDefinitions>
-											<RowDefinition Height="Auto" />
-											<RowDefinition Height="Auto" />
-										</Grid.RowDefinitions>
-										<Label Grid.Row="0" Content="Screen Location Parameters" />
-										<Grid Grid.Row="1" Margin="20,0,0,0">
-											<Grid.ColumnDefinitions>
-												<ColumnDefinition Width="37" />
-												<ColumnDefinition Width="*" />
-											</Grid.ColumnDefinitions>
-											<Grid.RowDefinitions>
-												<RowDefinition Height="Auto" />
-												<RowDefinition Height="Auto" />
-												<RowDefinition Height="Auto" />
-											</Grid.RowDefinitions>
-											<Label Grid.Column="0" Grid.Row="0" Content="X" ToolTip="X coordinate in meters, floating point number" />
-											<TextBox x:Name="screenLocationXTb" Grid.Column="1" Grid.Row="0" Style="{DynamicResource SizeTB}" Text="{Binding selectedScreen.locationX, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"  ToolTip="X coordinate in meters, floating point number"/>
-											<Label Grid.Column="0" Grid.Row="1" Content="Y" ToolTip="Y coordinate in meters, floating point number" />
-											<TextBox x:Name="screenLocationYTb" Grid.Column="1" Grid.Row="1" Style="{DynamicResource SizeTB}" Text="{Binding selectedScreen.locationY, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" ToolTip="Y coordinate in meters, floating point number" />
-											<Label Grid.Column="0" Grid.Row="2" Content="Z" ToolTip="Z coordinate in meters, floating point number" />
-											<TextBox x:Name="screenLocationZTb" Grid.Column="1" Grid.Row="2" Style="{DynamicResource SizeTB}" Text="{Binding selectedScreen.locationZ, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" ToolTip="Z coordinate in meters, floating point number" />
-										</Grid>
-									</Grid>
-									<Grid Grid.Row="3">
-										<Grid.RowDefinitions>
-											<RowDefinition Height="Auto" />
-											<RowDefinition Height="Auto" />
-										</Grid.RowDefinitions>
-										<Label Grid.Row="0" Content="Screen Rotation Parameters" />
-										<Grid  Grid.Row="1" Margin="20,0,0,0">
-											<Grid.ColumnDefinitions>
-												<ColumnDefinition Width="37" />
-												<ColumnDefinition Width="*" />
-											</Grid.ColumnDefinitions>
-											<Grid.RowDefinitions>
-												<RowDefinition Height="Auto" />
-												<RowDefinition Height="Auto" />
-												<RowDefinition Height="Auto" />
-											</Grid.RowDefinitions>
-											<Label Grid.Column="0" Grid.Row="0" Content="Pitch" ToolTip="Pitch in degrees, floating point number" />
-											<TextBox x:Name="screenRotationPTb" Grid.Column="1" Grid.Row="0" Style="{DynamicResource SizeTB}" Text="{Binding selectedScreen.rotationP, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"  ToolTip="Pitch in degrees, floating point number" />
-											<Label Grid.Column="0" Grid.Row="1" Content="Yaw" ToolTip="Yaw in degrees, floating point number" />
-											<TextBox x:Name="screenRotationYTb" Grid.Column="1" Grid.Row="1" Style="{DynamicResource SizeTB}" Text="{Binding selectedScreen.rotationY, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" ToolTip="Yaw in degrees, floating point number" />
-											<Label Grid.Column="0" Grid.Row="2" Content="Roll" ToolTip="Roll in degrees, floating point number" />
-											<TextBox x:Name="screenRotationRTb" Grid.Column="1" Grid.Row="2" Style="{DynamicResource SizeTB}" Text="{Binding selectedScreen.rotationR, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" ToolTip="Roll in degrees, floating point number" />
-										</Grid>
-									</Grid>
-									<Grid Grid.Row="5">
-										<Grid.RowDefinitions>
-											<RowDefinition Height="Auto" />
-											<RowDefinition Height="Auto" />
-										</Grid.RowDefinitions>
-										<Label  Grid.Row="0" Content="Screen Size Parameters" />
-										<Grid Grid.Row="1" Margin="20,0,0,0">
-											<Grid.ColumnDefinitions>
-												<ColumnDefinition Width="37" />
-												<ColumnDefinition Width="*" />
-											</Grid.ColumnDefinitions>
-											<Grid.RowDefinitions>
-												<RowDefinition Height="Auto" />
-												<RowDefinition Height="Auto" />
-												<RowDefinition Height="Auto" />
-											</Grid.RowDefinitions>
-											<Label Grid.Column="0" Grid.Row="0" Content="X" ToolTip="X size in meters, floating point number" />
-											<TextBox x:Name="screenSizeXTb" Grid.Column="1" Grid.Row="0" Style="{DynamicResource SizeTB}" Text="{Binding selectedScreen.sizeX, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" ToolTip="X size in meters, floating point number" />
-											<Label Grid.Column="0" Grid.Row="1" Content="Y" ToolTip="Y size in meters, floating point number" />
-											<TextBox x:Name="screenSizeYTb" Grid.Column="1" Grid.Row="1" Style="{DynamicResource SizeTB}" Text="{Binding selectedScreen.sizeY, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" ToolTip="Y size in meters, floating point number" />
-										</Grid>
-									</Grid>
-								</Grid>
-							</Grid>
-						</Grid>
-					</TabItem>
-					<TabItem Header="Inputs" x:Name="TabEditConfigInputs" >
+					<TabItem Header="Cameras" x:Name="TabEditConfigCameras" >
 						<Grid Style="{StaticResource TabContent}">
 							<Grid.ColumnDefinitions>
 								<ColumnDefinition Width="Auto" />
@@ -1437,14 +1309,14 @@
 									<RowDefinition Height="*" />
 									<RowDefinition Height="Auto" />
 								</Grid.RowDefinitions>
-								<ListBox x:Name="inputsListBox" Grid.Row="0" ItemsSource="{Binding inputs}" DisplayMemberPath="id" SelectedItem="{Binding selectedInput, Mode=TwoWay}" Height="Auto" ToolTip="List of input devices" SelectedIndex="0" MaxWidth="400" />
+								<ListBox x:Name="camerasListBox" Grid.Row="0" ItemsSource="{Binding cameras}" DisplayMemberPath="id" SelectedItem="{Binding selectedInput, Mode=TwoWay}" Height="Auto" ToolTip="List of cameras" SelectedIndex="0" MaxWidth="400" Width="120" />
 								<Grid Grid.Row="1">
 									<Grid.ColumnDefinitions>
 										<ColumnDefinition Width="*" />
 										<ColumnDefinition Width="*" />
 									</Grid.ColumnDefinitions>
-									<Button x:Name="addInputBtn" Grid.Column="0" Content="Add" Click="addInputBtn_Click" Template="{DynamicResource ButtonTemplate}" ToolTip="Add new input device"/>
-									<Button x:Name="delInputBtn" Grid.Column="1" Content="Delete" Click="delInputBtn_Click" Template="{DynamicResource ButtonTemplate}" ToolTip="Delete selected input device"/>
+									<Button x:Name="ctrlBtnCameraAdd" Grid.Column="0" Content="Add" Click="onBtnCameraAdd_Click" Template="{DynamicResource ButtonTemplate}" ToolTip="Add new camera"/>
+									<Button x:Name="ctrlBtnCameraDel" Grid.Column="1" Content="Delete" Click="onBtnCameraDel_Click" Template="{DynamicResource ButtonTemplate}" ToolTip="Delete selected camera"/>
 								</Grid>
 							</Grid>
 							<Grid Grid.Column="1">
@@ -1474,12 +1346,8 @@
 										<RowDefinition Height="Auto" />
 										<RowDefinition Height="*" />
 									</Grid.RowDefinitions>
-									<Label Content="Input ID" Grid.Column="0" Grid.Row="0"  />
-									<TextBox Grid.Column="1" Grid.Row="0" x:Name="inputIdTb" Style="{DynamicResource NameTB}" Text="{Binding selectedInput.id, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" ToolTip="Input device ID, you can use letters, numbers and _" />
-									<Label Content="Input Type" Grid.Column="0" Grid.Row="1" />
-									<Label x:Name="inputTypeLbl" Grid.Column="1" Grid.Row="1" Content="{Binding selectedInput.type}"/>
-									<Label Content="Input Address" Grid.Column="0" Grid.Row="2" />
-									<TextBox Grid.Column="1" Grid.Row="2" x:Name="inputAddressTb" Style="{DynamicResource NameTB}" Text="{Binding selectedInput.address, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" ToolTip="Input Addres in format InputName@127.0.0.1" />
+									<Label Content="Camera ID" Grid.Column="0" Grid.Row="0"  />
+									<TextBox Grid.Column="1" Grid.Row="0" x:Name="cameraIdTb" Style="{DynamicResource NameTB}" Text="{Binding selectedInput.id, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" ToolTip="Camera ID, you can use letters, numbers and _" />
 								</Grid>
 								<Grid Grid.Row="1" x:Name="trackerInputSettings" >
 									<Grid.Style>
@@ -1577,6 +1445,279 @@
 											<TextBox x:Name="inputRight" Grid.Column="1" Grid.Row="1" Style="{DynamicResource SizeTB}" Text="{Binding selectedInput.right, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"  ToolTip="Right direction axis" />
 											<Label Grid.Column="0" Grid.Row="2" Content="Up" ToolTip="Up direction axis" />
 											<TextBox x:Name="inputUp" Grid.Column="1" Grid.Row="2"  Style="{DynamicResource SizeTB}" Text="{Binding selectedInput.up, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"  ToolTip="Up direction axis" />
+										</Grid>
+									</Grid>
+								</Grid>
+							</Grid>
+						</Grid>
+					</TabItem>
+
+					<TabItem Header="Scene nodes" x:Name="TabEditConfigSceneNodes" >
+						<Grid Style="{StaticResource TabContent}">
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="Auto" />
+								<ColumnDefinition Width="*" />
+								<ColumnDefinition Width="Auto" />
+							</Grid.ColumnDefinitions>
+							<Grid Grid.Column="0">
+								<Grid.RowDefinitions>
+									<RowDefinition Height="*"/>
+									<RowDefinition Height="Auto" />
+								</Grid.RowDefinitions>
+								<TreeView x:Name="sceneNodesTreeView" Grid.Row="0" SelectedItemChanged="sceneNodesTreeView_SelectedItemChanged" MouseDown="treeView_MouseDown" MouseMove="treeView_MouseMove" Focusable="True" MouseUp="sceneNodesTreeView_MouseUp" AllowDrop="True" ItemsSource="{Binding sceneNodesView}" Height="Auto" ToolTip="List of empty hierarchy nodes (transforms)" MaxWidth="600" IsTabStop="False" Width="120" >
+									<TreeView.ItemContainerStyle>
+										<Style TargetType="{x:Type TreeViewItem}">
+											<Setter Property="IsSelected" Value="{Binding isSelected, Mode=TwoWay}" />
+											<Setter Property="IsExpanded" Value="true" />
+											<Setter Property="Foreground" Value="WhiteSmoke" />
+											<Setter Property="Padding" Value="1,1,5,1" />
+											<EventSetter Event="UIElement.DragOver"  Handler="treeView_DragOver"/>
+											<EventSetter Event="UIElement.Drop" Handler="treeView_Drop"/>
+											<EventSetter Event="UIElement.MouseMove" Handler="treeView_MouseMove"/>
+											<EventSetter Event="UIElement.MouseDown" Handler="treeView_MouseDown"/>
+										</Style>
+									</TreeView.ItemContainerStyle>
+									<TreeView.ItemTemplate>
+										<HierarchicalDataTemplate ItemsSource="{Binding children}">
+											<TextBlock Text="{Binding node.id}" />
+										</HierarchicalDataTemplate>
+									</TreeView.ItemTemplate>
+								</TreeView>
+								<Grid Grid.Row="1">
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="*" />
+										<ColumnDefinition Width="*" />
+									</Grid.ColumnDefinitions>
+									<Button x:Name="ctrlBtnSceneNodeAdd" Grid.Column="0" Content="Add" Click="onBtnSceneNodeAdd_Click" Template="{DynamicResource ButtonTemplate}" ToolTip="Add new empty hierarchy node (transform)" />
+									<Button x:Name="ctrlBtnSceneNodeDel" Grid.Column="1" Content="Delete" Click="onBtnSceneNodeDel_Click" Template="{DynamicResource ButtonTemplate}" ToolTip="Delete selected empty hierarchy node (transform)" />
+								</Grid>
+							</Grid>
+							<Grid Grid.Column="1">
+								<Grid.Style>
+									<Style TargetType="{x:Type Grid}">
+										<Setter Property="IsEnabled" Value="True" />
+										<Style.Triggers>
+											<DataTrigger Binding="{Binding selectedSceneNodeView}" Value="{x:Null}" >
+												<Setter Property="IsEnabled" Value="False" />
+											</DataTrigger>
+										</Style.Triggers>
+									</Style>
+								</Grid.Style>
+								<Grid.RowDefinitions>
+									<RowDefinition Height="Auto" />
+									<RowDefinition Height="Auto" />
+									<RowDefinition Height="*" />
+								</Grid.RowDefinitions>
+								<Grid Grid.Row="0" >
+									<Grid.RowDefinitions>
+										<RowDefinition Height="Auto" />
+										<RowDefinition Height="Auto" />
+										<RowDefinition Height="Auto" />
+									</Grid.RowDefinitions>
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="Auto" />
+										<ColumnDefinition Width="Auto" />
+										<ColumnDefinition Width="Auto"/>
+									</Grid.ColumnDefinitions>
+									<Label Grid.Column="0" Grid.Row="0"  Content="Scene Node ID"/>
+									<TextBox x:Name="sceneNodeIdTb" Grid.Column="1" Grid.Row="0" Text="{Binding selectedSceneNodeView.node.id, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" Style="{DynamicResource NameTB}" ToolTip="ID of empty hierarchy node (transform), you can use letters, numbers and _" />
+									<Label Grid.Column="0" Grid.Row="1" Content="Tracker ID"  />
+									<ComboBox Grid.Row="1" Grid.Column="1" x:Name="sceneNodeTrackerCb" Template="{DynamicResource ComboBoxTemplate}" DisplayMemberPath="id" ItemsSource="{Binding Source={StaticResource cvsInputTrackers}}" SelectedItem="{Binding selectedSceneNodeView.node.tracker}" ToolTip="Select Tracker ID, not required" />
+									<Label Grid.Column="0" Grid.Row="2" Content="Tracker Channel" />
+									<TextBox x:Name="sceneNodeTrackerChTb" Grid.Column="1" Grid.Row="2" Style="{DynamicResource NameTB}" Text="{Binding selectedSceneNodeView.node.trackerCh, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" ToolTip="Tracker channel, number, not required"/>
+								</Grid>
+								<Grid Grid.Row="1" HorizontalAlignment="Left" >
+									<Grid.RowDefinitions >
+										<RowDefinition Height="5" />
+										<RowDefinition Height="Auto" />
+										<RowDefinition Height="5" />
+										<RowDefinition Height="Auto" />
+									</Grid.RowDefinitions>
+									<Grid Grid.Row="1" >
+										<Grid.RowDefinitions>
+											<RowDefinition Height="Auto" />
+											<RowDefinition Height="Auto" />
+										</Grid.RowDefinitions>
+										<Label Grid.Row="0" Content="Location" />
+										<Grid Grid.Row="1" Margin="20,0,0,0" >
+											<Grid.RowDefinitions>
+												<RowDefinition Height="Auto" />
+												<RowDefinition Height="Auto" />
+												<RowDefinition Height="Auto" />
+											</Grid.RowDefinitions>
+											<Grid.ColumnDefinitions>
+												<ColumnDefinition Width="37" />
+												<ColumnDefinition Width="*" />
+											</Grid.ColumnDefinitions>
+											<Label Grid.Column="0" Grid.Row="0" Content="X" ToolTip="X coordinate in meters, floating point number" />
+											<TextBox x:Name="sceneNodeLocationXTb" Grid.Column="1" Grid.Row="0" Style="{DynamicResource SizeTB}" Text="{Binding selectedSceneNodeView.node.locationX, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"  ToolTip="X coordinate in meters, floating point number" />
+											<Label Grid.Column="0" Grid.Row="1" Content="Y" ToolTip="Y coordinate in meters, floating point number" />
+											<TextBox x:Name="sceneNodeLocationYTb" Grid.Column="1" Grid.Row="1" Style="{DynamicResource SizeTB}" Text="{Binding selectedSceneNodeView.node.locationY, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"  ToolTip="Y coordinate in meters, floating point number" />
+											<Label Grid.Column="0" Grid.Row="2" Content="Z" ToolTip="Z coordinate in meters, floating point number" />
+											<TextBox x:Name="sceneNodeLocationZTb" Grid.Column="1" Grid.Row="2" Style="{DynamicResource SizeTB}" Text="{Binding selectedSceneNodeView.node.locationZ, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" ToolTip="Z coordinate in meters, floating point number" />
+										</Grid>
+									</Grid>
+									<Grid Grid.Row="3">
+										<Grid.RowDefinitions>
+											<RowDefinition Height="Auto" />
+											<RowDefinition Height="Auto" />
+										</Grid.RowDefinitions>
+										<Label Grid.Row="0" Content="Rotation" />
+										<Grid Grid.Row="1" Margin="20,0,0,0" >
+											<Grid.RowDefinitions>
+												<RowDefinition Height="Auto" />
+												<RowDefinition Height="Auto" />
+												<RowDefinition Height="Auto" />
+											</Grid.RowDefinitions>
+											<Grid.ColumnDefinitions>
+												<ColumnDefinition Width="37" />
+												<ColumnDefinition Width="Auto" />
+											</Grid.ColumnDefinitions>
+											<Label Grid.Column="0" Grid.Row="0" Content="Pitch" ToolTip="Pitch in degrees, floating point number" />
+											<TextBox x:Name="sceneNodeRotationPTb" Grid.Column="1" Grid.Row="0" Style="{DynamicResource SizeTB}" Text="{Binding selectedSceneNodeView.node.rotationP, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" ToolTip="Pitch in degrees, floating point number" />
+											<Label Grid.Column="0" Grid.Row="1" Content="Yaw" ToolTip="Yaw in degrees, floating point number" />
+											<TextBox x:Name="sceneNodeRotationYTb" Grid.Column="1" Grid.Row="1" Style="{DynamicResource SizeTB}" Text="{Binding selectedSceneNodeView.node.rotationY, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" ToolTip="Yaw in degrees, floating point number" />
+											<Label Grid.Column="0" Grid.Row="2" Content="Roll" ToolTip="Roll in degrees, floating point number" />
+											<TextBox x:Name="sceneNodeRotationRTb" Grid.Column="1" Grid.Row="2" Style="{DynamicResource SizeTB}" Text="{Binding selectedSceneNodeView.node.rotationR, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" ToolTip="Roll in degrees, floating point number" />
+										</Grid>
+									</Grid>
+								</Grid>
+							</Grid>
+						</Grid>
+					</TabItem>
+					<TabItem Header="Inputs" x:Name="TabEditConfigInputs" >
+						<Grid Style="{StaticResource TabContent}">
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="Auto" />
+								<ColumnDefinition Width="*" />
+							</Grid.ColumnDefinitions>
+							<Grid Grid.Column="0">
+								<Grid.RowDefinitions>
+									<RowDefinition Height="*" />
+									<RowDefinition Height="Auto" />
+								</Grid.RowDefinitions>
+								<ListBox x:Name="inputsListBox" Grid.Row="0" ItemsSource="{Binding inputs}" DisplayMemberPath="id" SelectedItem="{Binding selectedInput, Mode=TwoWay}" Height="Auto" ToolTip="List of input devices" SelectedIndex="0" MaxWidth="400" Width="120" />
+								<Grid Grid.Row="1">
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="*" />
+										<ColumnDefinition Width="*" />
+									</Grid.ColumnDefinitions>
+									<Button x:Name="ctrlBtnInputAdd" Grid.Column="0" Content="Add" Click="onBtnInputAdd_Click" Template="{DynamicResource ButtonTemplate}" ToolTip="Add new input device"/>
+									<Button x:Name="ctrlBtnInputDel" Grid.Column="1" Content="Delete" Click="onBtnInputDel_Click" Template="{DynamicResource ButtonTemplate}" ToolTip="Delete selected input device"/>
+								</Grid>
+							</Grid>
+							<Grid Grid.Column="1">
+								<Grid.Style>
+									<Style TargetType="{x:Type Grid}">
+										<Setter Property="IsEnabled" Value="True" />
+										<Style.Triggers>
+											<DataTrigger Binding="{Binding selectedInput}" Value="{x:Null}" >
+												<Setter Property="IsEnabled" Value="False" />
+											</DataTrigger>
+										</Style.Triggers>
+									</Style>
+								</Grid.Style>
+								<Grid.RowDefinitions>
+									<RowDefinition Height="Auto" />
+									<RowDefinition Height="Auto" />
+									<RowDefinition Height="*" />
+								</Grid.RowDefinitions>
+								<Grid Grid.Row="0">
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="Auto" />
+										<ColumnDefinition Width="*" />
+									</Grid.ColumnDefinitions>
+									<Grid.RowDefinitions>
+										<RowDefinition Height="Auto" />
+										<RowDefinition Height="Auto" />
+										<RowDefinition Height="Auto" />
+										<RowDefinition Height="*" />
+									</Grid.RowDefinitions>
+									<Label Content="Input ID" Grid.Column="0" Grid.Row="0"  />
+									<TextBox Grid.Column="1" Grid.Row="0" x:Name="inputIdTb" Style="{DynamicResource NameTB}" Text="{Binding selectedInput.id, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" ToolTip="Input device ID, you can use letters, numbers and _" />
+									<Label Content="Input Type" Grid.Column="0" Grid.Row="1" />
+									<Label x:Name="inputTypeLbl" Grid.Column="1" Grid.Row="1" Content="{Binding selectedInput.type}"/>
+									<Label Content="Input Address" Grid.Column="0" Grid.Row="2" />
+									<TextBox Grid.Column="1" Grid.Row="2" x:Name="inputAddressTb" Style="{DynamicResource NameTB}" Text="{Binding selectedInput.address, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" ToolTip="Input Addres in format InputName@127.0.0.1" />
+								</Grid>
+								<Grid Grid.Row="1" x:Name="cameraSettings" >
+									<Grid.Style>
+										<Style TargetType="{x:Type Grid}">
+											<Setter Property="Visibility" Value="Collapsed" />
+											<Style.Triggers>
+												<DataTrigger Binding="{Binding selectedInput.type}" Value="tracker" >
+													<Setter Property="Visibility" Value="Visible" />
+												</DataTrigger>
+											</Style.Triggers>
+										</Style>
+									</Grid.Style>
+
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="Auto" />
+										<ColumnDefinition Width="Auto" />
+										<ColumnDefinition Width="*" />
+									</Grid.ColumnDefinitions>
+									<Grid.RowDefinitions>
+										<RowDefinition Height="5" />
+										<RowDefinition Height="Auto" />
+										<RowDefinition Height="5" />
+										<RowDefinition Height="Auto" />
+										<RowDefinition Height="5" />
+										<RowDefinition Height="Auto" />
+										<RowDefinition Height="*" />
+									</Grid.RowDefinitions>
+									<Grid Grid.Column="0" Grid.Row="1">
+										<Grid.RowDefinitions>
+											<RowDefinition Height="Auto" />
+											<RowDefinition Height="Auto" />
+										</Grid.RowDefinitions>
+										<Label Grid.Row="0" Content="Tracker Location" />
+										<Grid Grid.Row="1" Margin="20,0,0,0">
+											<Grid.ColumnDefinitions>
+												<ColumnDefinition Width="37" />
+												<ColumnDefinition Width="*" />
+											</Grid.ColumnDefinitions>
+											<Grid.RowDefinitions>
+												<RowDefinition Height="Auto" />
+												<RowDefinition Height="Auto" />
+												<RowDefinition Height="Auto" />
+											</Grid.RowDefinitions>
+										</Grid>
+									</Grid>
+									<Grid Grid.Column="0" Grid.Row="3">
+										<Grid.RowDefinitions>
+											<RowDefinition Height="Auto" />
+											<RowDefinition Height="Auto" />
+										</Grid.RowDefinitions>
+										<Label Grid.Row="0" Content="Tracker Rotation"/>
+										<Grid Grid.Row="1" Margin="20,0,0,0">
+											<Grid.ColumnDefinitions>
+												<ColumnDefinition Width="37" />
+												<ColumnDefinition Width="*" />
+											</Grid.ColumnDefinitions>
+											<Grid.RowDefinitions>
+												<RowDefinition Height="Auto" />
+												<RowDefinition Height="Auto" />
+												<RowDefinition Height="Auto" />
+											</Grid.RowDefinitions>
+										</Grid>
+									</Grid>
+									<Grid Grid.Column="0" Grid.Row="5">
+										<Grid.RowDefinitions>
+											<RowDefinition Height="Auto" />
+											<RowDefinition Height="Auto" />
+										</Grid.RowDefinitions>
+										<Label Grid.Row="0" Content="Coordinate system mapping" />
+										<Grid Grid.Row="1" Margin="20,0,0,0">
+											<Grid.ColumnDefinitions>
+												<ColumnDefinition Width="37" />
+												<ColumnDefinition Width="*" />
+											</Grid.ColumnDefinitions>
+											<Grid.RowDefinitions>
+												<RowDefinition Height="Auto" />
+												<RowDefinition Height="Auto" />
+												<RowDefinition Height="Auto" />
+											</Grid.RowDefinitions>
 										</Grid>
 									</Grid>
 								</Grid>
