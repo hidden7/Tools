@@ -108,22 +108,10 @@ namespace vrClusterManager
 
 		//Configs list
 		private List<string> _configs;
-		public List<string> configs
+		public List<string> Configs
 		{
 			get { return _configs; }
 			set { Set(ref _configs, value, "configs"); }
-		}
-
-		//Cameras list
-		private List<string> _cameras = new List<string>()
-		{
-			"camera_static",
-			"camera_dynamic"
-		};
-		public List<string> cameras
-		{
-			get { return _cameras; }
-			set { Set(ref _cameras, value, "cameras"); }
 		}
 
 		//Log categories list
@@ -154,7 +142,7 @@ namespace vrClusterManager
 			set
 			{
 				Set(ref _additionalParams, value, "additionalParams");
-				RegistryData.UpdateRegistry(RegistryData.paramsList, RegistryData.additionalParamsName, value);
+				RegistryData.SetStringValue(RegistryData.KeyRunParams, RegistryData.ValCommonCmdLineArgs, value);
 				GenerateCmdStartApp();
 			}
 		}
@@ -241,9 +229,9 @@ namespace vrClusterManager
 		//Reloading all config lists
 		private void InitConfigList()
 		{
-			applications = RegistryData.ReadStringsFromRegistry(RegistryData.appList);
+			applications = RegistryData.ReadStringsFromRegistry(RegistryData.KeyApps);
 			AppLogger.Add("Applications loaded successfully");
-			configs = RegistryData.ReadStringsFromRegistry(RegistryData.configList);
+			Configs = RegistryData.ReadStringsFromRegistry(RegistryData.KeyConfigs);
 			SetSelectedConfig();
 			AppLogger.Add("Configs loaded successfully");
 			AppLogger.Add("List of Active nodes loaded successfully");
@@ -270,10 +258,10 @@ namespace vrClusterManager
 		public void SetSelectedConfig()
 		{
 			selectedConfig = string.Empty;
-			string selected = RegistryData.FindSelectedRegValue(RegistryData.configList);
+			string selected = RegistryData.FindSelectedRegValue(RegistryData.KeyConfigs);
 			if (!string.IsNullOrEmpty(selected))
 			{
-				selectedConfig = configs.Find(x => x == selected);
+				selectedConfig = Configs.Find(x => x == selected);
 
 			}
 		}
@@ -287,7 +275,7 @@ namespace vrClusterManager
 
 		private void InitOptions()
 		{
-			additionalParams = RegistryData.GetCommonCmdLineArgs();
+			additionalParams = RegistryData.ReadStringValue(RegistryData.KeyRunParams, RegistryData.ValCommonCmdLineArgs);
 
 			AppLogger.Add("General options have been initialized");
 			//try
@@ -713,15 +701,15 @@ namespace vrClusterManager
 		{
 			try
 			{
-				foreach (string config in configs)
+				foreach (string config in Configs)
 				{
 					if (config != configPath)
 					{
-						RegistryData.UpdateRegistry(RegistryData.configList, config, false);
+						RegistryData.UpdateRegistry(RegistryData.KeyConfigs, config, false);
 					}
 					else
 					{
-						RegistryData.UpdateRegistry(RegistryData.configList, config, true);
+						RegistryData.UpdateRegistry(RegistryData.KeyConfigs, config, true);
 					}
 				}
 			}
@@ -735,9 +723,9 @@ namespace vrClusterManager
 		{
 			try
 			{
-				configs.Add(configPath);
-				selectedConfig = configs.Find(x => x == configPath);
-				RegistryData.AddRegistryValue(RegistryData.configList, configPath);
+				Configs.Add(configPath);
+				selectedConfig = Configs.Find(x => x == configPath);
+				RegistryData.AddRegistryValue(RegistryData.KeyConfigs, configPath);
 				SetActiveConfig(configPath);
 				AppLogger.Add("Configuration file [" + configPath + "] added to list");
 			}
@@ -746,49 +734,5 @@ namespace vrClusterManager
 				AppLogger.Add("ERROR! Can not add configuration file [" + configPath + "] to list");
 			}
 		}
-
-		public void DeleteConfig()
-		{
-			configs.Remove(selectedConfig);
-			RegistryData.RemoveRegistryValue(RegistryData.configList, selectedConfig);
-			AppLogger.Add("Configuration file [" + selectedConfig + "] deleted");
-			selectedConfig = configs.FirstOrDefault();
-		}
-
-		//public bool AddNode(string node)
-		//{
-		//    try
-		//    {
-		//        if (!activeNodes.Exists(x => x.key == node))
-		//        {
-		//            activeNodes.Add(new ActiveNode(node, true));
-		//            RegistrySaver.AddRegistryValue(RegistrySaver.nodeList, node);
-		//            AppLogger.Add("Node [" + node + "] added to list");
-		//            return true;
-		//        }
-		//        else
-		//        {
-		//            AppLogger.Add("WARNING! Node [" + node + "] is already in the list");
-		//            return false;
-		//        }
-		//    }
-		//    catch (Exception e)
-		//    {
-		//        AppLogger.Add("ERROR! can not add node [" + node + "] to list");
-		//        return false;
-		//    }
-		//}
-
-		//public void DeleteNodes(List<ActiveNode> nodes)
-		//{
-
-		//    foreach (ActiveNode node in nodes)
-		//    {
-		//        RegistrySaver.RemoveRegistryValue(RegistrySaver.nodeList, node.key);
-		//        activeNodes.Remove(node);
-		//        AppLogger.Add("Node [" + node.key + "] deleted");
-		//    }
-
-		//}
 	}
 }

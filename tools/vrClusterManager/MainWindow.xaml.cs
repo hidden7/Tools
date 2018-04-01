@@ -19,8 +19,7 @@ namespace vrClusterManager
 		static readonly string cfgFileExtention = "CAVE config file (*.cfg)|*.cfg";
 		static readonly string appFileExtention = "CAVE VR application (*.exe)|*.exe";
 
-		private VRConfig     m_Config  = new VRConfig();
-		private RegistryData m_RegData = new RegistryData();
+		public VRConfig     m_Config  = new VRConfig();
 
 		public MainWindow()
 		{
@@ -28,14 +27,7 @@ namespace vrClusterManager
 
 			InitializeInternals();
 
-			logFile = logFileName;
-
-			TabAppsLauncher.DataContext = this;
-			TabAppsLogging.DataContext  = this;
-			ctrlComboConfigs.DataContext = this;
-			ctrlTextAppLog.DataContext = AppLogger.instance;
-
-			SetDefaultConfig();
+			LoadDefaultConfig();
 			SetViewportPreview();
 		}
 
@@ -59,7 +51,7 @@ namespace vrClusterManager
 			{
 				try
 				{
-					string currentFileName = RegistryData.ReadStringFromRegistry(RegistryData.configName);
+					string currentFileName = RegistryData.ReadStringFromRegistry(RegistryData.ValDefaultConfig);
 					if (!isSaveAs && File.Exists(currentFileName))
 					{
 						File.WriteAllText(currentFileName, m_Config.CreateConfig());
@@ -73,8 +65,8 @@ namespace vrClusterManager
 							currentFileName = saveFileDialog.FileName;
 							m_Config.name = Path.GetFileNameWithoutExtension(currentFileName);
 
-							RegistryData.RemoveAllRegistryValues(RegistryData.configName);
-							RegistryData.AddRegistryValue(RegistryData.configName, currentFileName);
+							RegistryData.RemoveAllRegistryValues(RegistryData.ValDefaultConfig);
+							RegistryData.AddRegistryValue(RegistryData.ValDefaultConfig, currentFileName);
 							File.WriteAllText(currentFileName, m_Config.CreateConfig());
 						}
 					}
@@ -101,19 +93,20 @@ namespace vrClusterManager
 				AppLogger.Add("ERROR! Can not save config to file. Errors in configuration");
 			}
 		}
-		private void OpenImpl()
+
+		private void AddConfigFromFile()
 		{
 			OpenFileDialog openFileDialog = new OpenFileDialog();
 			openFileDialog.Filter = cfgFileExtention;
 			if (openFileDialog.ShowDialog() == true)
 			{
 				string configPath = openFileDialog.FileName;
-				if (!configs.Exists(x => x == configPath))
+				if (!Configs.Exists(x => x == configPath))
 				{
 					AddConfig(configPath);
 					ctrlComboConfigs.Items.Refresh();
 					// upper verions or below one
-					//ConfigFileParser(openFileDialog.FileName);
+					ConfigFileParser(openFileDialog.FileName);
 				}
 			}
 		}
@@ -127,7 +120,7 @@ namespace vrClusterManager
 		}
 		private void OpenConfig(object sender, RoutedEventArgs e)
 		{
-			OpenImpl();
+			AddConfigFromFile();
 		}
 		private void Exit(object sender, RoutedEventArgs e)
 		{
@@ -141,24 +134,9 @@ namespace vrClusterManager
 			aboutDialog.ShowDialog();
 		}
 
-		private void ProcessUnsavedConfig()
+		private void LoadDefaultConfig()
 		{
-			if (!m_IsDirty)
-				return;
-
-			YesNoDialog dialogResult = new YesNoDialog("Would you like to save current changes?");
-			dialogResult.Owner = this;
-			if (dialogResult.ShowDialog() == true)
-			{
-				Save(false);
-				m_IsDirty = false;
-			}
-		}
-
-
-		private void SetDefaultConfig()
-		{
-			string configPath = m_RegData.GetDefaultConfigFile();
+			string configPath = RegistryData.ReadStringFromRegistry(RegistryData.ValDefaultConfig);
 				
 			if (string.IsNullOrEmpty(configPath))
 			{
@@ -169,13 +147,15 @@ namespace vrClusterManager
 				ConfigFileParser(configPath);
 			}
 		}
+
 		public void NewConfig(object sender, RoutedEventArgs e)
 		{
 			CreateConfig();
 		}
+
 		void CreateConfig()
 		{
-			RegistryData.RemoveAllRegistryValues(RegistryData.configName);
+			RegistryData.RemoveAllRegistryValues(RegistryData.ValDefaultConfig);
 			m_Config = new VRConfig();
 			this.DataContext = m_Config;
 			//crutch. for refactoring
@@ -208,6 +188,11 @@ namespace vrClusterManager
 		//crutch for refreshing all listboxes and comboboxes after binding
 		private void RefreshUiControls()
 		{
+			TabAppsLauncher.DataContext = this;
+			TabAppsLogging.DataContext = this;
+			ctrlComboConfigs.DataContext = this;
+			ctrlTextAppLog.DataContext = AppLogger.instance;
+
 			inputsListBox.Items.Refresh();
 			screensListBox.Items.Refresh();
 			viewportsListBox.Items.Refresh();
@@ -340,7 +325,7 @@ namespace vrClusterManager
 
 		private void onBtnConfigAdd_Click(object sender, RoutedEventArgs e)
 		{
-			OpenImpl();
+			AddConfigFromFile();
 		}
 
 		private void onBtnConfigDel_Click(object sender, RoutedEventArgs e)
@@ -351,14 +336,35 @@ namespace vrClusterManager
 				dialogResult.Owner = this;
 				if ((bool)dialogResult.ShowDialog())
 				{
-					DeleteConfig();
+					Configs.Remove(selectedConfig);
+					RegistryData.RemoveRegistryValue(RegistryData.KeyConfigs, selectedConfig);
+					AppLogger.Add("Configuration file [" + selectedConfig + "] deleted");
+					selectedConfig = Configs.FirstOrDefault();
 
 					ctrlComboConfigs.Items.Refresh();
 				}
 			}
 		}
 
-		private void onBtnConfigDelAll_Click(object sender, RoutedEventArgs e) => throw new NotImplementedException();
+		private void onBtnConfigDelAll_Click(object sender, RoutedEventArgs e)
+		{
+			if (ctrlComboConfigs.SelectedItem != null)
+			{
+				YesNoDialog dialogResult = new YesNoDialog("Do you really want to delete all config file?");
+				dialogResult.Owner = this;
+				if ((bool)dialogResult.ShowDialog())
+				{
+					ctrlComboConfigs.Items.Clear();
+
+					Configs.Remove(selectedConfig);
+					RegistryData.RemoveRegistryValue(RegistryData.KeyConfigs, selectedConfig);
+					AppLogger.Add("Configuration file [" + selectedConfig + "] deleted");
+					selectedConfig = Configs.FirstOrDefault();
+
+					ctrlComboConfigs.Items.Refresh();
+				}
+			}
+		}
 		#endregion
 
 		#region Log buttons
@@ -797,6 +803,12 @@ namespace vrClusterManager
 				}
 				RefreshUiControls();
 			}
+		}
+
+		private void commandLineTb_ManipulationCompleted(object sender, ManipulationCompletedEventArgs e)
+		{
+			int a = 5;
+
 		}
 
 		private void addInput(string type)
