@@ -114,15 +114,15 @@
       <DependentUpon>AboutDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Log\AppLogger.cs" />
+    <Compile Include="MainWindow.Data.xaml.cs" />
     <Compile Include="ValueConversion\InverseBooleanConverter.cs" />
     <Compile Include="ValueConversion\BoolToHorizontalBorderConverter.cs" />
     <Compile Include="ValueConversion\BoolToVerticalBorderConverter.cs" />
     <Compile Include="ValueConversion\ValueConverterGroup.cs" />
     <Compile Include="Visualization\Draw.cs" />
-    <Compile Include="Config\Parser.cs" />
+    <Compile Include="Config\ConfigParser.cs" />
     <Compile Include="UIControl\AutoScroller.cs" />
     <Compile Include="Config\AnalogInput.cs" />
-    <Compile Include="AppRunner\AppRunner.cs" />
     <Compile Include="Config\BaseInput.cs" />
     <Compile Include="Config\Camera.cs" />
     <Compile Include="Config\ClusterNode.cs" />
@@ -133,7 +133,7 @@
     </Compile>
     <Compile Include="Other\EnumBindingSourceExtension.cs" />
     <Compile Include="Config\DynamicCamera.cs" />
-    <Compile Include="AppRunner\LogCategory.cs" />
+    <Compile Include="Log\LogCategory.cs" />
     <Compile Include="Config\MasterNode.cs" />
     <Compile Include="Config\SceneNode.cs" />
     <Compile Include="Config\SceneNodeView.cs" />
@@ -141,7 +141,7 @@
     <Compile Include="DialogWindows\InfoDialog.xaml.cs">
       <DependentUpon>InfoDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Settings\RegistrySaver.cs" />
+    <Compile Include="Settings\RegistryData.cs" />
     <Compile Include="UIControl\UnselectableListBox.cs" />
     <Compile Include="DialogWindows\YesNoDialog.xaml.cs">
       <DependentUpon>YesNoDialog.xaml</DependentUpon>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+//using System.Windows.Forms;
 using System.Windows.Data;
 using System.Windows.Input;
 using Microsoft.Win32;
@@ -18,18 +19,22 @@ namespace vrClusterManager
 		static readonly string cfgFileExtention = "CAVE config file (*.cfg)|*.cfg";
 		static readonly string appFileExtention = "CAVE VR application (*.exe)|*.exe";
 
-		public VRConfig currentConfig;
-		public AppRunner m_AppRunner;
-
+		private VRConfig     m_Config  = new VRConfig();
+		private RegistryData m_RegData = new RegistryData();
 
 		public MainWindow()
 		{
 			InitializeComponent();
 
-			m_AppRunner = new AppRunner();
-			TabAppsLauncher.DataContext = m_AppRunner;
-			TabAppsLogging.DataContext = m_AppRunner;
-			appLogTextBox.DataContext = AppLogger.instance;
+			InitializeInternals();
+
+			logFile = logFileName;
+
+			TabAppsLauncher.DataContext = this;
+			TabAppsLogging.DataContext  = this;
+			ctrlComboConfigs.DataContext = this;
+			ctrlTextAppLog.DataContext = AppLogger.instance;
+
 			SetDefaultConfig();
 			SetViewportPreview();
 		}
@@ -39,30 +44,25 @@ namespace vrClusterManager
 			UpdateWindowTitle();
 		}
 
-
-
-
-
 		private void SetViewportPreview()
 		{
 
 			ViewportPreview viewportPreview = new ViewportPreview();
 			screenResolutionGrid.DataContext = viewportPreview;
 			viewportCanvas.DataContext = viewportPreview;
-			previewViewport.DataContext = currentConfig;
+			previewViewport.DataContext = m_Config;
 		}
 
-
-		private void Save(bool isSaveAs)
+		private void SaveImpl(bool isSaveAs)
 		{
-			if (currentConfig.Validate())
+			if (m_Config.Validate())
 			{
 				try
 				{
-					string currentFileName = RegistrySaver.ReadStringFromRegistry(RegistrySaver.configName);
+					string currentFileName = RegistryData.ReadStringFromRegistry(RegistryData.configName);
 					if (!isSaveAs && File.Exists(currentFileName))
 					{
-						File.WriteAllText(currentFileName, currentConfig.CreateConfig());
+						File.WriteAllText(currentFileName, m_Config.CreateConfig());
 					}
 					else
 					{
@@ -71,10 +71,11 @@ namespace vrClusterManager
 						if (saveFileDialog.ShowDialog() == true)
 						{
 							currentFileName = saveFileDialog.FileName;
-							currentConfig.name = Path.GetFileNameWithoutExtension(currentFileName);
-							RegistrySaver.RemoveAllRegistryValues(RegistrySaver.configName);
-							RegistrySaver.AddRegistryValue(RegistrySaver.configName, currentFileName);
-							File.WriteAllText(currentFileName, currentConfig.CreateConfig());
+							m_Config.name = Path.GetFileNameWithoutExtension(currentFileName);
+
+							RegistryData.RemoveAllRegistryValues(RegistryData.configName);
+							RegistryData.AddRegistryValue(RegistryData.configName, currentFileName);
+							File.WriteAllText(currentFileName, m_Config.CreateConfig());
 						}
 					}
 					UpdateWindowTitle();
@@ -100,18 +101,33 @@ namespace vrClusterManager
 				AppLogger.Add("ERROR! Can not save config to file. Errors in configuration");
 			}
 		}
-		public void SaveAsConfig(object sender, RoutedEventArgs e)
-		{
-			Save(true);
-		}
-		public void OpenConfig(object sender, RoutedEventArgs e)
+		private void OpenImpl()
 		{
 			OpenFileDialog openFileDialog = new OpenFileDialog();
 			openFileDialog.Filter = cfgFileExtention;
 			if (openFileDialog.ShowDialog() == true)
 			{
-				ConfigFileParser(openFileDialog.FileName);
+				string configPath = openFileDialog.FileName;
+				if (!configs.Exists(x => x == configPath))
+				{
+					AddConfig(configPath);
+					ctrlComboConfigs.Items.Refresh();
+					// upper verions or below one
+					//ConfigFileParser(openFileDialog.FileName);
+				}
 			}
+		}
+		private void SaveConfig(object sender, RoutedEventArgs e)
+		{
+			SaveImpl(false);
+		}
+		private void SaveAsConfig(object sender, RoutedEventArgs e)
+		{
+			SaveImpl(true);
+		}
+		private void OpenConfig(object sender, RoutedEventArgs e)
+		{
+			OpenImpl();
 		}
 		private void Exit(object sender, RoutedEventArgs e)
 		{
@@ -125,18 +141,28 @@ namespace vrClusterManager
 			aboutDialog.ShowDialog();
 		}
 
-		public void SaveConfig(object sender, RoutedEventArgs e)
+		private void ProcessUnsavedConfig()
 		{
-			Save(false);
+			if (!m_IsDirty)
+				return;
+
+			YesNoDialog dialogResult = new YesNoDialog("Would you like to save current changes?");
+			dialogResult.Owner = this;
+			if (dialogResult.ShowDialog() == true)
+			{
+				Save(false);
+				m_IsDirty = false;
+			}
 		}
+
 
 		private void SetDefaultConfig()
 		{
-			string configPath = RegistrySaver.ReadStringFromRegistry(RegistrySaver.configName);
+			string configPath = m_RegData.GetDefaultConfigFile();
+				
 			if (string.IsNullOrEmpty(configPath))
 			{
 				CreateConfig();
-
 			}
 			else
 			{
@@ -149,11 +175,11 @@ namespace vrClusterManager
 		}
 		void CreateConfig()
 		{
-			RegistrySaver.RemoveAllRegistryValues(RegistrySaver.configName);
-			currentConfig = new VRConfig();
-			this.DataContext = currentConfig;
+			RegistryData.RemoveAllRegistryValues(RegistryData.configName);
+			m_Config = new VRConfig();
+			this.DataContext = m_Config;
 			//crutch. for refactoring
-			currentConfig.selectedSceneNodeView = null;
+			m_Config.selectedSceneNodeView = null;
 			AppLogger.Add("New config initialized");
 			UpdateWindowTitle();
 			SetViewportPreview();
@@ -164,9 +190,9 @@ namespace vrClusterManager
 		private void ConfigFileParser(string filePath)
 		{
 			CreateConfig();
-			Parser.Parse(filePath, currentConfig);
+			m_Config = ConfigParser.Parse(filePath);
 			//Set first items in listboxes and treeview as default if existed
-			currentConfig.SelectFirstItems();
+			m_Config.SelectFirstItems();
 			RefreshUiControls();
 			try
 			{
@@ -176,9 +202,7 @@ namespace vrClusterManager
 			{
 
 			}
-			//sceneNodeTrackerCb.SelectedIndex = -1;
 			UpdateWindowTitle();
-			//SetViewportPreview();
 		}
 
 		//crutch for refreshing all listboxes and comboboxes after binding
@@ -193,15 +217,25 @@ namespace vrClusterManager
 			viewportsCb.Items.Refresh();
 			cameraTrackerIDCb.Items.Refresh();
 			sceneNodeTrackerCb.Items.Refresh();
-			sceneNodesTreeView.Items.Refresh();
+			ctrlTreeSceneNodes.Items.Refresh();
 		}
 
-		//Setting title of widow.
 		private void UpdateWindowTitle()
 		{
-			this.Title = currentConfig.name + " - vrCluster runner & configurator ver. " + Assembly.GetExecutingAssembly().GetName().Version.ToString();
+			this.Title = "VRCluster Manager ver. " + Assembly.GetExecutingAssembly().GetName().Version.ToString() + " - " + m_Config.name;
 		}
 
+		private void CollectionViewSource_Filter(object sender, FilterEventArgs e)
+		{
+			if (e.Item is TrackerInput)
+			{
+				e.Accepted = true;
+			}
+			else
+			{
+				e.Accepted = false;
+			}
+		}
 
 		public static void ConfigModifyIndicator()
 		{
@@ -232,10 +266,10 @@ namespace vrClusterManager
 					{
 
 						//finding Parent TreeViewItem of dragged TreeViewItem 
-						SceneNodeView ParentItem = currentConfig.FindParentNode(_sourceItem);
+						SceneNodeView ParentItem = m_Config.FindParentNode(_sourceItem);
 						if (ParentItem == null)
 						{
-							((List<SceneNodeView>)sceneNodesTreeView.ItemsSource).Remove(_sourceItem);
+							((List<SceneNodeView>)ctrlTreeSceneNodes.ItemsSource).Remove(_sourceItem);
 						}
 						else
 						{
@@ -244,7 +278,7 @@ namespace vrClusterManager
 						//adding dragged TreeViewItem in target TreeViewItem
 						if (_targetItem == null)
 						{
-							((List<SceneNodeView>)sceneNodesTreeView.ItemsSource).Add(_sourceItem);
+							((List<SceneNodeView>)ctrlTreeSceneNodes.ItemsSource).Add(_sourceItem);
 							_sourceItem.node.parent = null;
 						}
 						else
@@ -257,51 +291,24 @@ namespace vrClusterManager
 					catch
 					{
 					}
-					sceneNodesTreeView.Items.Refresh();
+					ctrlTreeSceneNodes.Items.Refresh();
 				}
-			}
-		}
-
-		private bool CheckDropTarget(SceneNodeView _sourceItem, object _targetItem)
-		{
-			SceneNodeView target = (SceneNodeView)_targetItem;
-			//Check whether the target item is meeting your condition
-			bool _isEqual = false;
-			if (!_sourceItem.node.Equals(target.node))
-			{
-				_isEqual = true;
-			}
-			return _isEqual;
-
-		}
-
-
-		private void CollectionViewSource_Filter(object sender, FilterEventArgs e)
-		{
-
-			if (e.Item is TrackerInput)
-			{
-				e.Accepted = true;
-			}
-			else
-			{
-				e.Accepted = false;
 			}
 		}
 
 		private void CheckBox_Checked(object sender, RoutedEventArgs e)
 		{
-			m_AppRunner.GenerateLogLevelsString();
+			GenerateLogLevelsString();
 		}
 
 		private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
 		{
-			m_AppRunner.GenerateLogLevelsString();
+			GenerateLogLevelsString();
 		}
 
 		private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			m_AppRunner.GenerateLogLevelsString();
+			GenerateLogLevelsString();
 		}
 
 		private void CopyToClipboard(string text)
@@ -315,31 +322,25 @@ namespace vrClusterManager
 
 
 		#region Config buttons
-		private void configsCb_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		private void onComboConfigs_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			m_AppRunner.ChangeConfigSelection(m_AppRunner.selectedConfig);
+			SetActiveConfig(ctrlComboConfigs.SelectedValue as string);
 		}
 
-		private void configsCb_DropDownOpened(object sender, EventArgs e)
+		private void onComboConfigs_DropDownOpened(object sender, EventArgs e)
 		{
 			ctrlComboConfigs.Items.Refresh();
 		}
 
-		private void onBtnConfigNew_Click(object sender, RoutedEventArgs e) => throw new NotImplementedException();
+		private void onBtnConfigNew_Click(object sender, RoutedEventArgs e)
+		{
+			m_Config = new VRConfig();
+			RefreshUiControls();
+		}
 
 		private void onBtnConfigAdd_Click(object sender, RoutedEventArgs e)
 		{
-			OpenFileDialog openFileDialog = new OpenFileDialog();
-			openFileDialog.Filter = cfgFileExtention;
-			if (openFileDialog.ShowDialog() == true)
-			{
-				string configPath = openFileDialog.FileName;
-				if (!m_AppRunner.configs.Exists(x => x == configPath))
-				{
-					m_AppRunner.AddConfig(configPath);
-					ctrlComboConfigs.Items.Refresh();
-				}
-			}
+			OpenImpl();
 		}
 
 		private void onBtnConfigDel_Click(object sender, RoutedEventArgs e)
@@ -350,7 +351,7 @@ namespace vrClusterManager
 				dialogResult.Owner = this;
 				if ((bool)dialogResult.ShowDialog())
 				{
-					m_AppRunner.DeleteConfig();
+					DeleteConfig();
 
 					ctrlComboConfigs.Items.Refresh();
 				}
@@ -363,7 +364,7 @@ namespace vrClusterManager
 		#region Log buttons
 		private void onBtnLogCopy_Click(object sender, RoutedEventArgs e)
 		{
-			CopyToClipboard(appLogTextBox.Text);
+			CopyToClipboard(ctrlTextAppLog.Text);
 		}
 
 		private void onBtnLogSave_Click(object sender, RoutedEventArgs e) => throw new NotImplementedException();
@@ -382,7 +383,7 @@ namespace vrClusterManager
 			if (openFileDialog.ShowDialog() == true)
 			{
 				string appPath = openFileDialog.FileName;
-				m_AppRunner.AddApplication(appPath);
+				AddApplication(appPath);
 				applicationsListBox.Items.Refresh();
 			}
 		}
@@ -395,7 +396,7 @@ namespace vrClusterManager
 				dialogResult.Owner = this;
 				if ((bool)dialogResult.ShowDialog())
 				{
-					m_AppRunner.DeleteApplication();
+					DeleteApplication();
 					applicationsListBox.Items.Refresh();
 				}
 			}
@@ -408,24 +409,24 @@ namespace vrClusterManager
 
 		private void runBtn_Click(object sender, RoutedEventArgs e)
 		{
-			m_AppRunner.RunCommand();
+			RunCommand();
 		}
 
 		private void statusBtn_Click(object sender, RoutedEventArgs e)
 		{
-			m_AppRunner.StatusCommand();
+			StatusCommand();
 		}
 
 		private void killBtn_Click(object sender, RoutedEventArgs e)
 		{
-			m_AppRunner.KillCommand();
+			KillCommand();
 		}
 		#endregion
 
 		#region Page: APPS - logs
 		private void logsFolderBtn_Click(object sender, RoutedEventArgs e)
 		{
-			m_AppRunner.CollectLogs();
+			CollectLogs();
 		}
 
 		private void logsClearBtn_Click(object sender, RoutedEventArgs e)
@@ -434,7 +435,7 @@ namespace vrClusterManager
 			dialogResult.Owner = this;
 			if ((bool)dialogResult.ShowDialog())
 			{
-				m_AppRunner.CleanLogs();
+				CleanLogs();
 			}
 		}
 		#endregion
@@ -442,12 +443,12 @@ namespace vrClusterManager
 		#region Page: Edit config - cluster node
 		private void onCbMasterNode_Click(object sender, RoutedEventArgs e)
 		{
-			foreach (ClusterNode node in currentConfig.clusterNodes)
+			foreach (ClusterNode node in m_Config.clusterNodes)
 			{
-				if (node == currentConfig.selectedNode)
+				if (node == m_Config.selectedNode)
 				{
 					node.isMaster = true;
-					AppLogger.Add("Cluster node " + currentConfig.selectedNode.id + " set as master node");
+					AppLogger.Add("Cluster node " + m_Config.selectedNode.id + " set as master node");
 				}
 				else
 				{
@@ -459,8 +460,8 @@ namespace vrClusterManager
 
 		private void onBtnClusterNodeAdd_Click(object sender, RoutedEventArgs e)
 		{
-			currentConfig.clusterNodes.Add(new ClusterNode());
-			currentConfig.selectedNode = currentConfig.clusterNodes.LastOrDefault();
+			m_Config.clusterNodes.Add(new ClusterNode());
+			m_Config.selectedNode = m_Config.clusterNodes.LastOrDefault();
 			nodesListBox.Items.Refresh();
 			nodeIdTb.Focus();
 			AppLogger.Add("New cluster node added");
@@ -469,12 +470,12 @@ namespace vrClusterManager
 
 		private void onBtnClusterNodeDel_Click(object sender, RoutedEventArgs e)
 		{
-			if (currentConfig.selectedNode != null)
+			if (m_Config.selectedNode != null)
 			{
-				var id = currentConfig.selectedNode.id;
-				int selectedIndex = currentConfig.clusterNodes.IndexOf(currentConfig.selectedNode);
-				currentConfig.clusterNodes.RemoveAt(selectedIndex);
-				currentConfig.selectedNode = currentConfig.clusterNodes.FirstOrDefault();
+				var id = m_Config.selectedNode.id;
+				int selectedIndex = m_Config.clusterNodes.IndexOf(m_Config.selectedNode);
+				m_Config.clusterNodes.RemoveAt(selectedIndex);
+				m_Config.selectedNode = m_Config.clusterNodes.FirstOrDefault();
 
 				AppLogger.Add("Cluster node " + id + " deleted");
 			}
@@ -485,8 +486,8 @@ namespace vrClusterManager
 		#region Page: Edit config - screens
 		private void onBtnScreenAdd_Click(object sender, RoutedEventArgs e)
 		{
-			currentConfig.screens.Add(new Screen());
-			currentConfig.selectedScreen = currentConfig.screens.LastOrDefault();
+			m_Config.screens.Add(new Screen());
+			m_Config.selectedScreen = m_Config.screens.LastOrDefault();
 			screensListBox.Items.Refresh();
 			screensCb.Items.Refresh();
 			screenIdTb.Focus();
@@ -496,12 +497,12 @@ namespace vrClusterManager
 
 		private void onBtnScreenDel_Click(object sender, RoutedEventArgs e)
 		{
-			if (currentConfig.selectedScreen != null)
+			if (m_Config.selectedScreen != null)
 			{
-				var id = currentConfig.selectedScreen.id;
-				int selectedIndex = currentConfig.screens.IndexOf(currentConfig.selectedScreen);
-				currentConfig.screens.RemoveAt(selectedIndex);
-				currentConfig.selectedScreen = currentConfig.screens.FirstOrDefault();
+				var id = m_Config.selectedScreen.id;
+				int selectedIndex = m_Config.screens.IndexOf(m_Config.selectedScreen);
+				m_Config.screens.RemoveAt(selectedIndex);
+				m_Config.selectedScreen = m_Config.screens.FirstOrDefault();
 
 				AppLogger.Add("Screen " + id + " deleted");
 			}
@@ -514,8 +515,8 @@ namespace vrClusterManager
 		#region Page: Edit config - viewports
 		private void onBtnViewportAdd_Click(object sender, RoutedEventArgs e)
 		{
-			currentConfig.viewports.Add(new Viewport());
-			currentConfig.selectedViewport = currentConfig.viewports.LastOrDefault();
+			m_Config.viewports.Add(new Viewport());
+			m_Config.selectedViewport = m_Config.viewports.LastOrDefault();
 			viewportsListBox.Items.Refresh();
 			viewportsCb.Items.Refresh();
 			viewportIdTb.Focus();
@@ -525,13 +526,13 @@ namespace vrClusterManager
 
 		private void onBtnViewportDel_Click(object sender, RoutedEventArgs e)
 		{
-			if (currentConfig.selectedViewport != null)
+			if (m_Config.selectedViewport != null)
 			{
-				var id = currentConfig.selectedViewport.id;
-				int selectedIndex = currentConfig.viewports.IndexOf(currentConfig.selectedViewport);
+				var id = m_Config.selectedViewport.id;
+				int selectedIndex = m_Config.viewports.IndexOf(m_Config.selectedViewport);
 
-				currentConfig.viewports.RemoveAt(selectedIndex);
-				currentConfig.selectedViewport = currentConfig.viewports.FirstOrDefault();
+				m_Config.viewports.RemoveAt(selectedIndex);
+				m_Config.selectedViewport = m_Config.viewports.FirstOrDefault();
 
 				AppLogger.Add("Viewport " + id + " deleted");
 			}
@@ -550,18 +551,18 @@ namespace vrClusterManager
 		private void onBtnSceneNodeAdd_Click(object sender, RoutedEventArgs e)
 		{
 			SceneNode newItem = new SceneNode();
-			if (currentConfig.selectedSceneNodeView != null)
+			if (m_Config.selectedSceneNodeView != null)
 			{
-				newItem.parent = currentConfig.selectedSceneNodeView.node;
+				newItem.parent = m_Config.selectedSceneNodeView.node;
 			}
 			SceneNodeView newViewItem = new SceneNodeView(newItem);
 			newViewItem.isSelected = true;
-			currentConfig.sceneNodes.Add(newItem);
+			m_Config.sceneNodes.Add(newItem);
 
-			SceneNodeView parentNode = currentConfig.FindParentNode(newViewItem);
+			SceneNodeView parentNode = m_Config.FindParentNode(newViewItem);
 			if (parentNode == null)
 			{
-				currentConfig.sceneNodesView.Add(newViewItem);
+				m_Config.sceneNodesView.Add(newViewItem);
 			}
 			else
 			{
@@ -570,21 +571,21 @@ namespace vrClusterManager
 			}
 			AppLogger.Add("New scene node added");
 			AppLogger.Add("WARNING! Change default values");
-			sceneNodesTreeView.Items.Refresh();
+			ctrlTreeSceneNodes.Items.Refresh();
 			sceneNodeIdTb.Focus();
 		}
 
 		private void onBtnSceneNodeDel_Click(object sender, RoutedEventArgs e)
 		{
-			if (sceneNodesTreeView.SelectedItem != null)
+			if (ctrlTreeSceneNodes.SelectedItem != null)
 			{
-				SceneNodeView item = (SceneNodeView)sceneNodesTreeView.SelectedItem;
+				SceneNodeView item = (SceneNodeView)ctrlTreeSceneNodes.SelectedItem;
 				var id = item.node.id;
-				currentConfig.DeleteSceneNode(item);
-				currentConfig.selectedSceneNodeView = currentConfig.sceneNodesView.FirstOrDefault();
+				m_Config.DeleteSceneNode(item);
+				m_Config.selectedSceneNodeView = m_Config.sceneNodesView.FirstOrDefault();
 				AppLogger.Add("Scene Node " + id + " deleted");
 			}
-			sceneNodesTreeView.Items.Refresh();
+			ctrlTreeSceneNodes.Items.Refresh();
 			parentWallsCb.Items.Refresh();
 		}
 
@@ -592,7 +593,7 @@ namespace vrClusterManager
 		Point _lastMouseDown;
 		SceneNodeView draggedItem, _target;
 		bool isNode = true;
-		private void treeView_MouseDown(object sender, MouseButtonEventArgs e)
+		private void onTreeSceneNodes_MouseDown(object sender, MouseButtonEventArgs e)
 		{
 			if (e.ChangedButton == MouseButton.Left)
 			{
@@ -602,13 +603,13 @@ namespace vrClusterManager
 				}
 				else
 				{
-					_lastMouseDown = e.GetPosition(sceneNodesTreeView);
+					_lastMouseDown = e.GetPosition(ctrlTreeSceneNodes);
 					isNode = true;
 				}
 			}
 		}
 
-		private void treeView_MouseMove(object sender, MouseEventArgs e)
+		private void onTreeSceneNodes_MouseMove(object sender, MouseEventArgs e)
 		{
 			try
 			{
@@ -616,21 +617,18 @@ namespace vrClusterManager
 				{
 					if (!(e.OriginalSource is System.Windows.Controls.Primitives.Thumb))
 					{
-						Point currentPosition = e.GetPosition(sceneNodesTreeView);
+						Point currentPosition = e.GetPosition(ctrlTreeSceneNodes);
 
 						if ((Math.Abs(currentPosition.X - _lastMouseDown.X) > 10.0) ||
 							(Math.Abs(currentPosition.Y - _lastMouseDown.Y) > 10.0))
 						{
 							if (isNode)
 							{
-								draggedItem = (SceneNodeView)sceneNodesTreeView.SelectedItem;
+								draggedItem = (SceneNodeView)ctrlTreeSceneNodes.SelectedItem;
 							}
 							if (draggedItem != null)
 							{
-								DragDropEffects finalDropEffect =
-					DragDrop.DoDragDrop(sceneNodesTreeView,
-						sceneNodesTreeView.SelectedValue,
-									DragDropEffects.Move);
+								DragDropEffects finalDropEffect = DragDrop.DoDragDrop(ctrlTreeSceneNodes, ctrlTreeSceneNodes.SelectedValue, DragDropEffects.Move);
 								//Checking target is not null and item is
 								//dragging(moving)
 								if (finalDropEffect == DragDropEffects.Move)
@@ -664,30 +662,30 @@ namespace vrClusterManager
 		}
 
 		//Crutch for deselecting all nodes. refactoring needed!!!!!
-		private void sceneNodesTreeView_MouseUp(object sender, MouseButtonEventArgs e)
+		private void onTreeSceneNodes_MouseUp(object sender, MouseButtonEventArgs e)
 		{
-			if (e.OriginalSource is Grid && currentConfig.selectedSceneNodeView != null)
+			if (e.OriginalSource is Grid && m_Config.selectedSceneNodeView != null)
 			{
-				currentConfig.selectedSceneNodeView.isSelected = false;
-				currentConfig.selectedSceneNodeView = null;
-				sceneNodesTreeView.ItemsSource = null;
-				sceneNodesTreeView.ItemsSource = currentConfig.sceneNodesView;
+				m_Config.selectedSceneNodeView.isSelected = false;
+				m_Config.selectedSceneNodeView = null;
+				ctrlTreeSceneNodes.ItemsSource = null;
+				ctrlTreeSceneNodes.ItemsSource = m_Config.sceneNodesView;
 
 			}
 			isNode = true;
 		}
 
 		//Sets selected treeview item
-		private void sceneNodesTreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+		private void onTreeSceneNodes_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
 		{
-			currentConfig.selectedSceneNodeView = (SceneNodeView)sceneNodesTreeView.SelectedItem;
+			m_Config.selectedSceneNodeView = (SceneNodeView)ctrlTreeSceneNodes.SelectedItem;
 
 
-			if (currentConfig.selectedSceneNodeView != null)
+			if (m_Config.selectedSceneNodeView != null)
 			{
-				if (currentConfig.inputs.Contains(currentConfig.selectedSceneNodeView.node.tracker))
+				if (m_Config.inputs.Contains(m_Config.selectedSceneNodeView.node.tracker))
 				{
-					sceneNodeTrackerCb.SelectedItem = currentConfig.selectedSceneNodeView.node.tracker;
+					sceneNodeTrackerCb.SelectedItem = m_Config.selectedSceneNodeView.node.tracker;
 				}
 				else
 				{
@@ -700,7 +698,7 @@ namespace vrClusterManager
 		{
 			try
 			{
-				Point currentPosition = e.GetPosition(sceneNodesTreeView);
+				Point currentPosition = e.GetPosition(ctrlTreeSceneNodes);
 
 				if ((Math.Abs(currentPosition.X - _lastMouseDown.X) > 10.0) ||
 				   (Math.Abs(currentPosition.Y - _lastMouseDown.Y) > 10.0))
@@ -748,6 +746,19 @@ namespace vrClusterManager
 			{
 			}
 		}
+
+		private bool CheckDropTarget(SceneNodeView _sourceItem, object _targetItem)
+		{
+			SceneNodeView target = (SceneNodeView)_targetItem;
+			//Check whether the target item is meeting your condition
+			bool _isEqual = false;
+			if (!_sourceItem.node.Equals(target.node))
+			{
+				_isEqual = true;
+			}
+			return _isEqual;
+
+		}
 		#endregion
 
 		#region Page: Edit config - input
@@ -769,13 +780,13 @@ namespace vrClusterManager
 
 		private void onBtnInputDel_Click(object sender, RoutedEventArgs e)
 		{
-			if (currentConfig.selectedInput != null)
+			if (m_Config.selectedInput != null)
 			{
-				var id = currentConfig.selectedInput.id;
-				int selectedIndex = currentConfig.inputs.IndexOf(currentConfig.selectedInput);
-				currentConfig.inputs.RemoveAt(selectedIndex);
-				AppLogger.Add(currentConfig.selectedInput.type + " input " + id + " deleted");
-				currentConfig.selectedInput = currentConfig.inputs.FirstOrDefault();
+				var id = m_Config.selectedInput.id;
+				int selectedIndex = m_Config.inputs.IndexOf(m_Config.selectedInput);
+				m_Config.inputs.RemoveAt(selectedIndex);
+				AppLogger.Add(m_Config.selectedInput.type + " input " + id + " deleted");
+				m_Config.selectedInput = m_Config.inputs.FirstOrDefault();
 				try
 				{
 					((CollectionViewSource)this.Resources["cvsInputTrackers"]).View.Refresh();
@@ -794,14 +805,14 @@ namespace vrClusterManager
 			{
 				if (type == "tracker")
 				{
-					currentConfig.inputs.Add(new TrackerInput { id = "TrackerInputId", address = "TrackerInputName@127.0.0.1", locationX = "0", locationY = "0", locationZ = "0", rotationP = "0", rotationR = "0", rotationY = "0", front = "X", right = "Y", up = "-Z" });
+					m_Config.inputs.Add(new TrackerInput { id = "TrackerInputId", address = "TrackerInputName@127.0.0.1", locationX = "0", locationY = "0", locationZ = "0", rotationP = "0", rotationR = "0", rotationY = "0", front = "X", right = "Y", up = "-Z" });
 				}
 				else
 				{
 					InputDeviceType currentType = (InputDeviceType)System.Enum.Parse(typeof(InputDeviceType), type);
-					currentConfig.inputs.Add(new BaseInput { id = "InputId", type = currentType, address = "InputName@127.0.0.1" });
+					m_Config.inputs.Add(new BaseInput { id = "InputId", type = currentType, address = "InputName@127.0.0.1" });
 				}
-				currentConfig.selectedInput = currentConfig.inputs.LastOrDefault();
+				m_Config.selectedInput = m_Config.inputs.LastOrDefault();
 				RefreshUiControls();
 				//inputsListBox.Items.Refresh();
 				try

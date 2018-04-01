@@ -4,29 +4,30 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Forms;
+using System.Windows.Input;
 using System.IO.Compression;
-//using Microsoft.Win32;
 using vrClusterManager.Config;
 using vrClusterManager.Settings;
+using Microsoft.Win32;
+
 
 namespace vrClusterManager
 {
-	public class AppRunner : INotifyPropertyChanged
+	public partial class MainWindow : Window
 	{
-
-		// net
 		public const int nodeListenerPort = 9777;
 
-
 		public const string LogCategoriesList = "logCategoriesList.conf";
-
-		public const string registryPath = "SOFTWARE\\Pixela Labs\\vrCluster";
-
-		//Log file name
 		public const string logFileName = "logFilename.log";
+
+		private const string registryPath = "SOFTWARE\\Pixela Labs\\vrCluster";
 
 		public static string logLevels = "";
 
@@ -59,81 +60,6 @@ namespace vrClusterManager
 		private const string uvrParamNoTextureStreaming = " -notexturestreaming";
 		private const string uvrParamUseAllAvailableCores = " -useallavailablecores";
 
-
-		private Dictionary<string, string> _renderApiParams = new Dictionary<string, string>
-		{
-			{"OpenGL3", " -opengl3" },
-			{"OpenGL4", " -opengl4" },
-			{"DirectX 11", " -dx11" }
-		};
-		public Dictionary<string, string> renderApiParams
-		{
-			get { return _renderApiParams; }
-			set { Set(ref _renderApiParams, value, "renderApiParams"); }
-		}
-
-		//Selected OpenGL parameter
-		private KeyValuePair<string, string> _selectedRenderApiParam;
-		public KeyValuePair<string, string> selectedRenderApiParam
-		{
-			get { return _selectedRenderApiParam; }
-			set
-			{
-				Set(ref _selectedRenderApiParam, value, "selectedRenderApiParam");
-				RegistrySaver.UpdateRegistry(RegistrySaver.paramsList, RegistrySaver.renderApiName, value.Key);
-				GenerateCmdStartApp();
-			}
-		}
-
-		private Dictionary<string, string> _renderModeParams = new Dictionary<string, string>
-		{
-			{"Mono", " -uvr_dev_mono" },
-			{"Frame sequential", " -quad_buffer_stereo" },
-			{"Side-by-side", " -uvr_dev_side_by_side" },
-			{"Top-bottom", " -uvr_dev_top_bottom" }
-		};
-		public Dictionary<string, string> renderModeParams
-		{
-			get { return _renderModeParams; }
-			set { Set(ref _renderModeParams, value, "renderModeParams"); }
-		}
-
-		//Selected OpenGL parameter
-		private KeyValuePair<string, string> _selectedRenderModeParam;
-		public KeyValuePair<string, string> selectedRenderModeParam
-		{
-			get { return _selectedRenderModeParam; }
-			set
-			{
-				Set(ref _selectedRenderModeParam, value, "selectedRenderModeParam");
-				RegistrySaver.UpdateRegistry(RegistrySaver.paramsList, RegistrySaver.renderModeName, value.Key);
-				GenerateCmdStartApp();
-			}
-		}
-
-		private bool _isUseAllCores;
-		public bool isUseAllCores
-		{
-			get { return _isUseAllCores; }
-			set
-			{
-				Set(ref _isUseAllCores, value, "isUseAllCores");
-				RegistrySaver.UpdateRegistry(RegistrySaver.paramsList, RegistrySaver.isAllCoresName, value);
-				GenerateCmdStartApp();
-			}
-		}
-
-		private bool _isNotextureStreaming;
-		public bool isNotextureStreaming
-		{
-			get { return _isNotextureStreaming; }
-			set
-			{
-				Set(ref _isNotextureStreaming, value, "isNotextureStreaming");
-				RegistrySaver.UpdateRegistry(RegistrySaver.paramsList, RegistrySaver.isNoTextureStreamingName, value);
-				GenerateCmdStartApp();
-			}
-		}
 
 		private bool _isLogEnabled;
 		public bool isLogEnabled
@@ -228,7 +154,7 @@ namespace vrClusterManager
 			set
 			{
 				Set(ref _additionalParams, value, "additionalParams");
-				RegistrySaver.UpdateRegistry(RegistrySaver.paramsList, RegistrySaver.additionalParamsName, value);
+				RegistryData.UpdateRegistry(RegistryData.paramsList, RegistryData.additionalParamsName, value);
 				GenerateCmdStartApp();
 			}
 		}
@@ -265,23 +191,6 @@ namespace vrClusterManager
 			{
 				Set(ref _selectedConfig, value, "selectedConfig");
 				GenerateCmdStartApp();
-				//runningConfig = new Config();
-				//Parser.Parse(_selectedConfig, runningConfig);
-				//SetSelectedConfig();
-			}
-		}
-
-		//private Config runningConfig;
-
-		//Selected Camera
-		private string _selectedCamera;
-		public string selectedCamera
-		{
-			get { return _selectedCamera; }
-			set
-			{
-				Set(ref _selectedCamera, value, "selectedCamera");
-				GenerateCmdStartApp();
 			}
 		}
 
@@ -292,15 +201,6 @@ namespace vrClusterManager
 			Status,
 
 			COUNT
-		}
-
-		public AppRunner()
-		{
-
-			InitOptions();
-			InitConfigLists();
-			InitLogCategories();
-			logFile = logFileName;
 		}
 
 		//Implementation of INotifyPropertyChanged method for TwoWay binding
@@ -339,17 +239,15 @@ namespace vrClusterManager
 		}
 
 		//Reloading all config lists
-		private void InitConfigLists()
+		private void InitConfigList()
 		{
-
-			applications = RegistrySaver.ReadStringsFromRegistry(RegistrySaver.appList);
+			applications = RegistryData.ReadStringsFromRegistry(RegistryData.appList);
 			AppLogger.Add("Applications loaded successfully");
-			configs = RegistrySaver.ReadStringsFromRegistry(RegistrySaver.configList);
+			configs = RegistryData.ReadStringsFromRegistry(RegistryData.configList);
 			SetSelectedConfig();
 			AppLogger.Add("Configs loaded successfully");
 			AppLogger.Add("List of Active nodes loaded successfully");
-			selectedCamera = cameras.SingleOrDefault(x => x == "camera_dynamic");
-
+			//selectedCamera = cameras.SingleOrDefault(x => x == "camera_dynamic");
 		}
 
 		private void InitLogCategories()
@@ -372,7 +270,7 @@ namespace vrClusterManager
 		public void SetSelectedConfig()
 		{
 			selectedConfig = string.Empty;
-			string selected = RegistrySaver.FindSelectedRegValue(RegistrySaver.configList);
+			string selected = RegistryData.FindSelectedRegValue(RegistryData.configList);
 			if (!string.IsNullOrEmpty(selected))
 			{
 				selectedConfig = configs.Find(x => x == selected);
@@ -380,31 +278,39 @@ namespace vrClusterManager
 			}
 		}
 
+		private void InitializeInternals()
+		{
+			InitOptions();
+			InitConfigList();
+			InitLogCategories();
+		}
+
 		private void InitOptions()
 		{
-			try
-			{
-				selectedRenderApiParam = renderApiParams.First(x => x.Key == RegistrySaver.ReadStringValue(RegistrySaver.paramsList, RegistrySaver.renderApiName));
-			}
-			catch (Exception)
-			{
-				selectedRenderApiParam = renderApiParams.SingleOrDefault(x => x.Key == "OpenGL3");
-			}
+			additionalParams = RegistryData.GetCommonCmdLineArgs();
 
-			try
-			{
-				selectedRenderModeParam = renderModeParams.First(x => x.Key == RegistrySaver.ReadStringValue(RegistrySaver.paramsList, RegistrySaver.renderModeName));
-			}
-			catch (Exception)
-			{
-				selectedRenderApiParam = renderModeParams.SingleOrDefault(x => x.Key == "Mono");
-			}
+			AppLogger.Add("General options have been initialized");
+			//try
+			//{
+			//	selectedRenderApiParam = renderApiParams.First(x => x.Key == RegistryData.ReadStringValue(RegistryData.paramsList, RegistryData.renderApiName));
+			//}
+			//catch (Exception)
+			//{
+			//	selectedRenderApiParam = renderApiParams.SingleOrDefault(x => x.Key == "OpenGL3");
+			//}
+
+			//try
+			//{
+			//	selectedRenderModeParam = renderModeParams.First(x => x.Key == RegistryData.ReadStringValue(RegistryData.paramsList, RegistryData.renderModeName));
+			//}
+			//catch (Exception)
+			//{
+			//	selectedRenderApiParam = renderModeParams.SingleOrDefault(x => x.Key == "Mono");
+			//}
 
 
-			additionalParams = RegistrySaver.ReadStringValue(RegistrySaver.paramsList, RegistrySaver.additionalParamsName);
-			isUseAllCores = RegistrySaver.ReadBoolValue(RegistrySaver.paramsList, RegistrySaver.isAllCoresName);
-			isNotextureStreaming = RegistrySaver.ReadBoolValue(RegistrySaver.paramsList, RegistrySaver.isNoTextureStreamingName);
-			AppLogger.Add("Application Options initialized");
+			//isUseAllCores = RegistryData.ReadBoolValue(RegistryData.paramsList, RegistryData.isAllCoresName);
+			//isNotextureStreaming = RegistryData.ReadBoolValue(RegistryData.paramsList, RegistryData.isNoTextureStreamingName);
 		}
 
 		//Generating command line for the App
@@ -421,11 +327,11 @@ namespace vrClusterManager
 			string swNoTextureStreaming = "";
 			string swUseAllAvailableCores = "";
 
-			swRenderApi = selectedRenderApiParam.Value;
-			swRenderMode = selectedRenderModeParam.Value;
+			//swRenderApi = selectedRenderApiParam.Value;
+			//swRenderMode = selectedRenderModeParam.Value;
 			swFixedSeed = uvrParamFixedSeed;
-			swNoTextureStreaming = (isNotextureStreaming) ? uvrParamNoTextureStreaming : "";
-			swUseAllAvailableCores = (isUseAllCores) ? uvrParamUseAllAvailableCores : "";
+			//swNoTextureStreaming = (isNotextureStreaming) ? uvrParamNoTextureStreaming : "";
+			//swUseAllAvailableCores = (isUseAllCores) ? uvrParamUseAllAvailableCores : "";
 
 
 			// logging params
@@ -445,10 +351,10 @@ namespace vrClusterManager
 
 			// camera by default
 			string paramDefaultCamera = "";
-			if (selectedCamera != null)
-			{
-				paramDefaultCamera = uvrParamCameraDefault + selectedCamera;
-			}
+			//if (selectedCamera != null)
+			//{
+			//	paramDefaultCamera = uvrParamCameraDefault + selectedCamera;
+			//}
 
 			// additional params
 
@@ -488,7 +394,7 @@ namespace vrClusterManager
 		private List<ClusterNode> GetClusterNodes()
 		{
 			VRConfig runningConfig = new VRConfig();
-			return Parser.Parse(selectedConfig, runningConfig).clusterNodes;
+			return ConfigParser.Parse(selectedConfig).clusterNodes;
 		}
 
 		public void RunCommand()
@@ -678,7 +584,7 @@ namespace vrClusterManager
 
 			FolderBrowserDialog fbDialog = new FolderBrowserDialog();
 			//fbDialog.Description = "Select a folder for save log files from nodes :";
-			if (fbDialog.ShowDialog() != DialogResult.OK || nodes.Count == 0)
+			if ((fbDialog.ShowDialog() != System.Windows.Forms.DialogResult.OK) || nodes.Count == 0)
 			{
 				return;
 			}
@@ -784,7 +690,7 @@ namespace vrClusterManager
 			if (!applications.Contains(appPath))
 			{
 				applications.Add(appPath);
-				RegistrySaver.AddRegistryValue(RegistrySaver.appList, appPath);
+				RegistryData.AddRegistryValue(RegistryData.appList, appPath);
 				AppLogger.Add("Application [" + appPath + "] added to list");
 			}
 			else
@@ -797,13 +703,13 @@ namespace vrClusterManager
 		public void DeleteApplication()
 		{
 			applications.Remove(selectedApplication);
-			RegistrySaver.RemoveRegistryValue(RegistrySaver.appList, selectedApplication);
+			RegistryData.RemoveRegistryValue(RegistryData.appList, selectedApplication);
 			AppLogger.Add("Application [" + selectedApplication + "] deleted");
 
 			selectedApplication = null;
 		}
 
-		public void ChangeConfigSelection(string configPath)
+		public void SetActiveConfig(string configPath)
 		{
 			try
 			{
@@ -811,11 +717,11 @@ namespace vrClusterManager
 				{
 					if (config != configPath)
 					{
-						RegistrySaver.UpdateRegistry(RegistrySaver.configList, config, false);
+						RegistryData.UpdateRegistry(RegistryData.configList, config, false);
 					}
 					else
 					{
-						RegistrySaver.UpdateRegistry(RegistrySaver.configList, config, true);
+						RegistryData.UpdateRegistry(RegistryData.configList, config, true);
 					}
 				}
 			}
@@ -831,8 +737,8 @@ namespace vrClusterManager
 			{
 				configs.Add(configPath);
 				selectedConfig = configs.Find(x => x == configPath);
-				RegistrySaver.AddRegistryValue(RegistrySaver.configList, configPath);
-				ChangeConfigSelection(configPath);
+				RegistryData.AddRegistryValue(RegistryData.configList, configPath);
+				SetActiveConfig(configPath);
 				AppLogger.Add("Configuration file [" + configPath + "] added to list");
 			}
 			catch (Exception)
@@ -844,7 +750,7 @@ namespace vrClusterManager
 		public void DeleteConfig()
 		{
 			configs.Remove(selectedConfig);
-			RegistrySaver.RemoveRegistryValue(RegistrySaver.configList, selectedConfig);
+			RegistryData.RemoveRegistryValue(RegistryData.configList, selectedConfig);
 			AppLogger.Add("Configuration file [" + selectedConfig + "] deleted");
 			selectedConfig = configs.FirstOrDefault();
 		}

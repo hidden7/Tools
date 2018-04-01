@@ -59,8 +59,7 @@
 		<CollectionViewSource x:Key="cvsInputTrackers" Source="{Binding inputs}" Filter="CollectionViewSource_Filter" IsLiveFilteringRequested="True">
 
 		</CollectionViewSource>
-		<ObjectDataProvider x:Key="dataFromEnum" 
-                        MethodName="GetNames" ObjectType="{x:Type sys:Enum}">
+		<ObjectDataProvider x:Key="dataFromEnum" MethodName="GetNames" ObjectType="{x:Type sys:Enum}">
 			<ObjectDataProvider.MethodParameters>
 				<x:Type TypeName="local:LogCatValue" />
 			</ObjectDataProvider.MethodParameters>
@@ -477,7 +476,7 @@
 
 			<StackPanel Grid.Column="0" Margin="2,2,0,2" Orientation="Horizontal" HorizontalAlignment="Left" Width="Auto">
 				<Label Content="Config" />
-				<ComboBox x:Name="ctrlComboConfigs" ItemsSource="{Binding configs}" SelectedItem="{Binding selectedConfig}" VerticalAlignment="Top" Template="{DynamicResource ComboBoxTemplate}" DropDownOpened="configsCb_DropDownOpened" Width="Auto" Height="Auto" MinWidth="350" MaxWidth="720" ToolTip="Select config file" HorizontalAlignment="Stretch" SelectionChanged="configsCb_SelectionChanged" Margin="2,2,10,2" />
+				<ComboBox x:Name="ctrlComboConfigs" ItemsSource="{Binding configs}" SelectedItem="{Binding selectedConfig}" VerticalAlignment="Top" Template="{DynamicResource ComboBoxTemplate}" DropDownOpened="onComboConfigs_DropDownOpened" Width="Auto" Height="Auto" MinWidth="350" MaxWidth="720" ToolTip="Select config file" HorizontalAlignment="Stretch" SelectionChanged="onComboConfigs_SelectionChanged" Margin="2,2,10,2" />
 				<Button x:Name="ctrlBtnConfigNew" Content="New" Template="{DynamicResource ButtonTemplate}" ToolTip="Create new empty config" Click="onBtnConfigNew_Click" Padding="1.8,0,2,0" Margin="2,0" />
 				<Button x:Name="ctrlBtnConfigAdd" Content="Add" Template="{DynamicResource ButtonTemplate}" ToolTip="Add existing config" Click="onBtnConfigAdd_Click" Padding="2,0" Margin="2,0"/>
 				<Button x:Name="ctrlBtnConfigDel" Content="Delete" Template="{DynamicResource ButtonTemplate}" ToolTip="Delete selected config" Click="onBtnConfigDel_Click" Padding="2,0" Height="22" Margin="2,0" />
@@ -751,7 +750,7 @@
 									<ColumnDefinition Width="100" />
 									<ColumnDefinition Width="*" />
 								</Grid.ColumnDefinitions>
-								<CheckBox x:Name="logsZipCheckBox" Grid.Column="0" Content="Zip Logs" Template="{DynamicResource CustomCheckBoxControlTemplate}" IsChecked="{Binding isLogZip}" />
+								<CheckBox x:Name="ctrlCbLoggingAlogsZipCheckBox" Grid.Column="0" Content="Zip Logs" Template="{DynamicResource CustomCheckBoxControlTemplate}" IsChecked="{Binding isLogZip}" />
 								<CheckBox x:Name="logsRemoveCheckBox" Grid.Column="1" Content="Remove files arter Zip" Template="{DynamicResource CustomCheckBoxControlTemplate}" IsChecked="{Binding isLogRemove}" Visibility="{Binding IsChecked, Converter={StaticResource BoolToVisConverter}, ElementName=logsZipCheckBox}" />
 							</Grid>
 							<Grid Grid.Row="2" >
@@ -760,7 +759,8 @@
 									<RowDefinition Height="Auto" />
 								</Grid.RowDefinitions>
 
-								<CheckBox x:Name="logOptionsCheckBox" Grid.Row="0" Content="Enable Logging Options" Template="{DynamicResource CustomCheckBoxControlTemplate}" IsChecked="{Binding isLogEnabled}" />
+								<!--<CheckBox x:Name="logOptionsCheckBox" Grid.Row="0" Content="Enable Logging Options" Template="{DynamicResource CustomCheckBoxControlTemplate}" IsChecked="{Binding isLogEnabled}" />-->
+								<CheckBox x:Name="logOptionsCheckBox" Grid.Row="0" Content="Enable Logging Options" Template="{DynamicResource CustomCheckBoxControlTemplate}" IsChecked="True" />
 								<Grid Grid.Row="1" Margin="20,0,0,0" >
 									<Grid.Style>
 										<Style TargetType="{x:Type Grid}">
@@ -798,10 +798,10 @@
 												<Label Grid.Column="0"  Content="Log File Name" />
 												<TextBox Grid.Column="1"  x:Name="logFileNameTb" Text="{Binding logFile, UpdateSourceTrigger=PropertyChanged}" Style="{DynamicResource NameTB}" HorizontalAlignment="Stretch" Width="Auto" />
 											</Grid>
-											<CheckBox x:Name="forceLogCheckBox" Grid.Row="1" Grid.Column="0" Content="Force Log Flush" Template="{DynamicResource CustomCheckBoxControlTemplate}" IsChecked="{Binding isForceLogFlush}" />
+											<CheckBox x:Name="ctrlCbForceLogFlush" Grid.Row="1" Grid.Column="0" Content="Force Log Flush" Template="{DynamicResource CustomCheckBoxControlTemplate}" IsChecked="{Binding isForceLogFlush}" />
 										</Grid>
-										<Label Grid.Row="1" Content="Log Level Setup"  />
-										<ListBox x:Name="logLevelsListBox" Grid.Row="2" Height="260" MinWidth="150" Grid.Column="0" ItemsSource="{Binding logCategories}" MaxWidth="350" ScrollViewer.VerticalScrollBarVisibility="Auto"  >
+										<Label Grid.Row="1" Content="Log Level Setup" />
+										<ListBox x:Name="ctrlListLogLevels" Grid.Row="2" Height="260" MinWidth="150" Grid.Column="0" ItemsSource="{Binding logCategories}" MaxWidth="350" ScrollViewer.VerticalScrollBarVisibility="Auto"  >
 											<ListBox.ItemTemplate>
 												<DataTemplate>
 													<Grid>
@@ -1464,7 +1464,7 @@
 									<RowDefinition Height="*"/>
 									<RowDefinition Height="Auto" />
 								</Grid.RowDefinitions>
-								<TreeView x:Name="sceneNodesTreeView" Grid.Row="0" SelectedItemChanged="sceneNodesTreeView_SelectedItemChanged" MouseDown="treeView_MouseDown" MouseMove="treeView_MouseMove" Focusable="True" MouseUp="sceneNodesTreeView_MouseUp" AllowDrop="True" ItemsSource="{Binding sceneNodesView}" Height="Auto" ToolTip="List of empty hierarchy nodes (transforms)" MaxWidth="600" IsTabStop="False" Width="120" >
+								<TreeView x:Name="ctrlTreeSceneNodes" Grid.Row="0" SelectedItemChanged="onTreeSceneNodes_SelectedItemChanged" MouseDown="onTreeSceneNodes_MouseDown" MouseMove="onTreeSceneNodes_MouseMove" Focusable="True" MouseUp="onTreeSceneNodes_MouseUp" AllowDrop="True" ItemsSource="{Binding sceneNodesView}" Height="Auto" ToolTip="List of empty hierarchy nodes (transforms)" MaxWidth="600" IsTabStop="False" Width="120" >
 									<TreeView.ItemContainerStyle>
 										<Style TargetType="{x:Type TreeViewItem}">
 											<Setter Property="IsSelected" Value="{Binding isSelected, Mode=TwoWay}" />
@@ -1473,8 +1473,8 @@
 											<Setter Property="Padding" Value="1,1,5,1" />
 											<EventSetter Event="UIElement.DragOver"  Handler="treeView_DragOver"/>
 											<EventSetter Event="UIElement.Drop" Handler="treeView_Drop"/>
-											<EventSetter Event="UIElement.MouseMove" Handler="treeView_MouseMove"/>
-											<EventSetter Event="UIElement.MouseDown" Handler="treeView_MouseDown"/>
+											<EventSetter Event="UIElement.MouseMove" Handler="onTreeSceneNodes_MouseMove"/>
+											<EventSetter Event="UIElement.MouseDown" Handler="onTreeSceneNodes_MouseDown"/>
 										</Style>
 									</TreeView.ItemContainerStyle>
 									<TreeView.ItemTemplate>
@@ -1860,7 +1860,7 @@
 					<RowDefinition Height="*"/>
 				</Grid.RowDefinitions>
 				<ScrollViewer Margin="10,5,5,10">
-					<TextBox x:Name="appLogTextBox" Grid.Column="0" IsReadOnly="True" Text="{Binding Log, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" AcceptsReturn="True" CaretIndex="{x:Static sys:Int32.MaxValue}" Foreground="White" ToolTip="Log Window" HorizontalAlignment="Stretch" VerticalScrollBarVisibility="Disabled" MaxWidth="Infinity" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Margin="0" FontSize="11" />
+					<TextBox x:Name="ctrlTextAppLog" Grid.Column="0" IsReadOnly="True" Text="{Binding Log, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" AcceptsReturn="True" CaretIndex="{x:Static sys:Int32.MaxValue}" Foreground="White" ToolTip="Log Window" HorizontalAlignment="Stretch" VerticalScrollBarVisibility="Disabled" MaxWidth="Infinity" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Margin="0" FontSize="11" />
 				</ScrollViewer>
 			</Grid>
 			<StackPanel Grid.Column="1" Width="Auto" DockPanel.Dock="Right" Margin="5,5,10,10">

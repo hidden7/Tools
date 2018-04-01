@@ -478,7 +478,6 @@ namespace vrClusterManager.Config
 		}
 
 
-		//Inputs Parser
 		public void InputsParse(string line)
 		{
 			string id = GetRegEx("id").Match(line).Value;
@@ -505,8 +504,6 @@ namespace vrClusterManager.Config
 				inputs.Add(new BaseInput(id, type, address));
 			}
 		}
-
-		//Cluster Node Parser
 		public void ClusterNodeParse(string line)
 		{
 			string id = GetRegEx("id").Match(line).Value;
@@ -545,8 +542,6 @@ namespace vrClusterManager.Config
 			Viewport currentViewport = viewports.Find(x => x.id == viewport);
 			clusterNodes.Add(new ClusterNode(id, address, currentScreen, currentViewport, isMaster, isWindowed, winX, winY, resX, resY));
 		}
-
-		//Scene Node Parser
 		public void SceneNodeParse(string line)
 		{
 			string id = GetRegEx("id").Match(line).Value;
@@ -568,8 +563,6 @@ namespace vrClusterManager.Config
 
 			sceneNodes.Add(new SceneNode(id, locX, locY, locZ, rotP, rotY, rotR, tracker, _trackerCh, parent));
 		}
-
-		//Screen Parser
 		public void ScreenParse(string line)
 		{
 			string id = GetRegEx("id").Match(line).Value;
@@ -588,8 +581,6 @@ namespace vrClusterManager.Config
 			SceneNode parent = sceneNodes.Find(x => x.id == _parent);
 			screens.Add(new Screen(id, locX, locY, locZ, rotP, rotY, rotR, sizeX, sizeY, parent));
 		}
-
-		//Viewport Parser
 		public void ViewportParse(string line)
 		{
 			string id = GetRegEx("id").Match(line).Value;
@@ -617,8 +608,6 @@ namespace vrClusterManager.Config
 			//}
 			viewports.Add(new Viewport(id, x, y, width, height, flip_h, flip_v));
 		}
-
-		//Camera Parser
 		public void CameraParse(string line)
 		{
 			string loc = GetRegComplex("loc").Match(line).Value;
@@ -633,15 +622,11 @@ namespace vrClusterManager.Config
 			cameraTracker = (TrackerInput)inputs.Find(x => x.id == cameraTrackerId);
 			cameraTrackerCh = trackerCh;
 		}
-
-		//General Parser
 		public void GeneralParse(string line)
 		{
 			string swapSync = GetRegEx("swap_sync_policy").Match(line).Value;
 			selectedSwapSync = swapSyncPolicy.FirstOrDefault(x => x.Key == swapSync);
 		}
-
-		//Stereo Parser
 		public void StereoParse(string line)
 		{
 			string eye_swap = GetRegEx("eye_swap").Match(line).Value;
@@ -649,8 +634,6 @@ namespace vrClusterManager.Config
 			eyeSwap = Convert.ToBoolean(eye_swap);
 			eyeDist = eye_dist;
 		}
-
-		//Debug Parser
 		public void DebugParse(string line)
 		{
 			string lag_simulation = GetRegEx("lag_simulation").Match(line).Value;

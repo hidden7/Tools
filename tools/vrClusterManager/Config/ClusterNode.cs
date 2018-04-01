@@ -180,8 +180,8 @@ namespace vrClusterManager.Config
 			if (isMaster)
 			{
 				MainWindow Win = (MainWindow)Application.Current.MainWindow;
-				string portCS = Win.currentConfig.portCs;
-				string portSS = Win.currentConfig.portSs;
+				string portCS = Win.m_Config.portCs;
+				string portSS = Win.m_Config.portSs;
 				stringCfg = string.Concat(stringCfg, " port_cs=", portCS, " port_ss=", portSS, " master=true");
 			}
 			stringCfg = string.Concat(stringCfg, "\n");
