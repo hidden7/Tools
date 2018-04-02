@@ -24,15 +24,28 @@ namespace vrClusterManager
 		public MainWindow()
 		{
 			InitializeComponent();
-
 			InitializeInternals();
-
-			LoadDefaultConfig();
 		}
+
+		private void InitializeInternals()
+		{
+			Configs = RegistryData.GetValueNames(RegistryData.KeyConfigs);
+			Configs.RemoveAll(x => string.IsNullOrEmpty(x));
+
+			Applications = RegistryData.GetValueNames(RegistryData.KeyApps);
+			Applications.RemoveAll(x => string.IsNullOrEmpty(x));
+
+			additionalParams = RegistryData.GetStringValue(RegistryData.KeySettings, RegistryData.ValCommonCmdLineArgs);
+
+			InitLogCategories();
+
+			RefreshUiControls();
+		}
+
 
 		private void Window_Loaded(object sender, RoutedEventArgs e)
 		{
-			UpdateWindowTitle();
+			LoadDefaultConfig();
 		}
 
 		private void AddConfigFromFile()
@@ -45,10 +58,6 @@ namespace vrClusterManager
 				if (!Configs.Exists(x => x == configPath))
 				{
 					AddConfig(configPath);
-					ctrlComboConfigs.Items.Refresh();
-					ctrlComboConfigs.SelectedIndex = ctrlComboConfigs.Items.Count - 1;
-					// upper verions or below one
-					ConfigFileParser(openFileDialog.FileName);
 				}
 			}
 		}
@@ -85,7 +94,7 @@ namespace vrClusterManager
 			{
 				try
 				{
-					string currentFileName = RegistryData.GetStringValue(RegistryData.KeyRunParams, RegistryData.ValDefaultConfig);
+					string currentFileName = null;// RegistryData.GetStringValue(RegistryData.KeySettings, RegistryData.ValDefaultConfig);
 					if (!isSaveAs && File.Exists(currentFileName))
 					{
 						File.WriteAllText(currentFileName, m_Config.CreateConfig());
@@ -99,8 +108,8 @@ namespace vrClusterManager
 							currentFileName = saveFileDialog.FileName;
 							m_Config.name = Path.GetFileNameWithoutExtension(currentFileName);
 
-							RegistryData.RemoveAllRegistryValues(RegistryData.ValDefaultConfig);
-							RegistryData.SetStringValue(RegistryData.KeyRunParams, RegistryData.ValDefaultConfig, currentFileName);
+							//RegistryData.RemoveAllRegistryValues(RegistryData.ValDefaultConfig);
+							//RegistryData.SetStringValue(RegistryData.KeySettings, RegistryData.ValDefaultConfig, currentFileName);
 							File.WriteAllText(currentFileName, m_Config.CreateConfig());
 						}
 					}
@@ -131,52 +140,57 @@ namespace vrClusterManager
 
 		private void LoadNewConfig()
 		{
-			RegistryData.RemoveRegistryValue(RegistryData.KeyRunParams, RegistryData.ValDefaultConfig);
-
 			m_Config = new VRConfig();
-			this.DataContext = m_Config;
 
 			AppLogger.Add("New config initialized");
 
+			this.DataContext = m_Config;
 			UpdateWindowTitle();
 			SetViewportPreview();
-
 			RefreshUiControls();
 		}
 		private void LoadDefaultConfig()
 		{
-			string configPath = RegistryData.GetStringValue(RegistryData.KeyRunParams, RegistryData.ValDefaultConfig);
+			string configPath = RegistryData.GetStringValue(RegistryData.KeyConfigs, null);
 				
 			if (string.IsNullOrEmpty(configPath))
 			{
-				LoadNewConfig();
+				if (ctrlComboConfigs.Items.Count > 0)
+				{
+					ctrlComboConfigs.SelectedIndex = 0;
+				}
+				else
+				{
+					LoadNewConfig();
+				}
 			}
 			else
 			{
-				ConfigFileParser(configPath);
+				int idx = Configs.FindIndex(x => x == configPath);
+				if (idx >= 0)
+				{
+					ctrlComboConfigs.SelectedIndex = idx;
+				}
+				else
+				{
+					if (ctrlComboConfigs.Items.Count > 0)
+					{
+						ctrlComboConfigs.SelectedIndex = 0;
+					}
+					else
+					{
+						LoadNewConfig();
+					}
+				}
 			}
-			SetViewportPreview();
-
 		}
 		private void LoadSelectedConfig()
 		{
-			SetViewportPreview();
-
+			//ctrlComboConfigs.SelectedValue as string
 		}
-
-		private void SetViewportPreview()
-		{
-
-			ViewportPreview viewportPreview = new ViewportPreview();
-			screenResolutionGrid.DataContext = viewportPreview;
-			viewportCanvas.DataContext = viewportPreview;
-			previewViewport.DataContext = m_Config;
-		}
-
-
 
 		//Config file parser
-		private void ConfigFileParser(string filePath)
+		private void LoadConfigImpl(string filePath)
 		{
 			LoadNewConfig();
 			m_Config = ConfigParser.Parse(filePath);
@@ -194,6 +208,23 @@ namespace vrClusterManager
 			UpdateWindowTitle();
 		}
 
+		private void LoadConfigImpl()
+		{
+			UpdateWindowTitle();
+			SetViewportPreview();
+		}
+
+		private void SetViewportPreview()
+		{
+
+			ViewportPreview viewportPreview = new ViewportPreview();
+			screenResolutionGrid.DataContext = viewportPreview;
+			viewportCanvas.DataContext = viewportPreview;
+			previewViewport.DataContext = m_Config;
+		}
+
+
+
 		//crutch for refreshing all listboxes and comboboxes after binding
 		private void RefreshUiControls()
 		{
@@ -201,6 +232,8 @@ namespace vrClusterManager
 			TabAppsLogging.DataContext = this;
 			ctrlComboConfigs.DataContext = this;
 			ctrlTextAppLog.DataContext = AppLogger.instance;
+
+			ctrlComboConfigs.Items.Refresh();
 
 			inputsListBox.Items.Refresh();
 			screensListBox.Items.Refresh();
@@ -318,7 +351,8 @@ namespace vrClusterManager
 		#region Config buttons
 		private void onComboConfigs_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			SetActiveConfig(ctrlComboConfigs.SelectedValue as string);
+			RegistryData.SetStringValue(RegistryData.KeyConfigs, null, ctrlComboConfigs.SelectedValue as string);
+			LoadSelectedConfig();
 		}
 
 		private void onComboConfigs_DropDownOpened(object sender, EventArgs e)

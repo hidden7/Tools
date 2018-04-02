@@ -99,7 +99,7 @@ namespace vrClusterManager
 
 		//Applications list
 		private List<string> _applications;
-		public List<string> applications
+		public List<string> Applications
 		{
 			get { return _applications; }
 			set { Set(ref _applications, value, "applications"); }
@@ -114,7 +114,7 @@ namespace vrClusterManager
 		}
 
 		//Log categories list
-		private List<LogCategory> _logCategories;
+		private List<LogCategory> _logCategories = new List<LogCategory>();
 		public List<LogCategory> logCategories
 		{
 			get { return _logCategories; }
@@ -141,7 +141,7 @@ namespace vrClusterManager
 			set
 			{
 				Set(ref _additionalParams, value, "additionalParams");
-				RegistryData.SetStringValue(RegistryData.KeyRunParams, RegistryData.ValCommonCmdLineArgs, value);
+				RegistryData.SetStringValue(RegistryData.KeySettings, RegistryData.ValCommonCmdLineArgs, value);
 				GenerateCmdStartApp();
 			}
 		}
@@ -244,33 +244,8 @@ namespace vrClusterManager
 				"LogUvrBlueprint"
 			};
 
-			if (logCategories == null)
-			{
-				logCategories = new List<LogCategory>();
-			}
-			else
-			{
-				logCategories.Clear();
-			}
 			foreach (string logCat in logCats)
-			{
 				logCategories.Add(new LogCategory(logCat));
-			}
-		}
-
-		private void InitializeInternals()
-		{
-			additionalParams = RegistryData.GetStringValue(RegistryData.KeyRunParams, RegistryData.ValCommonCmdLineArgs);
-			AppLogger.Add("General options have been initialized");
-
-			applications = RegistryData.GetValueNames(RegistryData.KeyApps);
-			AppLogger.Add("Loaded list of applications");
-
-			Configs = RegistryData.GetValueNames(RegistryData.KeyConfigs);
-			//SetSelectedConfig();
-			AppLogger.Add("Configs loaded successfully");
-
-			InitLogCategories();
 		}
 
 		//Generating command line for the App
@@ -647,9 +622,9 @@ namespace vrClusterManager
 
 		public void AddApplication(string appPath)
 		{
-			if (!applications.Contains(appPath))
+			if (!Applications.Contains(appPath))
 			{
-				applications.Add(appPath);
+				Applications.Add(appPath);
 				RegistryData.SetStringValue(RegistryData.KeyApps, appPath, string.Empty);
 				AppLogger.Add("Application [" + appPath + "] added to list");
 			}
@@ -662,27 +637,28 @@ namespace vrClusterManager
 
 		public void DeleteApplication()
 		{
-			applications.Remove(selectedApplication);
+			Applications.Remove(selectedApplication);
 			RegistryData.RemoveRegistryValue(RegistryData.KeyApps, selectedApplication);
 			AppLogger.Add("Application [" + selectedApplication + "] deleted");
 
 			selectedApplication = null;
 		}
 
-		public void SetActiveConfig(string configPath)
-		{
-			RegistryData.SetStringValue(RegistryData.KeyRunParams, RegistryData.ValDefaultConfig, configPath);
-		}
-
 		public void AddConfig(string configPath)
 		{
+			if (Configs.Exists(x => x == configPath))
+			{
+				return;
+			}
+
 			try
 			{
+
 				Configs.Add(configPath);
-				selectedConfig = Configs.Find(x => x == configPath);
+				ctrlComboConfigs.Items.Refresh();
+				//ctrlComboConfigs.SelectedIndex = ctrlComboConfigs.Items.Count - 1;
+				ctrlComboConfigs.SelectedValue = configPath;
 				RegistryData.SetStringValue(RegistryData.KeyConfigs, configPath, string.Empty);
-				SetActiveConfig(configPath);
-				AppLogger.Add("Configuration file [" + configPath + "] added to list");
 			}
 			catch (Exception)
 			{

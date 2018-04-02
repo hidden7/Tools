@@ -11,14 +11,12 @@ namespace vrClusterManager.Settings
 {
 	public static class RegistryData
 	{
-		private const string BaseRegistryPath = "SOFTWARE\\Pixela Labs\\vrCluster";
+		private const string BaseRegistryPath = "SOFTWARE\\Pixela Labs\\VRCluster";
 
-		public const string KeyRunParams  = "RunParameters";
+		public const string KeySettings   = "Settings";
 		public const string KeyConfigs    = "Configs";
 		public const string KeyApps       = "Apps";
 
-		public const string ValDefaultApp        = "DefaultApp";
-		public const string ValDefaultConfig     = "DefaultConfig";
 		public const string ValCommonCmdLineArgs = "CommonArgs";
 
 		public static bool GetBoolValue(string key, string name)
@@ -45,7 +43,7 @@ namespace vrClusterManager.Settings
 		{
 			try
 			{
-				RegistryKey regKey = Registry.CurrentUser.OpenSubKey(BaseRegistryPath + "\\" + key, true);
+				RegistryKey regKey = GetKey(key, true);
 				regKey.DeleteValue(value);
 			}
 			catch (Exception)
@@ -58,7 +56,7 @@ namespace vrClusterManager.Settings
 		{
 			try
 			{
-				RegistryKey regKey = Registry.CurrentUser.OpenSubKey(BaseRegistryPath + "\\" + key, true);
+				RegistryKey regKey = GetKey(key, true);
 				string[] values = regKey.GetValueNames();
 				foreach (string value in values)
 					regKey.DeleteValue(value);
@@ -74,7 +72,7 @@ namespace vrClusterManager.Settings
 			List<string> names = new List<string>();
 			try
 			{
-				RegistryKey regKey = Registry.CurrentUser.OpenSubKey(BaseRegistryPath + "\\" + key, false);
+				RegistryKey regKey = GetKey(key, false);
 				names = new List<string>(regKey.GetValueNames());
 			}
 			catch (Exception)
@@ -85,11 +83,31 @@ namespace vrClusterManager.Settings
 			return names;
 		}
 
+		private static RegistryKey GetKey(string key, bool writable)
+		{
+			try
+			{
+				RegistryKey regKey = Registry.CurrentUser.OpenSubKey(BaseRegistryPath + "\\" + key, writable);
+				if (regKey == null)
+				{
+					RegistryKey rootKey = Registry.CurrentUser.CreateSubKey(BaseRegistryPath);
+					regKey = rootKey.CreateSubKey(key);
+				}
+
+				return regKey;
+			}
+			catch (Exception)
+			{
+			}
+
+			return null;
+		}
+
 		private static object ReadValue(string key, string name)
 		{
 			try
 			{
-				RegistryKey regKey = Registry.CurrentUser.OpenSubKey(BaseRegistryPath + "\\" + key, false);
+				RegistryKey regKey = GetKey(key, false);
 				return regKey.GetValue(name);
 			}
 			catch (Exception /*exception*/)
@@ -103,7 +121,7 @@ namespace vrClusterManager.Settings
 		{
 			try
 			{
-				RegistryKey regKey = Registry.CurrentUser.OpenSubKey(BaseRegistryPath + "\\" + key, true);
+				RegistryKey regKey = GetKey(key, true);
 				regKey.SetValue(name, value);
 			}
 			catch (Exception /*exception*/)
