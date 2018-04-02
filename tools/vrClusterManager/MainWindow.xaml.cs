@@ -28,7 +28,6 @@ namespace vrClusterManager
 			InitializeInternals();
 
 			LoadDefaultConfig();
-			SetViewportPreview();
 		}
 
 		private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -36,22 +35,57 @@ namespace vrClusterManager
 			UpdateWindowTitle();
 		}
 
-		private void SetViewportPreview()
+		private void AddConfigFromFile()
 		{
-
-			ViewportPreview viewportPreview = new ViewportPreview();
-			screenResolutionGrid.DataContext = viewportPreview;
-			viewportCanvas.DataContext = viewportPreview;
-			previewViewport.DataContext = m_Config;
+			OpenFileDialog openFileDialog = new OpenFileDialog();
+			openFileDialog.Filter = cfgFileExtention;
+			if (openFileDialog.ShowDialog() == true)
+			{
+				string configPath = openFileDialog.FileName;
+				if (!Configs.Exists(x => x == configPath))
+				{
+					AddConfig(configPath);
+					ctrlComboConfigs.Items.Refresh();
+					ctrlComboConfigs.SelectedIndex = ctrlComboConfigs.Items.Count - 1;
+					// upper verions or below one
+					ConfigFileParser(openFileDialog.FileName);
+				}
+			}
 		}
-
+		private void NewConfig(object sender, RoutedEventArgs e)
+		{
+			LoadNewConfig();
+		}
+		private void SaveConfig(object sender, RoutedEventArgs e)
+		{
+			SaveImpl(false);
+		}
+		private void SaveAsConfig(object sender, RoutedEventArgs e)
+		{
+			SaveImpl(true);
+		}
+		private void OpenConfig(object sender, RoutedEventArgs e)
+		{
+			AddConfigFromFile();
+		}
+		private void Exit(object sender, RoutedEventArgs e)
+		{
+			this.Close();
+		}
+		private void About_Click(object sender, RoutedEventArgs e)
+		{
+			AboutDialog aboutDialog = new AboutDialog();
+			aboutDialog.Owner = this;
+			aboutDialog.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+			aboutDialog.ShowDialog();
+		}
 		private void SaveImpl(bool isSaveAs)
 		{
 			if (m_Config.Validate())
 			{
 				try
 				{
-					string currentFileName = RegistryData.ReadStringFromRegistry(RegistryData.ValDefaultConfig);
+					string currentFileName = RegistryData.GetStringValue(RegistryData.KeyRunParams, RegistryData.ValDefaultConfig);
 					if (!isSaveAs && File.Exists(currentFileName))
 					{
 						File.WriteAllText(currentFileName, m_Config.CreateConfig());
@@ -66,7 +100,7 @@ namespace vrClusterManager
 							m_Config.name = Path.GetFileNameWithoutExtension(currentFileName);
 
 							RegistryData.RemoveAllRegistryValues(RegistryData.ValDefaultConfig);
-							RegistryData.AddRegistryValue(RegistryData.ValDefaultConfig, currentFileName);
+							RegistryData.SetStringValue(RegistryData.KeyRunParams, RegistryData.ValDefaultConfig, currentFileName);
 							File.WriteAllText(currentFileName, m_Config.CreateConfig());
 						}
 					}
@@ -94,82 +128,57 @@ namespace vrClusterManager
 			}
 		}
 
-		private void AddConfigFromFile()
-		{
-			OpenFileDialog openFileDialog = new OpenFileDialog();
-			openFileDialog.Filter = cfgFileExtention;
-			if (openFileDialog.ShowDialog() == true)
-			{
-				string configPath = openFileDialog.FileName;
-				if (!Configs.Exists(x => x == configPath))
-				{
-					AddConfig(configPath);
-					ctrlComboConfigs.Items.Refresh();
-					// upper verions or below one
-					ConfigFileParser(openFileDialog.FileName);
-				}
-			}
-		}
-		private void SaveConfig(object sender, RoutedEventArgs e)
-		{
-			SaveImpl(false);
-		}
-		private void SaveAsConfig(object sender, RoutedEventArgs e)
-		{
-			SaveImpl(true);
-		}
-		private void OpenConfig(object sender, RoutedEventArgs e)
-		{
-			AddConfigFromFile();
-		}
-		private void Exit(object sender, RoutedEventArgs e)
-		{
-			this.Close();
-		}
-		private void About_Click(object sender, RoutedEventArgs e)
-		{
-			AboutDialog aboutDialog = new AboutDialog();
-			aboutDialog.Owner = this;
-			aboutDialog.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-			aboutDialog.ShowDialog();
-		}
 
+		private void LoadNewConfig()
+		{
+			RegistryData.RemoveRegistryValue(RegistryData.KeyRunParams, RegistryData.ValDefaultConfig);
+
+			m_Config = new VRConfig();
+			this.DataContext = m_Config;
+
+			AppLogger.Add("New config initialized");
+
+			UpdateWindowTitle();
+			SetViewportPreview();
+
+			RefreshUiControls();
+		}
 		private void LoadDefaultConfig()
 		{
-			string configPath = RegistryData.ReadStringFromRegistry(RegistryData.ValDefaultConfig);
+			string configPath = RegistryData.GetStringValue(RegistryData.KeyRunParams, RegistryData.ValDefaultConfig);
 				
 			if (string.IsNullOrEmpty(configPath))
 			{
-				CreateConfig();
+				LoadNewConfig();
 			}
 			else
 			{
 				ConfigFileParser(configPath);
 			}
-		}
-
-		public void NewConfig(object sender, RoutedEventArgs e)
-		{
-			CreateConfig();
-		}
-
-		void CreateConfig()
-		{
-			RegistryData.RemoveAllRegistryValues(RegistryData.ValDefaultConfig);
-			m_Config = new VRConfig();
-			this.DataContext = m_Config;
-			//crutch. for refactoring
-			m_Config.selectedSceneNodeView = null;
-			AppLogger.Add("New config initialized");
-			UpdateWindowTitle();
 			SetViewportPreview();
+
 		}
+		private void LoadSelectedConfig()
+		{
+			SetViewportPreview();
+
+		}
+
+		private void SetViewportPreview()
+		{
+
+			ViewportPreview viewportPreview = new ViewportPreview();
+			screenResolutionGrid.DataContext = viewportPreview;
+			viewportCanvas.DataContext = viewportPreview;
+			previewViewport.DataContext = m_Config;
+		}
+
 
 
 		//Config file parser
 		private void ConfigFileParser(string filePath)
 		{
-			CreateConfig();
+			LoadNewConfig();
 			m_Config = ConfigParser.Parse(filePath);
 			//Set first items in listboxes and treeview as default if existed
 			m_Config.SelectFirstItems();
@@ -319,8 +328,7 @@ namespace vrClusterManager
 
 		private void onBtnConfigNew_Click(object sender, RoutedEventArgs e)
 		{
-			m_Config = new VRConfig();
-			RefreshUiControls();
+			LoadNewConfig();
 		}
 
 		private void onBtnConfigAdd_Click(object sender, RoutedEventArgs e)
@@ -515,7 +523,6 @@ namespace vrClusterManager
 			screensListBox.Items.Refresh();
 			screensCb.Items.Refresh();
 		}
-
 		#endregion
 
 		#region Page: Edit config - viewports
@@ -805,9 +812,8 @@ namespace vrClusterManager
 			}
 		}
 
-		private void commandLineTb_ManipulationCompleted(object sender, ManipulationCompletedEventArgs e)
+		private void onTextCommonCmdLineArgs_LostFocus(object sender, RoutedEventArgs e)
 		{
-			int a = 5;
 
 		}
 

@@ -476,7 +476,7 @@
 
 			<StackPanel Grid.Column="0" Margin="2,2,0,2" Orientation="Horizontal" HorizontalAlignment="Left" Width="Auto">
 				<Label Content="Config" />
-				<ComboBox x:Name="ctrlComboConfigs" ItemsSource="{Binding Configs}" SelectedItem="{Binding selectedConfig}" VerticalAlignment="Top" Template="{DynamicResource ComboBoxTemplate}" DropDownOpened="onComboConfigs_DropDownOpened" Width="Auto" Height="Auto" MinWidth="350" MaxWidth="720" ToolTip="Select config file" HorizontalAlignment="Stretch" SelectionChanged="onComboConfigs_SelectionChanged" Margin="2,2,10,2" />
+				<ComboBox x:Name="ctrlComboConfigs" ItemsSource="{Binding Configs}" VerticalAlignment="Top" Template="{DynamicResource ComboBoxTemplate}" DropDownOpened="onComboConfigs_DropDownOpened" Width="Auto" Height="Auto" MinWidth="350" MaxWidth="720" ToolTip="Select config file" HorizontalAlignment="Stretch" SelectionChanged="onComboConfigs_SelectionChanged" Margin="2,2,10,2" />
 				<Button x:Name="ctrlBtnConfigNew" Content="New" Template="{DynamicResource ButtonTemplate}" ToolTip="Create new empty config" Click="onBtnConfigNew_Click" Padding="1.8,0,2,0" Margin="2,0" />
 				<Button x:Name="ctrlBtnConfigAdd" Content="Add" Template="{DynamicResource ButtonTemplate}" ToolTip="Add existing config" Click="onBtnConfigAdd_Click" Padding="2,0" Margin="2,0"/>
 				<Button x:Name="ctrlBtnConfigDel" Content="Delete" Template="{DynamicResource ButtonTemplate}" ToolTip="Delete selected config" Click="onBtnConfigDel_Click" Padding="2,0" Height="22" Margin="2,0" />
@@ -530,7 +530,7 @@
 													<RowDefinition Height="*" />
 												</Grid.RowDefinitions>
 												<Label Grid.Row="3" Content="Custom command line arguments:" />
-												<TextBox x:Name="commandLineTb" Grid.Row="4" Style="{DynamicResource NameTB}" Width="Auto" Text="{Binding additionalParams, UpdateSourceTrigger=PropertyChanged}" Margin="20,2,2,2" HorizontalAlignment="Stretch" MaxWidth="400" ManipulationCompleted="commandLineTb_ManipulationCompleted" />
+												<TextBox x:Name="ctrlTextCommonCmdLineArgs" Grid.Row="4" Style="{DynamicResource NameTB}" Width="Auto" Text="{Binding additionalParams, UpdateSourceTrigger=PropertyChanged}" Margin="20,2,2,2" HorizontalAlignment="Stretch" MaxWidth="400" LostFocus="onTextCommonCmdLineArgs_LostFocus" />
 											</Grid>
 										</Grid>
 									</Grid>

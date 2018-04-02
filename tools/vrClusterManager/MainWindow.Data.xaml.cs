@@ -24,7 +24,6 @@ namespace vrClusterManager
 	{
 		public const int nodeListenerPort = 9777;
 
-		public const string LogCategoriesList = "logCategoriesList.conf";
 		public const string logFileName = "logFilename.log";
 
 		private const string registryPath = "SOFTWARE\\Pixela Labs\\vrCluster";
@@ -226,21 +225,25 @@ namespace vrClusterManager
 			return infoList;
 		}
 
-		//Reloading all config lists
-		private void InitConfigList()
-		{
-			applications = RegistryData.ReadStringsFromRegistry(RegistryData.KeyApps);
-			AppLogger.Add("Applications loaded successfully");
-			Configs = RegistryData.ReadStringsFromRegistry(RegistryData.KeyConfigs);
-			SetSelectedConfig();
-			AppLogger.Add("Configs loaded successfully");
-			AppLogger.Add("List of Active nodes loaded successfully");
-			//selectedCamera = cameras.SingleOrDefault(x => x == "camera_dynamic");
-		}
-
 		private void InitLogCategories()
 		{
-			List<string> logCats = ReadConfigFile(LogCategoriesList);
+			List<string> logCats = new List<string>()
+			{
+				"LogUvrGameMode",
+				"LogUvrEngine",
+				"LogUvrModule",
+				"LogUvrCluster",
+				"LogUvrConfig",
+				"LogUvrGame",
+				"LogUvrInput",
+				"LogUvrInputVRPN",
+				"LogUvrLicensing",
+				"LogUvrNetwork",
+				"LogUvrNetworkMsg",
+				"LogUvrRender",
+				"LogUvrBlueprint"
+			};
+
 			if (logCategories == null)
 			{
 				logCategories = new List<LogCategory>();
@@ -255,50 +258,19 @@ namespace vrClusterManager
 			}
 		}
 
-		public void SetSelectedConfig()
-		{
-			selectedConfig = string.Empty;
-			string selected = RegistryData.FindSelectedRegValue(RegistryData.KeyConfigs);
-			if (!string.IsNullOrEmpty(selected))
-			{
-				selectedConfig = Configs.Find(x => x == selected);
-
-			}
-		}
-
 		private void InitializeInternals()
 		{
-			InitOptions();
-			InitConfigList();
-			InitLogCategories();
-		}
-
-		private void InitOptions()
-		{
-			additionalParams = RegistryData.ReadStringValue(RegistryData.KeyRunParams, RegistryData.ValCommonCmdLineArgs);
-
+			additionalParams = RegistryData.GetStringValue(RegistryData.KeyRunParams, RegistryData.ValCommonCmdLineArgs);
 			AppLogger.Add("General options have been initialized");
-			//try
-			//{
-			//	selectedRenderApiParam = renderApiParams.First(x => x.Key == RegistryData.ReadStringValue(RegistryData.paramsList, RegistryData.renderApiName));
-			//}
-			//catch (Exception)
-			//{
-			//	selectedRenderApiParam = renderApiParams.SingleOrDefault(x => x.Key == "OpenGL3");
-			//}
 
-			//try
-			//{
-			//	selectedRenderModeParam = renderModeParams.First(x => x.Key == RegistryData.ReadStringValue(RegistryData.paramsList, RegistryData.renderModeName));
-			//}
-			//catch (Exception)
-			//{
-			//	selectedRenderApiParam = renderModeParams.SingleOrDefault(x => x.Key == "Mono");
-			//}
+			applications = RegistryData.GetValueNames(RegistryData.KeyApps);
+			AppLogger.Add("Loaded list of applications");
 
+			Configs = RegistryData.GetValueNames(RegistryData.KeyConfigs);
+			//SetSelectedConfig();
+			AppLogger.Add("Configs loaded successfully");
 
-			//isUseAllCores = RegistryData.ReadBoolValue(RegistryData.paramsList, RegistryData.isAllCoresName);
-			//isNotextureStreaming = RegistryData.ReadBoolValue(RegistryData.paramsList, RegistryData.isNoTextureStreamingName);
+			InitLogCategories();
 		}
 
 		//Generating command line for the App
@@ -678,7 +650,7 @@ namespace vrClusterManager
 			if (!applications.Contains(appPath))
 			{
 				applications.Add(appPath);
-				RegistryData.AddRegistryValue(RegistryData.appList, appPath);
+				RegistryData.SetStringValue(RegistryData.KeyApps, appPath, string.Empty);
 				AppLogger.Add("Application [" + appPath + "] added to list");
 			}
 			else
@@ -691,7 +663,7 @@ namespace vrClusterManager
 		public void DeleteApplication()
 		{
 			applications.Remove(selectedApplication);
-			RegistryData.RemoveRegistryValue(RegistryData.appList, selectedApplication);
+			RegistryData.RemoveRegistryValue(RegistryData.KeyApps, selectedApplication);
 			AppLogger.Add("Application [" + selectedApplication + "] deleted");
 
 			selectedApplication = null;
@@ -699,24 +671,7 @@ namespace vrClusterManager
 
 		public void SetActiveConfig(string configPath)
 		{
-			try
-			{
-				foreach (string config in Configs)
-				{
-					if (config != configPath)
-					{
-						RegistryData.UpdateRegistry(RegistryData.KeyConfigs, config, false);
-					}
-					else
-					{
-						RegistryData.UpdateRegistry(RegistryData.KeyConfigs, config, true);
-					}
-				}
-			}
-			catch (Exception exception)
-			{
-				AppLogger.Add("ERROR while changing config selection. EXCEPTION: " + exception.Message);
-			}
+			RegistryData.SetStringValue(RegistryData.KeyRunParams, RegistryData.ValDefaultConfig, configPath);
 		}
 
 		public void AddConfig(string configPath)
@@ -725,7 +680,7 @@ namespace vrClusterManager
 			{
 				Configs.Add(configPath);
 				selectedConfig = Configs.Find(x => x == configPath);
-				RegistryData.AddRegistryValue(RegistryData.KeyConfigs, configPath);
+				RegistryData.SetStringValue(RegistryData.KeyConfigs, configPath, string.Empty);
 				SetActiveConfig(configPath);
 				AppLogger.Add("Configuration file [" + configPath + "] added to list");
 			}
