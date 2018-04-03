@@ -56,7 +56,6 @@ namespace vrClusterManager.Config
 						AppLogger.Add("ERROR! " + error);
 					}
 				}
-				MainWindow.ConfigModifyIndicator();
 				return error;
 			}
 		}

@@ -134,13 +134,13 @@ namespace vrClusterManager
 		}
 
 		//Additional command line params
-		private string _additionalParams;
-		public string additionalParams
+		private string _CommonCmdLineArgs;
+		public string CommonCmdLineArgs
 		{
-			get { return _additionalParams; }
+			get { return _CommonCmdLineArgs; }
 			set
 			{
-				Set(ref _additionalParams, value, "additionalParams");
+				Set(ref _CommonCmdLineArgs, value, "additionalParams");
 				RegistryData.SetStringValue(RegistryData.KeySettings, RegistryData.ValCommonCmdLineArgs, value);
 				GenerateCmdStartApp();
 			}
@@ -296,7 +296,7 @@ namespace vrClusterManager
 			// cmd
 			cmd = confString + paramDefaultCamera + swRenderApi + swRenderMode + uvrParamStatic + swFixedSeed
 								 + swNoTextureStreaming + swUseAllAvailableCores + swForceLogFlush + swNoWrite
-								 + paramLogFilename + " " + additionalParams + logLevelsSetup;
+								 + paramLogFilename + " " + CommonCmdLineArgs + logLevelsSetup;
 			if (isLogEnabled)
 			{
 				cmd = cmd + logLevels;
@@ -642,28 +642,6 @@ namespace vrClusterManager
 			AppLogger.Add("Application [" + selectedApplication + "] deleted");
 
 			selectedApplication = null;
-		}
-
-		public void AddConfig(string configPath)
-		{
-			if (Configs.Exists(x => x == configPath))
-			{
-				return;
-			}
-
-			try
-			{
-
-				Configs.Add(configPath);
-				ctrlComboConfigs.Items.Refresh();
-				//ctrlComboConfigs.SelectedIndex = ctrlComboConfigs.Items.Count - 1;
-				ctrlComboConfigs.SelectedValue = configPath;
-				RegistryData.SetStringValue(RegistryData.KeyConfigs, configPath, string.Empty);
-			}
-			catch (Exception)
-			{
-				AppLogger.Add("ERROR! Can not add configuration file [" + configPath + "] to list");
-			}
 		}
 	}
 }

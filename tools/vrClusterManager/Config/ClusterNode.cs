@@ -132,7 +132,6 @@ namespace vrClusterManager.Config
 					}
 				}
 
-				MainWindow.ConfigModifyIndicator();
 				return error;
 			}
 		}

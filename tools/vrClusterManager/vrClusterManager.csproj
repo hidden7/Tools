@@ -114,7 +114,15 @@
       <DependentUpon>AboutDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Log\AppLogger.cs" />
+    <Compile Include="MainWindow.Apps.Launcher.xaml.cs" />
+    <Compile Include="MainWindow.Apps.Logs.xaml.cs" />
     <Compile Include="MainWindow.Data.xaml.cs" />
+    <Compile Include="MainWindow.EditConfig.Camera.xaml.cs" />
+    <Compile Include="MainWindow.EditConfig.ClusterNode.xaml.cs" />
+    <Compile Include="MainWindow.EditConfig.Input.xaml.cs" />
+    <Compile Include="MainWindow.EditConfig.SceneNode.xaml.cs" />
+    <Compile Include="MainWindow.EditConfig.Screen.xaml.cs" />
+    <Compile Include="MainWindow.EditConfig.Viewport.xaml.cs" />
     <Compile Include="ValueConversion\InverseBooleanConverter.cs" />
     <Compile Include="ValueConversion\BoolToHorizontalBorderConverter.cs" />
     <Compile Include="ValueConversion\BoolToVerticalBorderConverter.cs" />
