@@ -50,6 +50,9 @@ namespace vrClusterManager
 		private void Window_Loaded(object sender, RoutedEventArgs e)
 		{
 			SetTitle();
+
+			//TEMP: only launcher tab is available
+			tabControl.SelectedIndex = tabControl.Items.Count - 1;
 		}
 
 
@@ -66,6 +69,9 @@ namespace vrClusterManager
 
 		private void Save(bool isSaveAs)
 		{
+			//TEMP: only launcher tab is available
+			return;
+
 			if (currentConfig.Validate())
 			{
 				try
@@ -129,6 +135,9 @@ namespace vrClusterManager
 		//Open Config File
 		public void OpenConfig(object sender, RoutedEventArgs e)
 		{
+			//TEMP: only launcher tab is available
+			return;
+
 			OpenFileDialog openFileDialog = new OpenFileDialog();
 			openFileDialog.Filter = configFileExtention;
 			if (openFileDialog.ShowDialog() == true)
@@ -203,6 +212,9 @@ namespace vrClusterManager
 		//New config file
 		public void NewConfig(object sender, RoutedEventArgs e)
 		{
+			//TEMP: only launcher tab is available
+			return;
+
 			CreateConfig();
 		}
 
