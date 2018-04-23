@@ -15,7 +15,7 @@
 		Title="VRCluster Manager" 
 		Loaded="Window_Loaded"
 		MinWidth="1024"
-		MinHeight="601" Icon="Icons/Icon.ico" ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" Height="900">
+		MinHeight="601" Icon="Icons/Icon.ico" ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" Height="600">
 
 	<Window.CommandBindings>
 		<CommandBinding Command="Save" Executed="SaveConfig" />
@@ -708,9 +708,9 @@
 										<ColumnDefinition Width="Auto" />
 									</Grid.ColumnDefinitions>
 									<ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto" Margin="3,0,0,0">
-										<TextBox x:Name="commandTextBox" Text="{Binding commandLine, UpdateSourceTrigger=PropertyChanged}"  TextWrapping="Wrap" Background="#3F3F46" MinWidth="300" Margin="5"  ScrollViewer.CanContentScroll="True" Height="64" ScrollViewer.VerticalScrollBarVisibility="Auto" ToolTip="Generated command line" HorizontalAlignment="Stretch" MaxWidth="Infinity" />
+										<TextBox x:Name="ctrlTextClusterCommands" Text="{Binding commandLine, UpdateSourceTrigger=PropertyChanged}"  TextWrapping="Wrap" Background="#3F3F46" MinWidth="300" Margin="5"  ScrollViewer.CanContentScroll="True" Height="64" ScrollViewer.VerticalScrollBarVisibility="Auto" ToolTip="Generated command line" HorizontalAlignment="Stretch" MaxWidth="Infinity" />
 									</ScrollViewer>
-									<Button x:Name="copyLogBtn" Grid.Column="1" Content="Copy" Template="{DynamicResource ButtonTemplate}" HorizontalAlignment="Left" Width="50" Click="copyLogBtn_Click" Margin="5,0,2,0" ToolTip="Copy command line to bufer" />
+									<Button x:Name="ctrlBtnClusterCommandsCopy" Grid.Column="1" Content="Copy" Template="{DynamicResource ButtonTemplate}" HorizontalAlignment="Left" Width="50" Click="onBtnClusterCommandsCopy_Click" Margin="5,0,2,0" ToolTip="Copy command line to bufer" />
 								</Grid>
 
 								<Grid Grid.Row="3" VerticalAlignment="Stretch" />

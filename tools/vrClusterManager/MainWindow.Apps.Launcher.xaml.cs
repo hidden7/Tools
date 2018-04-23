@@ -43,9 +43,9 @@ namespace vrClusterManager
 			}
 		}
 
-		private void copyLogBtn_Click(object sender, RoutedEventArgs e)
+		private void onBtnClusterCommandsCopy_Click(object sender, RoutedEventArgs e)
 		{
-			CopyToClipboard(commandTextBox.Text);
+				Clipboard.SetText(ctrlTextClusterCommands.Text);
 		}
 
 		private void runBtn_Click(object sender, RoutedEventArgs e)

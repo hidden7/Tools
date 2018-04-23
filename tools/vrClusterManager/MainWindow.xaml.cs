@@ -233,14 +233,6 @@ namespace vrClusterManager
 			GenerateLogLevelsString();
 		}
 
-		private void CopyToClipboard(string text)
-		{
-			if (text != String.Empty)
-			{
-				Clipboard.SetText(text);
-			}
-		}
-
 		#region Config operations
 		private void AddConfigFromFile()
 		{
@@ -426,7 +418,7 @@ namespace vrClusterManager
 		#region Log buttons
 		private void onBtnLogCopy_Click(object sender, RoutedEventArgs e)
 		{
-			CopyToClipboard(ctrlTextAppLog.Text);
+			Clipboard.SetText(ctrlTextAppLog.Text);
 		}
 
 		private void onBtnLogSave_Click(object sender, RoutedEventArgs e) => throw new NotImplementedException();
