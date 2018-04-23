@@ -19,7 +19,7 @@ namespace UnrealTools
 		const string CmdKill   = "kill";
 		const string CmdStatus = "status";
 
-		const int DefaultPort = 9777;
+		const int DefaultPort = 41000;
 
 		static HashSet<int> ProcIDs      = new HashSet<int>();
 		static int          LastProcID   = -1;
