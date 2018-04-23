@@ -204,7 +204,16 @@ namespace vrClusterManager
 		private List<string> _cameras = new List<string>()
 		{
 			"camera_static",
-			"camera_dynamic"
+			"camera_dynamic",
+			"camera_custom_1",
+			"camera_custom_2",
+			"camera_custom_3",
+			"camera_custom_4",
+			"camera_custom_5",
+			"camera_custom_6",
+			"camera_custom_7",
+			"camera_custom_8",
+			"camera_custom_9"
 		};
 		public List<string> cameras
 		{
@@ -293,6 +302,7 @@ namespace vrClusterManager
 			set
 			{
 				Set(ref _selectedCamera, value, "selectedCamera");
+				RegistrySaver.UpdateRegistry(RegistrySaver.paramsList, RegistrySaver.curCamera, value);
 				GenerateCmdStartApp();
 			}
 		}
@@ -360,8 +370,15 @@ namespace vrClusterManager
 			SetSelectedConfig();
 			AppLogger.Add("Configs loaded successfully");
 			AppLogger.Add("List of Active nodes loaded successfully");
-			selectedCamera = cameras.SingleOrDefault(x => x == "camera_dynamic");
 
+			try
+			{
+				selectedCamera = cameras.First(x => x == RegistrySaver.ReadStringValue(RegistrySaver.paramsList, RegistrySaver.curCamera));
+			}
+			catch (Exception)
+			{
+				selectedCamera = cameras.SingleOrDefault(x => x == "camera_dynamic");
+			}
 		}
 
 		private void InitLogCategories()
@@ -394,6 +411,15 @@ namespace vrClusterManager
 
 		private void InitOptions()
 		{
+			try
+			{
+				selectedCamera = cameras.First(x => x == RegistrySaver.ReadStringValue(RegistrySaver.paramsList, RegistrySaver.curCamera));
+			}
+			catch (Exception)
+			{
+				selectedCamera = cameras.SingleOrDefault(x => x == "camera_dynamic");
+			}
+
 			try
 			{
 				selectedRenderApiParam = renderApiParams.First(x => x.Key == RegistrySaver.ReadStringValue(RegistrySaver.paramsList, RegistrySaver.renderApiName));
