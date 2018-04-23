@@ -461,12 +461,12 @@
 				</ItemsPanelTemplate>
 			</Menu.ItemsPanel>
 			<MenuItem Header="File" HorizontalAlignment="Left" Template="{DynamicResource MenuItemControlTemplate}">
-				<MenuItem Header="_New..." Command="New" />
+				<MenuItem Header="_New..." Command="New" IsEnabled="False" />
 				<Separator />
-				<MenuItem Header="_Open..." Command="Open" />
+				<MenuItem Header="_Open..." Command="Open" IsEnabled="False" />
 				<Separator />
-				<MenuItem Header="_Save" Command="Save"/>
-				<MenuItem x:Name="menuSaveAs" Header="_Save As..."  InputGestureText="Ctrl+Alt+S" Command="SaveAs"/>
+				<MenuItem Header="_Save" Command="Save" IsEnabled="False"/>
+				<MenuItem x:Name="menuSaveAs" Header="_Save As..."  InputGestureText="Ctrl+Alt+S" Command="SaveAs" IsEnabled="False"/>
 				<Separator />
 				<MenuItem Header="_Exit" Command="Close" InputGestureText="Ctrl+X"/>
 			</MenuItem>
@@ -475,7 +475,7 @@
 		</Menu>
 
 		<TabControl Grid.Row="1" x:Name="tabControl" VerticalAlignment="Top" MinWidth="500" MinHeight="200" Background="#FF2D2D30" BorderThickness="0,3,0,0" BorderBrush="#0079CB" Margin="10" Padding="0" Style="{DynamicResource TabControlStyle}" >
-			<TabItem Header="Cluster nodes">
+			<TabItem Header="Cluster nodes" IsEnabled="False">
 				<Grid Style="{StaticResource TabContent}" >
 					<Grid Grid.Row="1">
 						<Grid.ColumnDefinitions>
@@ -634,7 +634,7 @@
 					</Grid>
 				</Grid>
 			</TabItem>
-			<TabItem Header="Viewports" Margin="3,0,-3,0">
+			<TabItem Header="Viewports" Margin="3,0,-3,0" IsEnabled="False">
 				<Grid Style="{StaticResource TabContent}">
 					<Grid.ColumnDefinitions>
 						<ColumnDefinition Width="auto"/>
@@ -764,7 +764,7 @@
 					</Viewbox>
 				</Grid>
 			</TabItem>
-			<TabItem Header="Scene nodes">
+			<TabItem Header="Scene nodes" IsEnabled="False">
 				<Grid Style="{StaticResource TabContent}">
 					<Grid.ColumnDefinitions>
 						<ColumnDefinition Width="Auto" />
@@ -897,7 +897,7 @@
 					</Grid>
 				</Grid>
 			</TabItem>
-			<TabItem Header="Screens">
+			<TabItem Header="Screens" IsEnabled="False" IsSelected="True">
 				<Grid Style="{StaticResource TabContent}" >
 					<Grid.ColumnDefinitions>
 						<ColumnDefinition Width="auto"/>
@@ -1032,7 +1032,7 @@
 					</Grid>
 				</Grid>
 			</TabItem>
-			<TabItem Header="Inputs" >
+			<TabItem Header="Inputs" IsEnabled="False" >
 				<Grid Style="{StaticResource TabContent}">
 					<Grid.ColumnDefinitions>
 						<ColumnDefinition Width="Auto" />
@@ -1189,7 +1189,7 @@
 					</Grid>
 				</Grid>
 			</TabItem>
-			<TabItem Header="Other settings" >
+			<TabItem Header="Other settings" IsEnabled="False" >
 				<Grid Style="{StaticResource TabContent}">
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto" />
@@ -1311,7 +1311,7 @@
 					</Grid>
 				</Grid>
 			</TabItem>
-			<TabItem Header="Log Tools" x:Name="logTab">
+			<TabItem Header="Log Tools" x:Name="logTab" IsEnabled="False">
 				<Grid Style="{StaticResource TabContent}">
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto" />
