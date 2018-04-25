@@ -113,7 +113,7 @@
     <Compile Include="DialogWindows\AboutDialog.xaml.cs">
       <DependentUpon>AboutDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Log\AppLogger.cs" />
+    <Compile Include="AppLog\AppLogger.cs" />
     <Compile Include="ValueConversion\InverseBooleanConverter.cs" />
     <Compile Include="ValueConversion\BoolToHorizontalBorderConverter.cs" />
     <Compile Include="ValueConversion\BoolToVerticalBorderConverter.cs" />

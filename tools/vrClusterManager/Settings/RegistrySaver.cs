@@ -27,6 +27,7 @@ namespace vrClusterManager.Settings
         public const string renderApiName = "renderApi";
 		public const string renderModeName = "renderMode";
         public const string additionalParamsName = "additionalParams";
+		public const string curCamera = "camera";
 
         private static string[] ReadRegistry(string key)
         {
