@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2027
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A743136B-7B4E-43FA-A0C9-C59A4D7BE8DC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "vrClusterManager", "vrClusterManager\vrClusterManager.csproj", "{0CD16871-AE33-44AC-9E84-40DBFAEB51C4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "vrClusterListener", "vrClusterListener\vrClusterListener.csproj", "{89224712-325D-4500-A4A5-B102A3A8EE2F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0CD16871-AE33-44AC-9E84-40DBFAEB51C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0CD16871-AE33-44AC-9E84-40DBFAEB51C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0CD16871-AE33-44AC-9E84-40DBFAEB51C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0CD16871-AE33-44AC-9E84-40DBFAEB51C4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{89224712-325D-4500-A4A5-B102A3A8EE2F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{89224712-325D-4500-A4A5-B102A3A8EE2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{89224712-325D-4500-A4A5-B102A3A8EE2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{89224712-325D-4500-A4A5-B102A3A8EE2F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{0CD16871-AE33-44AC-9E84-40DBFAEB51C4} = {A743136B-7B4E-43FA-A0C9-C59A4D7BE8DC}
+		{89224712-325D-4500-A4A5-B102A3A8EE2F} = {A743136B-7B4E-43FA-A0C9-C59A4D7BE8DC}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8B205E72-0640-4800-81FB-BC1675CE63AF}
+	EndGlobalSection
+EndGlobal
