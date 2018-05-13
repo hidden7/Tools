@@ -475,7 +475,7 @@
 		</Menu>
 
 		<TabControl Grid.Row="1" x:Name="tabControl" VerticalAlignment="Top" MinWidth="500" MinHeight="200" Background="#FF2D2D30" BorderThickness="0,3,0,0" BorderBrush="#0079CB" Margin="10" Padding="0" Style="{DynamicResource TabControlStyle}" >
-			<TabItem Header="Cluster nodes" IsEnabled="False">
+			<TabItem Header="Cluster nodes" IsEnabled="False" Visibility="Collapsed">
 				<Grid Style="{StaticResource TabContent}" >
 					<Grid Grid.Row="1">
 						<Grid.ColumnDefinitions>
@@ -634,7 +634,7 @@
 					</Grid>
 				</Grid>
 			</TabItem>
-			<TabItem Header="Viewports" Margin="3,0,-3,0" IsEnabled="False">
+			<TabItem Header="Viewports" Margin="3,0,-3,0" IsEnabled="False" Visibility="Collapsed">
 				<Grid Style="{StaticResource TabContent}">
 					<Grid.ColumnDefinitions>
 						<ColumnDefinition Width="auto"/>
@@ -764,7 +764,7 @@
 					</Viewbox>
 				</Grid>
 			</TabItem>
-			<TabItem Header="Scene nodes" IsEnabled="False">
+			<TabItem Header="Scene nodes" IsEnabled="False" Visibility="Collapsed">
 				<Grid Style="{StaticResource TabContent}">
 					<Grid.ColumnDefinitions>
 						<ColumnDefinition Width="Auto" />
@@ -897,7 +897,7 @@
 					</Grid>
 				</Grid>
 			</TabItem>
-			<TabItem Header="Screens" IsEnabled="False" IsSelected="True">
+			<TabItem Header="Screens" IsEnabled="False" IsSelected="True" Visibility="Collapsed">
 				<Grid Style="{StaticResource TabContent}" >
 					<Grid.ColumnDefinitions>
 						<ColumnDefinition Width="auto"/>
@@ -1032,7 +1032,7 @@
 					</Grid>
 				</Grid>
 			</TabItem>
-			<TabItem Header="Inputs" IsEnabled="False" >
+			<TabItem Header="Inputs" IsEnabled="False" Visibility="Collapsed" >
 				<Grid Style="{StaticResource TabContent}">
 					<Grid.ColumnDefinitions>
 						<ColumnDefinition Width="Auto" />
@@ -1189,7 +1189,7 @@
 					</Grid>
 				</Grid>
 			</TabItem>
-			<TabItem Header="Other settings" IsEnabled="False" >
+			<TabItem Header="Other settings" IsEnabled="False" Visibility="Collapsed" >
 				<Grid Style="{StaticResource TabContent}">
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto" />
@@ -1311,7 +1311,7 @@
 					</Grid>
 				</Grid>
 			</TabItem>
-			<TabItem Header="Log Tools" x:Name="logTab" IsEnabled="False">
+			<TabItem Header="Log Tools" x:Name="logTab" IsEnabled="False" Visibility="Collapsed">
 				<Grid Style="{StaticResource TabContent}">
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto" />
@@ -1532,8 +1532,8 @@
 									</Grid.RowDefinitions>
 
 									<StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,5,0">
-											<Label Grid.Column="0" Grid.Row="0" Content="Render API" />
-											<ComboBox x:Name="renderApi" Grid.Column="1" Grid.Row="0" ItemsSource="{Binding renderApiParams}" SelectedItem="{Binding selectedRenderApiParam}" DisplayMemberPath="Key" Template="{DynamicResource ComboBoxTemplate}" HorizontalAlignment="Stretch" Width="172"/>
+										<Label Grid.Column="0" Grid.Row="0" Content="Render API" />
+										<ComboBox x:Name="renderApi" Grid.Column="1" Grid.Row="0" ItemsSource="{Binding renderApiParams}" SelectedItem="{Binding selectedRenderApiParam}" DisplayMemberPath="Key" Template="{DynamicResource ComboBoxTemplate}" HorizontalAlignment="Stretch" Width="172"/>
 									</StackPanel>
 
 									<StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,5,0">
