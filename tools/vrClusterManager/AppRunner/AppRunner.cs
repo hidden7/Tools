@@ -18,8 +18,8 @@ namespace vrClusterManager
 	{
 
 		// net
-		public const int nodeListenerPort = 41000;
-
+		public static int nodeListenerPort = 41000;
+		public const string ArgListenerPort = "listener_port=";
 
 		public const string LogCategoriesList = "logCategoriesList.conf";
 
