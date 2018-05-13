@@ -19,31 +19,30 @@ namespace UnrealTools
 		const string CmdKill   = "kill";
 		const string CmdStatus = "status";
 
-		const int DefaultPort = 41000;
+		const string ArgPort = "port=";
+
+		static int Port = 41000;
 
 		static HashSet<int> ProcIDs      = new HashSet<int>();
-		static int          LastProcID   = -1;
-		static string       LastProcName = string.Empty;
+		static System.Object LockPIDList = new System.Object();
 
-		// The listener will kill all names listed below each time it receives KILL command. This is
-		// similar to black list. Just enumerate your enemies.
-		static List<string> ProcessesToAlwaysKill = new List<string> {
-			//"UE4Game.exe"
-		};
 
 		static void Main(string[] args)
 		{
 			Console.SetWindowSize(120, 24);
 			Console.SetBufferSize(120, 240);
 
+			PrintColorText("Pixela Labs LLC, 2018", ConsoleColor.Cyan);
+
+			ParseCommandLine(args);
+
 			TcpListener server = null;
 			try
 			{
-				server = new TcpListener(IPAddress.Any, DefaultPort);
+				server = new TcpListener(IPAddress.Any, Port);
 				server.Start();
 
-				PrintColorText("Pixela Labs LLC, 2018", ConsoleColor.Cyan);
-				PrintColorText(string.Format("VRCListener is listening to port {0}", DefaultPort.ToString()), ConsoleColor.Cyan);
+				PrintColorText(string.Format("VRCListener is listening to port {0}", Port.ToString()), ConsoleColor.Cyan);
 				Console.WriteLine("---------------------------------------------------------");
 
 				// Processing commands
@@ -125,7 +124,7 @@ namespace UnrealTools
 			}
 			else
 			{
-				PrintColorText("Unknown command", ConsoleColor.Red);
+				PrintColorText("Unknown command", ConsoleColor.Yellow);
 			}
 		}
 
@@ -152,7 +151,6 @@ namespace UnrealTools
 				return data.Substring(idxStart, idxEnd - idxStart + 1);
 			else
 				return string.Empty;
-
 		}
 
 		private static void StartApplication(string data)
@@ -160,7 +158,7 @@ namespace UnrealTools
 			data = data.Trim();
 			if (data == String.Empty)
 			{
-				PrintColorText("Application path hasn't been specified.", ConsoleColor.Red);
+				PrintColorText("No data", ConsoleColor.Red);
 				return;
 			}
 
@@ -175,48 +173,43 @@ namespace UnrealTools
 				proc.StartInfo.Arguments = argList;
 				proc.Start();
 
-				ProcIDs.Add(proc.Id);
-				LastProcID = proc.Id;
-				LastProcName = Path.GetFileNameWithoutExtension(appPath);
+				lock (LockPIDList)
+				{
+					ProcIDs.Add(proc.Id);
+				}
 
 				PrintColorText(string.Format("Process started: {0} | {1}", proc.Id, proc.ProcessName), ConsoleColor.White);
 			}
 			catch (Exception e)
 			{
-				PrintColorText(string.Format("Couldn't start application. {0}", e.ToString()), ConsoleColor.Red);
+				PrintColorText(e.Message, ConsoleColor.Red);
 			}
 		}
 
 		private static void KillAll()
 		{
-			/*
-			// Kill processes from 'black list'
-			if (ProcessesToAlwaysKill.Count > 0)
+			try
 			{
-				foreach (string name in ProcessesToAlwaysKill)
-					KillProcessesByName(name);
+				lock (LockPIDList)
+				{
+					foreach (int pid in ProcIDs)
+					{
+						try
+						{
+							KillProcessAndChildren(pid);
+						}
+						catch (Exception e)
+						{
+							PrintColorText(e.Message, ConsoleColor.Red);
+						}
+					}
+
+					ProcIDs.Clear();
+				}
 			}
-
-			// Kill last started process by name
-			if (LastProcName.Length > 0)
+			catch (Exception e)
 			{
-				KillProcessesByName(LastProcName);
-			}
-
-			// Check if we start any process before
-			if (LastProcID <= 0)
-				return;
-
-			// Always try to Kill the latest process
-			KillProcessByPID(LastProcID);
-
-			foreach (int pid in ProcIDs)
-				KillProcessByPID(pid);
-			*/
-
-			if (LastProcID > 0)
-			{
-				KillProcessAndChildren(LastProcID);
+				PrintColorText(e.Message, ConsoleColor.Red);
 			}
 		}
 
@@ -224,19 +217,13 @@ namespace UnrealTools
 		{
 			ManagementObjectSearcher searcher = new ManagementObjectSearcher("Select * From Win32_Process Where ParentProcessID=" + pid);
 			ManagementObjectCollection moc = searcher.Get();
+
 			foreach (ManagementObject mo in moc)
 			{
 				KillProcessAndChildren(Convert.ToInt32(mo["ProcessID"]));
 			}
-			try
-			{
-				Process proc = Process.GetProcessById(pid);
-				proc.Kill();
-			}
-			catch (ArgumentException)
-			{
-				/* process already exited */
-			}
+
+			KillProcessByPID(pid);
 		}
 
 		private static void KillProcessByPID(int PID)
@@ -248,34 +235,37 @@ namespace UnrealTools
 				proc.Kill();
 				PrintColorText("Killed " + proc.ProcessName, ConsoleColor.White);
 			}
-			catch(Exception e)
+			catch(Exception)
 			{
 				// Enclose any exceptions here
-				PrintColorText(e.Message, ConsoleColor.White);
-			}
-		}
-
-		private static void KillProcessesByName(string procName)
-		{
-			Process[] processes = Process.GetProcessesByName(procName);
-			foreach (Process proc in processes)
-			{
-				try
-				{
-					proc.Kill();
-					PrintColorText("Killed " + proc.ProcessName, ConsoleColor.White);
-				}
-				catch
-				{
-					// Enclose any exceptions here
-				}
+				//PrintColorText(e.Message, ConsoleColor.Red);
 			}
 		}
 
 		private static void PrintStatus()
 		{
-			//@todo: We need to send status report in response to 'status' command.
-			PrintColorText("STATUS command has not been implemented yet.", ConsoleColor.Magenta);
+			int num = 0;
+			foreach (int id in ProcIDs)
+				PrintColorText(string.Format("APP[{0}]: pid {1}", num++, id), ConsoleColor.Magenta);
+		}
+
+		private static void ParseCommandLine(string[] args)
+		{
+			foreach (string arg in args)
+			{
+				try
+				{
+					if (arg.StartsWith(ArgPort, StringComparison.OrdinalIgnoreCase))
+					{
+						Port = int.Parse(arg.Substring(ArgPort.Length));
+						return;
+					}
+				}
+				catch (Exception e)
+				{
+					PrintColorText(e.Message, ConsoleColor.Red);
+				}
+			}
 		}
 	}
 }
